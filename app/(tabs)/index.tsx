@@ -5,8 +5,66 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import HomePage from "@/screens/HomePage";
+import HomePage2 from "@/screens/HomePage2";
+import FeaturedPage from "@/screens/FeaturedPage";
+import ShopPage from "@/screens/ShopPage";
+import MyAccount from "@/screens/MyAccount";
+import ProductList from "@/screens/ProductList";
+import SearchPage from "@/screens/SearchPage";
+import ProductDetails from "@/screens/ProductDetails";
+import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
+import CartPageAfterLogin from "@/screens/CartPageAfterLogin";
 
 export default function HomeScreen() {
+	return <MyAccount />;
+	// return <CartPageBeforeLogin />; // bad
+	// return <CartPageAfterLogin />; // good
+	// return (
+	// 	<ProductDetails
+	// 		product={{
+	// 			image: "https://via.placeholder.com/150",
+	// 			name: "OZiva Shaker Green, 600 ml",
+	// 			ratings: 4.5,
+	// 			price: 499,
+	// 			discount: 3,
+	// 			oldPrice: 599,
+	// 			reviews: 100,
+	// 			recentlyBought: 200,
+	// 			description: "This is a description of the product",
+	// 		}}
+	// 		onBack={() => {}}
+	// 	/>
+	// );
+	// return <ProductList onProductSelect={() => {}} />;
+
+	// return <ShopPage />;
+
+	return <HomePage2 />;
+	return <HomePage />;
+	return <FeaturedPage />;
+	return <CartPageAfterLogin />;
+
+	// return (
+	// 	<ProductDetails
+	// 		product={{
+	// 			image: "https://via.placeholder.com/150",
+	// 			name: "OZiva Shaker Green, 600 ml",
+	// 			ratings: 4.5,
+	// 			price: 499,
+	// 			discount: 3,
+	// 			oldPrice: 599,
+	// 			reviews: 100,
+	// 			recentlyBought: 200,
+	// 			description: "This is a description of the product",
+	// 		}}
+	// 		onBack={() => {}}
+	// 	/>
+	// );
+	return <SearchPage />;
+	return <ProductList onProductSelect={() => {}} />;
+
+	return <ShopPage />;
+	// return <FeaturedPage />;
 	return <HomePage />;
 	return (
 		<ParallaxScrollView

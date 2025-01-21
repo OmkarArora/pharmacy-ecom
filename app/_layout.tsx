@@ -44,7 +44,7 @@ export default function RootLayout() {
 				<Stack>
 					{/* <Stack.Screen name='login'/> */}
 					<Stack.Screen name="sign-in" options={{ headerShown: false }} />
-					<Stack.Screen name="(app)" options={{ headerShown: false }} />
+					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 					<Stack.Screen name="+not-found" />
 				</Stack>
 				<StatusBar style="auto" />
