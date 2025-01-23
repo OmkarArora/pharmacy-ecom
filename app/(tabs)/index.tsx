@@ -14,23 +14,27 @@ import SearchPage from "@/screens/SearchPage";
 import ProductDetails from "@/screens/ProductDetails";
 import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
 import CartPageAfterLogin from "@/screens/CartPageAfterLogin";
+import AlertPage from "../../screens/AlertPage";
+import Home from "@/screens/Home";
+import MyAccountProfile from "@/screens/MyAccountProfile";
 
 export default function HomeScreen() {
-	return <MyAccount />;
+	// return <Home />;
+	return <MyAccountProfile/>;
 	// return <CartPageBeforeLogin />; // bad
 	// return <CartPageAfterLogin />; // good
 	// return (
 	// 	<ProductDetails
 	// 		product={{
-	// 			image: "https://via.placeholder.com/150",
-	// 			name: "OZiva Shaker Green, 600 ml",
-	// 			ratings: 4.5,
-	// 			price: 499,
-	// 			discount: 3,
-	// 			oldPrice: 599,
-	// 			reviews: 100,
-	// 			recentlyBought: 200,
-	// 			description: "This is a description of the product",
+				// image: "https://via.placeholder.com/150",
+				// name: "OZiva Shaker Green, 600 ml",
+				// ratings: 4.5,
+				// price: 499,
+				// discount: 3,
+				// oldPrice: 599,
+				// reviews: 100,
+				// recentlyBought: 200,
+				// description: "This is a description of the product",
 	// 		}}
 	// 		onBack={() => {}}
 	// 	/>
@@ -63,7 +67,7 @@ export default function HomeScreen() {
 	return <SearchPage />;
 	return <ProductList onProductSelect={() => {}} />;
 
-	return <ShopPage />;
+	// return <ShopPage />;
 	// return <FeaturedPage />;
 	return <HomePage />;
 	return (

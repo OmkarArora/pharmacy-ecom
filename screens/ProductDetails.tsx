@@ -8,8 +8,10 @@ const ProductDetails = ({
 	onBack,
 }: {
 	product: {
+		id: number,
+		category: string,
+		title: string;
 		image: string;
-		name: string;
 		ratings: number;
 		reviews: number;
 		recentlyBought: number;
@@ -29,13 +31,13 @@ const ProductDetails = ({
 				</TouchableOpacity>
 				<Ionicons name="cart-outline" size={24} color="#000" />
 			</View>
-
+			
 			{/* Product Image */}
 			<Image source={{ uri: product.image }} style={styles.productImage} />
 
 			{/* Product Title */}
-			<Text style={styles.title}>{product.name}</Text>
-
+			<Text style={styles.title}>{product.title}</Text>
+			<Text style={styles.title}>{product.category}</Text>
 			{/* Rating Section */}
 			<View style={styles.ratingContainer}>
 				<Text style={styles.rating}>{product.ratings}</Text>
@@ -57,6 +59,7 @@ const ProductDetails = ({
 				<Text style={styles.newPrice}>₹{product.price}</Text>
 			</View>
 			<Text style={styles.inclusive}>Inclusive of all taxes</Text>
+			<Text style={styles.inclusive}>Description {product.description}</Text>
 
 			{/* Add to Cart */}
 			<TouchableOpacity style={styles.addToCartButton}>
