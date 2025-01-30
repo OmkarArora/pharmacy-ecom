@@ -16,7 +16,7 @@ import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
 import CartPageAfterLogin from "@/screens/CartPageAfterLogin";
 
 export default function HomeScreen() {
-	return <MyAccount />;
+	// return <MyAccount />;
 	// return <CartPageBeforeLogin />; // bad
 	// return <CartPageAfterLogin />; // good
 	// return (
@@ -39,7 +39,7 @@ export default function HomeScreen() {
 
 	// return <ShopPage />;
 
-	return <HomePage2 />;
+	// return <HomePage2 />;
 	return <HomePage />;
 	return <FeaturedPage />;
 	return <CartPageAfterLogin />;
