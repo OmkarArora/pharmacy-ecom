@@ -51,7 +51,12 @@ export default function RootLayout() {
 					{/* <Stack.Screen name='login'/> */}
 					<Stack.Screen name="onboarding" options={{ headerShown: false }} />
 					<Stack.Screen name="sign-in" options={{ headerShown: false }} />
+
 					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="products/[productId]"
+						options={{ headerShown: false }}
+					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
 				<StatusBar style="auto" />

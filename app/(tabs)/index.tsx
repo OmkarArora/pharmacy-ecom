@@ -5,7 +5,7 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import HomePage from "@/screens/HomePage";
-import HomePage2 from "@/screens/HomePage2";
+
 import FeaturedPage from "@/screens/FeaturedPage";
 import ShopPage from "@/screens/ShopPage";
 import MyAccount from "@/screens/MyAccount";
