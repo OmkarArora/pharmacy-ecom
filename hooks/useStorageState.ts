@@ -68,3 +68,10 @@ export function useStorageState(key: string): UseStateHook<string> {
 
 	return [state, setValue];
 }
+
+export async function clearStoredKeys(keysToClear: string[]) {
+	for (const key of keysToClear) {
+		await SecureStore.deleteItemAsync(key);
+		console.log(`Cleared value for key: ${key}`);
+	}
+}
