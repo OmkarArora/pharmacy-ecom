@@ -8,12 +8,12 @@ import HomePage from "@/screens/HomePage";
 
 import FeaturedPage from "@/screens/FeaturedPage";
 import ShopPage from "@/screens/ShopPage";
-import MyAccount from "@/screens/MyAccount";
+import MyAccount from "@/screens/account/MyAccount";
 import ProductList from "@/screens/ProductList";
 import SearchPage from "@/screens/SearchPage";
 import ProductDetails from "@/screens/ProductDetails";
 import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
-import CartPageAfterLogin from "@/screens/CartPageAfterLogin";
+import CartPageAfterLogin from "@/screens/CartPage";
 import AlertPage from "../../screens/AlertPage";
 
 // import MyAccountProfile from "@/screens/MyAccountProfile";

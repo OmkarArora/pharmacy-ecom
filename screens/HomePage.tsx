@@ -2,8 +2,12 @@ import ProductCard from "@/components/product/ProductCard";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useSession } from "@/lib/SessionProvider";
-import { ProductItem } from "@/lib/types";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import {
+	HomePageCategoryItem,
+	HomePageItem,
+	isProduct,
+	Product,
+} from "@/lib/types";
 import {
 	FlatList,
 	StyleSheet,
@@ -15,192 +19,61 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
-import { clearStoredKeys } from "@/hooks/useStorageState";
-import { LocalConfig } from "@/lib/values";
+import { homePageCategoryItemsDB, productsDB } from "@/lib/fake-data";
 
-const DATA = [
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-		title: "Second Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72n",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72t",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72e",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72w",
-		title: "Third Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba4",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f633",
-		title: "Second Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba2",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f631mmmm",
-		title: "Second Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f633mmm",
-		title: "Second Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba2mm",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f631m",
-		title: "Second Item",
-	},
-];
-
-interface Product {
-	id: string;
-	category: string;
-	title: string;
-	image: string;
-	ratings?: number;
-	price?: number;
-	discount?: number;
-	oldPrice?: number | null;
-	reviews?: number;
-	recentlyBought?: number;
-	description?: string;
-	healthConditions?: string[];
-}
-
-const products: Product[] = [
-	{
-		id: "1",
-		category: "Product of the Day",
-		title: "OZiva Shaker Green, 600 ml",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 499,
-		discount: 3,
-		oldPrice: 599,
-		reviews: 100,
-		recentlyBought: 200,
-		description: "This is a description of the product",
-	},
-	{
-		id: "2",
-		category: "Product of the Day",
-		title: "Apollo Life Biotin 5000 mcg, 60 Tablets",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 475,
-		discount: 10,
-		oldPrice: 525,
-		reviews: 150,
-		recentlyBought: 250,
-		description: "This is a description of the product",
-	},
-	{
-		id: "3",
-		category: "browseByHealthCondition",
-		title: "Cough & Cold",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "4",
-		category: "browseByHealthCondition",
-		title: "Diabetes",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "5",
-		category: "browseByHealthCondition",
-		title: "Cardiac Care",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "6",
-		category: "browseByHealthCondition",
-		title: "Stomach Care",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "7",
-		category: "Top Brands",
-		title: "Pantene Shampoo, 600 ml",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 499,
-		discount: 3,
-		oldPrice: 599,
-		reviews: 100,
-		recentlyBought: 200,
-		description: "This is a description of the product",
-	},
-	{
-		id: "8",
-		category: "Top Brands",
-		title: "VLCC Ayurveda Deep Pore Cleansing Face Wash",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 130,
-		discount: 3,
-		oldPrice: 150,
-		reviews: 120,
-		recentlyBought: 180,
-		description: "This is a description of the product",
-	},
-];
+const products: HomePageItem[] = [...productsDB, ...homePageCategoryItemsDB];
 
 export default function HomePage() {
 	const { signOut } = useSession();
 	const router = useRouter();
 
-	const renderCard = ({ item }: { item: Product }) => (
-		<TouchableOpacity
-			style={styles.card}
-			onPress={() => {
-				if (item.category === "browseByHealthCondition") {
-					// navigation.navigate('ShopPage', { healthCondition: item.title })
-					console.error("Route not handled");
-					// router.push(`/ShopPage`)
-				} else {
-					router.push(`/products/${item.id}`);
-				}
-			}}
-		>
-			<Image source={{ uri: item.image }} style={styles.cardImage} />
-			<Text style={styles.cardTitle}>{item.title}</Text>
-			{item.price !== null && item.price !== undefined && (
-				<>
-					<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
-					{item.oldPrice !== null && item.oldPrice !== undefined && (
-						<Text style={styles.cardOriginalPrice}>
-							₹{item.oldPrice.toFixed(2)}
-						</Text>
-					)}
-					{item.discount !== null && item.discount !== undefined && (
-						<Text style={styles.cardDiscount}>{item.discount}% off</Text>
-					)}
-				</>
-			)}
-		</TouchableOpacity>
-	);
+	const renderCard = ({ item }: { item: HomePageItem }) => {
+		const isProductType = isProduct(item);
+
+		// let renderData = isProductType
+		// 	? (item as Product)
+		// 	: (item as HomePageCategoryItem);
+
+		return (
+			<TouchableOpacity
+				style={styles.card}
+				onPress={() => {
+					if (item.category === "browseByHealthCondition") {
+						// navigation.navigate('ShopPage', { healthCondition: item.title })
+						console.error("Route not handled");
+						// router.push(`/ShopPage`)
+					} else {
+						router.push(`/products/${item.id}`);
+					}
+				}}
+			>
+				<Image
+					source={item.image}
+					style={styles.cardImage}
+					contentFit="contain"
+				/>
+				<Text style={styles.cardTitle}>{item.title}</Text>
+
+				{isProductType && item.price !== null && item.price !== undefined && (
+					<>
+						<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
+						{item.originalPrice !== null &&
+							item.originalPrice !== undefined && (
+								<Text style={styles.cardOriginalPrice}>
+									₹{item.originalPrice.toFixed(2)}
+								</Text>
+							)}
+						{item.discountPercent !== null &&
+							item.discountPercent !== undefined && (
+								<Text style={styles.cardDiscount}>
+									{item.discountPercent}% off
+								</Text>
+							)}
+					</>
+				)}
+			</TouchableOpacity>
+		);
+	};
 
 	const renderSectionHeader = ({ section }: { section: any }) => (
 		<View>
@@ -321,7 +194,6 @@ const styles = StyleSheet.create({
 	cardImage: {
 		width: 100,
 		height: 100,
-		resizeMode: "contain",
 	},
 	cardTitle: {
 		fontSize: 16,

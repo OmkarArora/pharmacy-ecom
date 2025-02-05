@@ -1,80 +1,97 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+	View,
+	Text,
+	Image,
+	StyleSheet,
+	TouchableOpacity,
+	ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ProductReviews from "./ProductReview";
+import { productsDB } from "@/lib/fake-data";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { useRouter } from "expo-router";
 
 const ProductDetails = ({
-	product,
+	productId,
 	onBack,
 }: {
-	product: {
-		id: number,
-		category: string,
-		title: string;
-		image: string;
-		ratings: number;
-		reviews: number;
-		recentlyBought: number;
-		oldPrice: number;
-		discount: number;
-		price: number;
-		description: string;
-	};
+	productId: string;
 	onBack: () => void;
 }) => {
+	const primaryColor = useThemeColor({}, "primary");
+	const router = useRouter();
+
+	const product = productsDB.find((item) => item.id === productId);
+
+	function goToCart() {
+		router.push("/cart");
+	}
+
+	if (!product) return <Text>Product not found</Text>;
+
 	return (
-		<View style={styles.container}>
-			{/* Header */}
-			<View style={styles.header}>
-				<TouchableOpacity onPress={onBack}>
-					<Ionicons name="arrow-back" size={24} color="#000" />
-				</TouchableOpacity>
-				<Ionicons name="cart-outline" size={24} color="#000" />
-			</View>
-			
-			{/* Product Image */}
-			<Image source={{ uri: product.image }} style={styles.productImage} />
+		<SafeAreaView style={{ flex: 1 }}>
+			<ScrollView style={styles.container}>
+				{/* Header */}
+				<View style={styles.header}>
+					<TouchableOpacity onPress={onBack}>
+						<Ionicons name="arrow-back" size={24} color="#000" />
+					</TouchableOpacity>
 
-			{/* Product Title */}
-			<Text style={styles.title}>{product.title}</Text>
-			<Text style={styles.title}>{product.category}</Text>
-			{/* Rating Section */}
-			<View style={styles.ratingContainer}>
-				<Text style={styles.rating}>{product.ratings}</Text>
-				<Ionicons name="star" size={16} color="#FFD700" />
-				<Text style={styles.ratingText}>({product.reviews} Ratings)</Text>
-			</View>
-
-			{/* Recently Bought */}
-			<Text style={styles.recentlyBought}>
-				{product.recentlyBought} people bought this recently
-			</Text>
-
-			{/* Price Section */}
-			<View style={styles.priceContainer}>
-				<View>
-					<Text style={styles.oldPrice}>MRP ₹{product.oldPrice}</Text>
-					<Text style={styles.discount}>{product.discount}</Text>
+					<TouchableOpacity onPress={goToCart}>
+						<Ionicons name="cart-outline" size={24} color="#000" />
+					</TouchableOpacity>
 				</View>
-				<Text style={styles.newPrice}>₹{product.price}</Text>
-			</View>
-			<Text style={styles.inclusive}>Inclusive of all taxes</Text>
-			<Text style={styles.inclusive}>Description {product.description}</Text>
 
-			{/* Add to Cart */}
-			<TouchableOpacity style={styles.addToCartButton}>
-				<Ionicons name="add" size={16} color="#fff" />
-				<Text style={styles.addToCartText}>Add to Cart</Text>
-			</TouchableOpacity>
+				{/* Product Image */}
+				<Image source={{ uri: product.image }} style={styles.productImage} />
 
-			{/* Product Details */}
-			<View style={styles.detailsContainer}>
-				<Text style={styles.detailsHeading}>Product Details</Text>
-				<Text style={styles.detailsDescription}>{product.description}</Text>
-			</View>
+				{/* Product Title */}
+				<Text style={styles.title}>{product.title}</Text>
+				<Text style={styles.title}>{product.category}</Text>
+				{/* Rating Section */}
+				<View style={styles.ratingContainer}>
+					<Text style={styles.rating}>{product.ratings}</Text>
+					<Ionicons name="star" size={16} color="#FFD700" />
+					<Text style={styles.ratingText}>({product.reviews} Ratings)</Text>
+				</View>
 
-			<ProductReviews />
-		</View>
+				{/* Recently Bought */}
+				<Text style={styles.recentlyBought}>
+					{product.recentlyBought} people bought this recently
+				</Text>
+
+				{/* Price Section */}
+				<View style={styles.priceContainer}>
+					<View>
+						<Text style={styles.oldPrice}>MRP ₹{product.originalPrice}</Text>
+						<Text style={styles.discount}>{product.discountPercent}</Text>
+					</View>
+					<Text style={styles.newPrice}>₹{product.price}</Text>
+				</View>
+				<Text style={styles.inclusive}>Inclusive of all taxes</Text>
+				<Text style={styles.inclusive}>Description {product.description}</Text>
+
+				{/* Add to Cart */}
+				<TouchableOpacity
+					style={[styles.addToCartButton, { backgroundColor: primaryColor }]}
+				>
+					<Ionicons name="add" size={16} color="#fff" />
+					<Text style={styles.addToCartText}>Add to Cart</Text>
+				</TouchableOpacity>
+
+				{/* Product Details */}
+				<View style={styles.detailsContainer}>
+					<Text style={styles.detailsHeading}>Product Details</Text>
+					<Text style={styles.detailsDescription}>{product.description}</Text>
+				</View>
+
+				<ProductReviews />
+			</ScrollView>
+		</SafeAreaView>
 	);
 };
 

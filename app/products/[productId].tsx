@@ -1,12 +1,14 @@
-import { useLocalSearchParams } from "expo-router";
-import { SafeAreaView, Text } from "react-native";
+import ProductDetails from "@/screens/ProductDetails";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function Page() {
 	const { productId } = useLocalSearchParams();
+	const router = useRouter();
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
-			<Text>Product ID - {productId}</Text>
-		</SafeAreaView>
+		<ProductDetails
+			productId={productId as string}
+			onBack={() => router.back()}
+		/>
 	);
 }
