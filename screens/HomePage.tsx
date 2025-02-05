@@ -40,6 +40,8 @@ export default function HomePage() {
 				onPress={() => {
 					if (item.category === "browseByHealthCondition") {
 						// navigation.navigate('ShopPage', { healthCondition: item.title })
+						router.push("/products/2");
+
 						console.error("Route not handled");
 						// router.push(`/ShopPage`)
 					} else {
