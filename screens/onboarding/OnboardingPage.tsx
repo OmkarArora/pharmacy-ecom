@@ -40,15 +40,15 @@ export default function OnboardingPage() {
 		if (currentIndex < slidesData.length - 1) {
 			flatlistRef.current?.scrollToIndex({ index: currentIndex + 1 });
 		} else {
-			// Alert.alert("last slide");
-			// set onboarding as completed
 			setIsOnboarded("true");
 			router.push("/sign-in");
 		}
 	}, [currentIndex, slidesData.length]);
 
 	const onClickSkip = useCallback(() => {
-		flatlistRef.current?.scrollToIndex({ index: slidesData.length - 1 });
+		setIsOnboarded("true");
+		router.push("/sign-in");
+		// flatlistRef.current?.scrollToIndex({ index: slidesData.length - 1 });
 	}, [slidesData.length]);
 
 	return (

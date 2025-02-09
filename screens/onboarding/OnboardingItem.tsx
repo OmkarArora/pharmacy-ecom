@@ -17,6 +17,7 @@ const onboardingImages: { [key: string]: string } = {
 export default function OnboardingItem({ data }: Props) {
 	const { width, height } = useWindowDimensions();
 	const primaryColor = useThemeColor({}, "primary");
+	const secondaryColor = useThemeColor({}, "secondary");
 
 	const { title, description, id } = data;
 
@@ -31,7 +32,7 @@ export default function OnboardingItem({ data }: Props) {
 
 			<View style={{ flex: 0.3 }}>
 				<Text style={[styles.title, { color: primaryColor }]}>{title}</Text>
-				<Text style={[styles.description, { color: "#ADB3BC" }]}>
+				<Text style={[styles.description, { color: secondaryColor }]}>
 					{description}
 				</Text>
 			</View>

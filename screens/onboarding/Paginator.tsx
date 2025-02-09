@@ -1,3 +1,4 @@
+import { SecondaryButton } from "@/components/ui/buttons";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { OnboardingItemType } from "@/lib/types";
 import {
@@ -37,11 +38,11 @@ export default function Paginator({
 				paddingHorizontal: 40,
 			}}
 		>
-			<TouchableOpacity onPress={onClickSkip}>
-				<Text style={{ color: primaryColor, opacity: 0.8, fontWeight: "600" }}>
-					Skip
-				</Text>
-			</TouchableOpacity>
+			<SecondaryButton
+				onPress={onClickSkip}
+				title="Skip"
+				textStyle={{ fontWeight: "400", fontSize: 16 }}
+			/>
 
 			<View style={{ flexDirection: "row" }}>
 				{data.map((_, index) => {
@@ -53,7 +54,7 @@ export default function Paginator({
 
 					const dotWidth = scrollX.interpolate({
 						inputRange,
-						outputRange: [10, 20, 10],
+						outputRange: [10, 30, 10],
 						extrapolate: "clamp",
 					});
 
@@ -77,7 +78,9 @@ export default function Paginator({
 			</View>
 
 			<TouchableOpacity onPress={onClickNext}>
-				<Text style={{ color: primaryColor, fontWeight: "600" }}>Next</Text>
+				<Text style={{ color: primaryColor, fontWeight: "600", fontSize: 16 }}>
+					Next
+				</Text>
 			</TouchableOpacity>
 		</View>
 	);

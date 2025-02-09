@@ -15,6 +15,8 @@ const MAPPING = {
 	"chevron.right": "chevron-right",
 	"cart.fill": "shopping-cart",
 	"person.fill": "account-circle",
+	person: "person-outline",
+	lock: "lock-outline",
 } as Partial<
 	Record<
 		import("expo-symbols").SymbolViewProps["name"],
