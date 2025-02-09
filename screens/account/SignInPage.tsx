@@ -71,6 +71,7 @@ export default function SignInPage() {
 							autoComplete="email"
 							autoCapitalize="none"
 							autoFocus
+							placeholderTextColor={"grey"}
 						/>
 					</InputWrapper>
 				)}
@@ -94,6 +95,7 @@ export default function SignInPage() {
 							onChangeText={onChange}
 							value={value}
 							secureTextEntry
+							placeholderTextColor={"grey"}
 						/>
 					</InputWrapper>
 				)}
