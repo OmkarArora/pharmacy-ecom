@@ -54,7 +54,9 @@ export default function HomePage() {
 					style={styles.cardImage}
 					contentFit="contain"
 				/>
-				<Text style={styles.cardTitle}>{item.title}</Text>
+				<Text style={styles.cardTitle} numberOfLines={2}>
+					{item.title}
+				</Text>
 
 				{isProductType && item.price !== null && item.price !== undefined && (
 					<>
@@ -107,7 +109,7 @@ export default function HomePage() {
 	];
 
 	const renderSection = ({ item }: { item: any }) => {
-		if (item.horizontal) {
+		if (true) {
 			return (
 				<View>
 					{renderSectionHeader({ section: item })}
@@ -129,7 +131,7 @@ export default function HomePage() {
 						data={item.data}
 						renderItem={renderCard}
 						keyExtractor={(product) => product.id}
-						numColumns={2}
+						numColumns={3}
 						columnWrapperStyle={styles.columnWrapper}
 					/>
 				</View>
@@ -172,6 +174,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "#fff",
 		padding: 10,
+		paddingHorizontal: 16,
 	},
 	categoryTitle: {
 		fontSize: 20,
@@ -201,6 +204,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "bold",
 		marginTop: 10,
+		textAlign: "center",
 	},
 	cardPrice: {
 		fontSize: 14,
