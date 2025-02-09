@@ -71,7 +71,7 @@ const MyAccount = () => {
 		<SafeAreaView style={{ flex: 1 }}>
 			<TouchableOpacity
 				onPress={() => clearStoredKeys([LocalConfig.IS_ONBOARDED])}
-				style={{ backgroundColor: "red" }}
+				style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
 			>
 				<Text
 					style={{

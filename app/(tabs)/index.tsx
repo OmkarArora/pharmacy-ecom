@@ -11,8 +11,7 @@ import ShopPage from "@/screens/ShopPage";
 import MyAccount from "@/screens/account/MyAccount";
 import ProductList from "@/screens/ProductList";
 import SearchPage from "@/screens/SearchPage";
-import ProductDetails from "@/screens/ProductDetails";
-import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
+
 import CartPageAfterLogin from "@/screens/CartPage";
 import AlertPage from "../../screens/AlertPage";
 
