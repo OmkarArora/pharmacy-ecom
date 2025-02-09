@@ -15,6 +15,7 @@ import { SessionProvider } from "@/lib/SessionProvider";
 import OnboardingPage from "@/screens/onboarding/OnboardingPage";
 import { useStorageState } from "@/hooks/useStorageState";
 import { LocalConfig } from "@/lib/values";
+import Toast from "@/components/ui/toast";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -59,6 +60,7 @@ export default function RootLayout() {
 					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
+				<Toast />
 				<StatusBar style="auto" />
 			</ThemeProvider>
 		</SessionProvider>

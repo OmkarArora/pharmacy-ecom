@@ -1,6 +1,8 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
+import useCartStore from "@/lib/store/cart-store";
+import { Product } from "@/lib/types";
 import { Image } from "expo-image";
-import React from "react";
+import React, { useMemo } from "react";
 import {
 	View,
 	Text,
@@ -12,6 +14,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CartPage() {
 	const primaryColor = useThemeColor({}, "primary");
+	const items = useCartStore((state) => state.items);
+
+	const total = useMemo(() => {
+		let countTotal = 0;
+		items.forEach((productCartItem) => {
+			countTotal += productCartItem.product.price;
+		});
+
+		return countTotal;
+	}, [items]);
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
@@ -38,30 +50,13 @@ export default function CartPage() {
 				</View>
 
 				<View style={styles.cartDetails}>
-					<Text style={styles.itemCount}>1 ITEM IN YOUR CART</Text>
-					<View style={styles.item}>
-						<Image
-							source={
-								"https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-							}
-							style={styles.itemImage}
-						/>
-						<View style={styles.itemDetails}>
-							<Text style={styles.itemTitle}>
-								Holland & Barrett Multivits & Iron for Fatigue, 120 Tablets
-							</Text>
-							<View style={styles.itemQuantity}>
-								<TouchableOpacity>
-									<Text style={styles.quantityButton}>-</Text>
-								</TouchableOpacity>
-								<Text style={styles.quantity}>1</Text>
-								<TouchableOpacity>
-									<Text style={styles.quantityButton}>+</Text>
-								</TouchableOpacity>
-							</View>
-							<Text style={styles.itemPrice}>₹250</Text>
-						</View>
-					</View>
+					<Text style={styles.itemCount}>
+						{items.length} {items.length === 1 ? "ITEM" : "ITEMS"} IN YOUR CART
+					</Text>
+
+					{items.map((item, index) => (
+						<CartItem data={item.product} key={`${item}-${index}`} />
+					))}
 
 					{/* Last Minute Buys Section */}
 					<Text style={styles.lastMinuteTitle}>LAST MINUTE BUYS</Text>
@@ -91,7 +86,7 @@ export default function CartPage() {
 						<Text style={styles.breakdownTitle}>CART BREAKDOWN</Text>
 						<View style={styles.breakdownRow}>
 							<Text>Cart Total</Text>
-							<Text>₹499.5</Text>
+							<Text>₹{total}</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Discount on MRP</Text>
@@ -133,6 +128,28 @@ export default function CartPage() {
 				<View style={{ height: 100, backgroundColor: "transparent" }}></View>
 			</ScrollView>
 		</SafeAreaView>
+	);
+}
+
+function CartItem({ data }: { data: Product }) {
+	const { image, title, price } = data;
+	return (
+		<View style={styles.item}>
+			<Image source={image} style={styles.itemImage} />
+			<View style={styles.itemDetails}>
+				<Text style={styles.itemTitle}>{title}</Text>
+				<View style={styles.itemQuantity}>
+					<TouchableOpacity>
+						<Text style={styles.quantityButton}>-</Text>
+					</TouchableOpacity>
+					<Text style={styles.quantity}>1</Text>
+					<TouchableOpacity>
+						<Text style={styles.quantityButton}>+</Text>
+					</TouchableOpacity>
+				</View>
+				<Text style={styles.itemPrice}>₹{price}</Text>
+			</View>
+		</View>
 	);
 }
 

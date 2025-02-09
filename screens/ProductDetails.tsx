@@ -13,6 +13,9 @@ import { productsDB } from "@/lib/fake-data";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useRouter } from "expo-router";
+import useCartStore from "@/lib/store/cart-store";
+
+import useToastStore from "@/lib/store/toast-store";
 
 const ProductDetails = ({
 	productId,
@@ -23,11 +26,20 @@ const ProductDetails = ({
 }) => {
 	const primaryColor = useThemeColor({}, "primary");
 	const router = useRouter();
+	const addItemToCart = useCartStore((state) => state.addItem);
+	const showToast = useToastStore((state) => state.show);
 
 	const product = productsDB.find((item) => item.id === productId);
 
 	function goToCart() {
 		router.push("/cart");
+	}
+
+	function addToCart() {
+		if (product) {
+			addItemToCart(product);
+			showToast("Added to Cart!");
+		}
 	}
 
 	if (!product) return <Text>Product not found</Text>;
@@ -78,6 +90,7 @@ const ProductDetails = ({
 				{/* Add to Cart */}
 				<TouchableOpacity
 					style={[styles.addToCartButton, { backgroundColor: primaryColor }]}
+					onPress={addToCart}
 				>
 					<Ionicons name="add" size={16} color="#fff" />
 					<Text style={styles.addToCartText}>Add to Cart</Text>
