@@ -1,4 +1,5 @@
 import { clearStoredKeys } from "@/hooks/useStorageState";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { LocalConfig } from "@/lib/values";
 import React from "react";
 import {
@@ -8,7 +9,9 @@ import {
 	TouchableOpacity,
 	Image,
 	ScrollView,
+	useColorScheme,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Placeholder screens for navigation
 const MyOrdersScreen = () => (
@@ -38,94 +41,98 @@ const AboutCompanyScreen = () => (
 const userName = "John Doe";
 
 export default function ProfilePage() {
+	const primaryColor = useThemeColor({}, "primary");
+
 	return (
-		<ScrollView contentContainerStyle={styles.container}>
-			<View style={styles.header}>
-				<Image
-					source={{ uri: "https://via.placeholder.com/100" }} // Replace with a user profile image URL
-					style={styles.profileImage}
-				/>
-				<Text style={styles.userName}>{userName}</Text>
-				<Text
-					style={styles.editDetails}
-					onPress={() => {
-						// navigation.navigate('EditContactDetails')
-					}}
-				>
-					edit contact details
-				</Text>
-			</View>
-
-			<View style={styles.rateAppSection}>
-				<TouchableOpacity style={styles.rateAppButton}>
-					<Text style={styles.rateAppText}>Rate an app</Text>
-					<View style={styles.stars}>
-						{[...Array(5)].map((_, index) => (
-							<Text key={index} style={styles.star}>
-								⭐
-							</Text>
-						))}
-					</View>
-				</TouchableOpacity>
-			</View>
-
-			<View style={styles.section}>
-				<TouchableOpacity
-					style={styles.sectionItem}
-					onPress={() => {
-						// navigation.navigate('MyOrders')
-					}}
-				>
-					<Text style={styles.sectionText}>My Orders</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.sectionItem}
-					onPress={() => {
-						// navigation.navigate('ManagePayment')
-					}}
-				>
-					<Text style={styles.sectionText}>Manage Payment</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.sectionItem}
-					onPress={() => {
-						// navigation.navigate('AddressBook')
-					}}
-				>
-					<Text style={styles.sectionText}>Address Book</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.sectionItem}
-					onPress={() => {
-						// navigation.navigate('AboutCompany')
-					}}
-				>
-					<Text style={styles.sectionText}>About the company</Text>
-				</TouchableOpacity>
-			</View>
-
-			<View style={styles.footer}>
-				<Text style={styles.versionText}>Version 1.3.9</Text>
-				<TouchableOpacity style={styles.logoutButton}>
-					<Text style={styles.logoutText}>Logout</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => clearStoredKeys([LocalConfig.IS_ONBOARDED])}
-					style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
-				>
-					<Text
-						style={{
-							color: "white",
-							fontSize: 20,
-							textTransform: "uppercase",
-							textAlign: "center",
+		<SafeAreaView style={{ flex: 1 }}>
+			<ScrollView contentContainerStyle={styles.container}>
+				<View style={styles.header}>
+					<Text style={[styles.userName, { color: primaryColor }]}>
+						{userName}
+					</Text>
+					{/* <Text
+						style={styles.editDetails}
+						onPress={() => {
+							// navigation.navigate('EditContactDetails')
 						}}
 					>
-						Clear App Settings
-					</Text>
-				</TouchableOpacity>
-			</View>
-		</ScrollView>
+						edit contact details
+					</Text> */}
+				</View>
+
+				<View style={[styles.rateAppSection]}>
+					<TouchableOpacity
+						style={[styles.rateAppButton, { backgroundColor: primaryColor }]}
+					>
+						<Text style={styles.rateAppText}>Rate the app</Text>
+						<View style={styles.stars}>
+							{[...Array(5)].map((_, index) => (
+								<Text key={index} style={styles.star}>
+									⭐
+								</Text>
+							))}
+						</View>
+					</TouchableOpacity>
+				</View>
+
+				<View style={styles.section}>
+					<TouchableOpacity
+						style={styles.sectionItem}
+						onPress={() => {
+							// navigation.navigate('MyOrders')
+						}}
+					>
+						<Text style={styles.sectionText}>My Orders</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.sectionItem}
+						onPress={() => {
+							// navigation.navigate('ManagePayment')
+						}}
+					>
+						<Text style={styles.sectionText}>Manage Payment</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.sectionItem}
+						onPress={() => {
+							// navigation.navigate('AddressBook')
+						}}
+					>
+						<Text style={styles.sectionText}>Address Book</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.sectionItem}
+						onPress={() => {
+							// navigation.navigate('AboutCompany')
+						}}
+					>
+						<Text style={styles.sectionText}>About the company</Text>
+					</TouchableOpacity>
+				</View>
+
+				<View style={styles.footer}>
+					<Text style={styles.versionText}>Version 1.3.9</Text>
+					<TouchableOpacity style={styles.logoutButton}>
+						<Text style={styles.logoutText}>Logout</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => clearStoredKeys([LocalConfig.IS_ONBOARDED])}
+						style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
+					>
+						<Text
+							style={{
+								color: "white",
+								fontSize: 20,
+								textTransform: "uppercase",
+								textAlign: "center",
+							}}
+						>
+							Clear App Settings
+						</Text>
+					</TouchableOpacity>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
 	);
 }
 
@@ -133,10 +140,10 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		padding: 20,
+		paddingTop: 40,
 		backgroundColor: "#fff",
 	},
 	header: {
-		alignItems: "center",
 		marginBottom: 20,
 	},
 	profileImage: {
@@ -146,7 +153,7 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 	userName: {
-		fontSize: 20,
+		fontSize: 35,
 		fontWeight: "bold",
 		color: "#333",
 	},
@@ -166,13 +173,14 @@ const styles = StyleSheet.create({
 		backgroundColor: "#E0F7FA",
 		padding: 15,
 		borderRadius: 10,
+		paddingVertical: 20,
 		width: "100%",
 		justifyContent: "space-between",
 	},
 	rateAppText: {
 		fontSize: 16,
 		fontWeight: "600",
-		color: "#00796B",
+		color: "white",
 	},
 	stars: {
 		flexDirection: "row",
