@@ -1,8 +1,10 @@
+import { PrimaryButton } from "@/components/ui/buttons";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import useCartStore, { CartItem as CartItemType } from "@/lib/store/cart-store";
-import { Product } from "@/lib/types";
+
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import {
 	View,
@@ -12,10 +14,17 @@ import {
 	ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useStore } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 export default function CartPage() {
+	const router = useRouter();
 	const primaryColor = useThemeColor({}, "primary");
 	const items = useCartStore((state) => state.items);
+	const totalItemsInCart = useStore(
+		useCartStore,
+		useShallow((state) => state.selectTotalItemsCount(state))
+	);
 
 	const [totalPrice, fullNoDiscountPrice] = useMemo(() => {
 		let actualTotal = 0;
@@ -30,6 +39,52 @@ export default function CartPage() {
 
 		return [actualTotal, preDiscountTotal];
 	}, [items]);
+
+	if (totalItemsInCart === 0) {
+		return (
+			<SafeAreaView style={{ flex: 1 }}>
+				<ScrollView style={styles.container}>
+					<View style={styles.cartHeader}>
+						<Text style={styles.cartTitle}>MY CART</Text>
+					</View>
+					<View
+						style={{
+							flex: 1,
+							justifyContent: "center",
+							alignContent: "center",
+						}}
+					>
+						<Text style={{ color: "#111111", fontSize: 20, padding: 16 }}>
+							There are no items in the cart.
+						</Text>
+
+						<Image
+							source={require("@/assets/images/cart/cart-empty.png")}
+							// 	source={require(image)}
+							// style={[styles.image, { width }]}
+							style={{
+								height: 300,
+								width: 300,
+								maxWidth: 330,
+								alignSelf: "center",
+							}}
+							contentFit="contain"
+						/>
+
+						<View style={{ paddingHorizontal: 30 }}>
+							<PrimaryButton
+								title="Continue Shopping →"
+								textStyle={{ fontWeight: "700" }}
+								onPress={() => {
+									router.push("/(tabs)");
+								}}
+							/>
+						</View>
+					</View>
+				</ScrollView>
+			</SafeAreaView>
+		);
+	}
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>

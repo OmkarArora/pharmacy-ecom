@@ -110,36 +110,55 @@ const ProductPage = ({
 				<Text style={styles.inclusive}>Description {product.description}</Text>
 
 				{/* Add to Cart */}
-				{quantityInCart === 0 && (
-					<TouchableOpacity
-						style={[styles.addToCartButton, { backgroundColor: primaryColor }]}
-						onPress={addToCart}
-					>
-						<Ionicons name="add" size={16} color="#fff" />
-						<Text style={styles.addToCartText}>Add to Cart</Text>
-					</TouchableOpacity>
-				)}
 
-				{quantityInCart > 0 && (
-					<>
-						<View style={styles.itemQuantity}>
-							{quantityInCart === 1 ? (
-								<TouchableOpacity onPress={() => removeItem(product.id)}>
-									<MaterialIcons name="delete" size={30} />
-								</TouchableOpacity>
-							) : (
-								<TouchableOpacity onPress={() => decreaseQuantity(product.id)}>
-									<MaterialIcons name="remove-circle-outline" size={30} />
-								</TouchableOpacity>
-							)}
+				<View
+					style={{
+						height: 70,
+						justifyContent: "center",
+						alignItems: "center",
+						paddingVertical: 10,
+					}}
+				>
+					{quantityInCart === 0 && (
+						<TouchableOpacity
+							style={[
+								styles.addToCartButton,
+								{
+									backgroundColor: primaryColor,
+									width: "100%",
+									height: "100%",
+								},
+							]}
+							onPress={addToCart}
+						>
+							<Ionicons name="add" size={16} color="#fff" />
+							<Text style={styles.addToCartText}>Add to Cart</Text>
+						</TouchableOpacity>
+					)}
 
-							<Text style={styles.quantity}>{quantityInCart}</Text>
-							<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
-								<MaterialIcons name="add-circle-outline" size={30} />
-							</TouchableOpacity>
-						</View>
-					</>
-				)}
+					{quantityInCart > 0 && (
+						<>
+							<View style={styles.itemQuantity}>
+								{quantityInCart === 1 ? (
+									<TouchableOpacity onPress={() => removeItem(product.id)}>
+										<MaterialIcons name="delete" size={30} />
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity
+										onPress={() => decreaseQuantity(product.id)}
+									>
+										<MaterialIcons name="remove-circle-outline" size={30} />
+									</TouchableOpacity>
+								)}
+
+								<Text style={styles.quantity}>{quantityInCart}</Text>
+								<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
+									<MaterialIcons name="add-circle-outline" size={30} />
+								</TouchableOpacity>
+							</View>
+						</>
+					)}
+				</View>
 
 				{/* Product Details */}
 				<View style={styles.detailsContainer}>
@@ -229,9 +248,8 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: "#00AAFF",
-		paddingVertical: 12,
+		paddingVertical: 14,
 		borderRadius: 8,
-		marginVertical: 16,
 	},
 	addToCartText: {
 		fontSize: 16,
@@ -257,8 +275,7 @@ const styles = StyleSheet.create({
 	itemQuantity: {
 		flexDirection: "row",
 		alignItems: "center",
-		marginBottom: 8,
-		marginVertical: 10,
+		justifyContent: "center",
 	},
 	quantity: {
 		marginHorizontal: 8,
