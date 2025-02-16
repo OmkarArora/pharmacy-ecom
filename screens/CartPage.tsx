@@ -1,6 +1,7 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
-import useCartStore from "@/lib/store/cart-store";
+import useCartStore, { CartItem as CartItemType } from "@/lib/store/cart-store";
 import { Product } from "@/lib/types";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useMemo } from "react";
 import {
@@ -16,13 +17,18 @@ export default function CartPage() {
 	const primaryColor = useThemeColor({}, "primary");
 	const items = useCartStore((state) => state.items);
 
-	const total = useMemo(() => {
-		let countTotal = 0;
+	const [totalPrice, fullNoDiscountPrice] = useMemo(() => {
+		let actualTotal = 0;
+		let preDiscountTotal = 0;
 		items.forEach((productCartItem) => {
-			countTotal += productCartItem.product.price;
+			preDiscountTotal +=
+				(productCartItem.product.originalPrice ||
+					productCartItem.product.price) * (productCartItem.quantity || 1);
+			actualTotal +=
+				productCartItem.product.price * (productCartItem.quantity || 1);
 		});
 
-		return countTotal;
+		return [actualTotal, preDiscountTotal];
 	}, [items]);
 
 	return (
@@ -55,17 +61,17 @@ export default function CartPage() {
 					</Text>
 
 					{items.map((item, index) => (
-						<CartItem data={item.product} key={`${item}-${index}`} />
+						<CartItem data={item} key={`${item}-${index}`} />
 					))}
 
 					{/* Last Minute Buys Section */}
-					<Text style={styles.lastMinuteTitle}>LAST MINUTE BUYS</Text>
+					{/* <Text style={styles.lastMinuteTitle}>LAST MINUTE BUYS</Text>
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
 						style={styles.lastMinuteScroll}
 					>
-						{/* Example product cards */}
+						
 						<View style={styles.lastMinuteItem}>
 							<Image
 								source={
@@ -78,19 +84,19 @@ export default function CartPage() {
 								<Text style={styles.addButton}>ADD</Text>
 							</TouchableOpacity>
 						</View>
-						{/* Add more last-minute buy cards similarly */}
-					</ScrollView>
+			
+					</ScrollView> */}
 
 					{/* Cart Breakdown */}
 					<View style={styles.cartBreakdown}>
 						<Text style={styles.breakdownTitle}>CART BREAKDOWN</Text>
 						<View style={styles.breakdownRow}>
 							<Text>Cart Total</Text>
-							<Text>₹{total}</Text>
+							<Text>₹{totalPrice}</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Discount on MRP</Text>
-							<Text>-₹249.5</Text>
+							<Text>-₹{fullNoDiscountPrice - totalPrice}</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Coupon Discount</Text>
@@ -110,10 +116,12 @@ export default function CartPage() {
 						</View>
 						<View style={styles.totalRow}>
 							<Text>To Pay</Text>
-							<Text>₹259</Text>
+							<Text>₹{totalPrice}</Text>
 						</View>
 						<View style={styles.savings}>
-							<Text>You saved ₹354.50 on this order</Text>
+							<Text>
+								You saved ₹{fullNoDiscountPrice - totalPrice} on this order
+							</Text>
 						</View>
 					</View>
 
@@ -131,20 +139,33 @@ export default function CartPage() {
 	);
 }
 
-function CartItem({ data }: { data: Product }) {
-	const { image, title, price } = data;
+function CartItem({ data }: { data: CartItemType }) {
+	const { product, quantity } = data;
+	const { image, title, price } = product;
+
+	const increaseQuantity = useCartStore((state) => state.increaseQuantity);
+	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+	const removeItem = useCartStore((state) => state.removeItem);
+
 	return (
 		<View style={styles.item}>
 			<Image source={image} style={styles.itemImage} />
 			<View style={styles.itemDetails}>
 				<Text style={styles.itemTitle}>{title}</Text>
 				<View style={styles.itemQuantity}>
-					<TouchableOpacity>
-						<Text style={styles.quantityButton}>-</Text>
-					</TouchableOpacity>
-					<Text style={styles.quantity}>1</Text>
-					<TouchableOpacity>
-						<Text style={styles.quantityButton}>+</Text>
+					{quantity === 1 ? (
+						<TouchableOpacity onPress={() => removeItem(product.id)}>
+							<MaterialIcons name="delete" size={16} />
+						</TouchableOpacity>
+					) : (
+						<TouchableOpacity onPress={() => decreaseQuantity(product.id)}>
+							<MaterialIcons name="remove-circle-outline" size={16} />
+						</TouchableOpacity>
+					)}
+
+					<Text style={styles.quantity}>{quantity}</Text>
+					<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
+						<MaterialIcons name="add-circle-outline" size={16} />
 					</TouchableOpacity>
 				</View>
 				<Text style={styles.itemPrice}>₹{price}</Text>

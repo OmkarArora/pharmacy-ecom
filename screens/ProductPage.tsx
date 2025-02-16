@@ -7,7 +7,7 @@ import {
 	TouchableOpacity,
 	ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductReviews from "./ProductReview";
 import { productsDB } from "@/lib/fake-data";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,8 +16,11 @@ import { useRouter } from "expo-router";
 import useCartStore from "@/lib/store/cart-store";
 
 import useToastStore from "@/lib/store/toast-store";
+import { useStore } from "zustand";
+import { useShallow } from "zustand/react/shallow";
+import Badge from "@/components/Badge";
 
-const ProductDetails = ({
+const ProductPage = ({
 	productId,
 	onBack,
 }: {
@@ -28,6 +31,20 @@ const ProductDetails = ({
 	const router = useRouter();
 	const addItemToCart = useCartStore((state) => state.addItem);
 	const showToast = useToastStore((state) => state.show);
+
+	const increaseQuantity = useCartStore((state) => state.increaseQuantity);
+	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+	const removeItem = useCartStore((state) => state.removeItem);
+
+	const quantityInCart = useStore(
+		useCartStore,
+		useShallow((state) => state.selectProductQuantity(state, productId))
+	);
+
+	const totalItemsInCart = useStore(
+		useCartStore,
+		useShallow((state) => state.selectTotalItemsCount(state))
+	);
 
 	const product = productsDB.find((item) => item.id === productId);
 
@@ -55,6 +72,11 @@ const ProductDetails = ({
 
 					<TouchableOpacity onPress={goToCart}>
 						<Ionicons name="cart-outline" size={24} color="#000" />
+						<Badge
+							count={totalItemsInCart}
+							color={"white"}
+							backgroundColor={primaryColor}
+						/>
 					</TouchableOpacity>
 				</View>
 
@@ -80,7 +102,7 @@ const ProductDetails = ({
 				<View style={styles.priceContainer}>
 					<View>
 						<Text style={styles.oldPrice}>MRP ₹{product.originalPrice}</Text>
-						<Text style={styles.discount}>{product.discountPercent}</Text>
+						<Text style={styles.discount}>{product.discountPercent}%</Text>
 					</View>
 					<Text style={styles.newPrice}>₹{product.price}</Text>
 				</View>
@@ -88,13 +110,36 @@ const ProductDetails = ({
 				<Text style={styles.inclusive}>Description {product.description}</Text>
 
 				{/* Add to Cart */}
-				<TouchableOpacity
-					style={[styles.addToCartButton, { backgroundColor: primaryColor }]}
-					onPress={addToCart}
-				>
-					<Ionicons name="add" size={16} color="#fff" />
-					<Text style={styles.addToCartText}>Add to Cart</Text>
-				</TouchableOpacity>
+				{quantityInCart === 0 && (
+					<TouchableOpacity
+						style={[styles.addToCartButton, { backgroundColor: primaryColor }]}
+						onPress={addToCart}
+					>
+						<Ionicons name="add" size={16} color="#fff" />
+						<Text style={styles.addToCartText}>Add to Cart</Text>
+					</TouchableOpacity>
+				)}
+
+				{quantityInCart > 0 && (
+					<>
+						<View style={styles.itemQuantity}>
+							{quantityInCart === 1 ? (
+								<TouchableOpacity onPress={() => removeItem(product.id)}>
+									<MaterialIcons name="delete" size={30} />
+								</TouchableOpacity>
+							) : (
+								<TouchableOpacity onPress={() => decreaseQuantity(product.id)}>
+									<MaterialIcons name="remove-circle-outline" size={30} />
+								</TouchableOpacity>
+							)}
+
+							<Text style={styles.quantity}>{quantityInCart}</Text>
+							<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
+								<MaterialIcons name="add-circle-outline" size={30} />
+							</TouchableOpacity>
+						</View>
+					</>
+				)}
 
 				{/* Product Details */}
 				<View style={styles.detailsContainer}>
@@ -209,6 +254,21 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: "#666",
 	},
+	itemQuantity: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginBottom: 8,
+		marginVertical: 10,
+	},
+	quantity: {
+		marginHorizontal: 8,
+		fontSize: 16,
+	},
+	badgeContainer: {
+		position: "absolute",
+		top: -4,
+		right: -4,
+	},
 });
 
-export default ProductDetails;
+export default ProductPage;

@@ -6,22 +6,29 @@ import { Product } from "../types";
 // Define the structure of a product
 
 // Define the structure of a cart item
-interface CartItem {
+export interface CartItem {
 	product: Product;
 	quantity: number;
 }
 
-interface CartState {
+type State = {
 	items: CartItem[];
+};
+
+type Actions = {
 	addItem: (product: Product) => void;
 	removeItem: (productId: string) => void;
 	increaseQuantity: (productId: string) => void;
 	decreaseQuantity: (productId: string) => void;
 	clearCart: () => void;
 	getTotalPrice: () => number;
-}
 
-const useCartStore = create<CartState>()(
+	// Selectors
+	selectProductQuantity: (state: State, productId: string) => number;
+	selectTotalItemsCount: (state: State) => number;
+};
+
+const useCartStore = create<State & Actions>()(
 	persist(
 		(set, get) => ({
 			items: [],
@@ -74,6 +81,20 @@ const useCartStore = create<CartState>()(
 					(total, item) => total + item.product.price * item.quantity,
 					0
 				);
+			},
+			selectProductQuantity: (state: State, productId) => {
+				const existingItem = state.items.find(
+					(item) => item.product.id === productId
+				);
+
+				if (existingItem) {
+					return existingItem.quantity;
+				} else {
+					return 0;
+				}
+			},
+			selectTotalItemsCount: (state: State) => {
+				return state.items.reduce((acc, curr) => acc + curr.quantity, 0);
 			},
 		}),
 		{

@@ -1,4 +1,4 @@
-import ProductDetails from "@/screens/ProductDetails";
+import ProductPage from "@/screens/ProductPage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function Page() {
@@ -6,9 +6,6 @@ export default function Page() {
 	const router = useRouter();
 
 	return (
-		<ProductDetails
-			productId={productId as string}
-			onBack={() => router.back()}
-		/>
+		<ProductPage productId={productId as string} onBack={() => router.back()} />
 	);
 }
