@@ -1,6 +1,7 @@
 import { clearStoredKeys } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { LocalConfig } from "@/lib/values";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
 	View,
@@ -42,6 +43,7 @@ const userName = "John Doe";
 
 export default function ProfilePage() {
 	const primaryColor = useThemeColor({}, "primary");
+	const router = useRouter();
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
@@ -80,6 +82,7 @@ export default function ProfilePage() {
 						style={styles.sectionItem}
 						onPress={() => {
 							// navigation.navigate('MyOrders')
+							router.push("/my-orders");
 						}}
 					>
 						<Text style={styles.sectionText}>My Orders</Text>
@@ -88,6 +91,7 @@ export default function ProfilePage() {
 						style={styles.sectionItem}
 						onPress={() => {
 							// navigation.navigate('ManagePayment')
+							router.push("/manage-payments");
 						}}
 					>
 						<Text style={styles.sectionText}>Manage Payment</Text>
@@ -95,7 +99,7 @@ export default function ProfilePage() {
 					<TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
-							// navigation.navigate('AddressBook')
+							router.push("/address-book");
 						}}
 					>
 						<Text style={styles.sectionText}>Address Book</Text>

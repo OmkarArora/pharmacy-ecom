@@ -19,14 +19,9 @@ import useToastStore from "@/lib/store/toast-store";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import Badge from "@/components/Badge";
+import Header from "@/components/Header";
 
-const ProductPage = ({
-	productId,
-	onBack,
-}: {
-	productId: string;
-	onBack: () => void;
-}) => {
+const ProductPage = ({ productId }: { productId: string }) => {
 	const primaryColor = useThemeColor({}, "primary");
 	const router = useRouter();
 	const addItemToCart = useCartStore((state) => state.addItem);
@@ -41,16 +36,7 @@ const ProductPage = ({
 		useShallow((state) => state.selectProductQuantity(state, productId))
 	);
 
-	const totalItemsInCart = useStore(
-		useCartStore,
-		useShallow((state) => state.selectTotalItemsCount(state))
-	);
-
 	const product = productsDB.find((item) => item.id === productId);
-
-	function goToCart() {
-		router.push("/cart");
-	}
 
 	function addToCart() {
 		if (product) {
@@ -64,21 +50,7 @@ const ProductPage = ({
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView style={styles.container}>
-				{/* Header */}
-				<View style={styles.header}>
-					<TouchableOpacity onPress={onBack}>
-						<Ionicons name="arrow-back" size={24} color="#000" />
-					</TouchableOpacity>
-
-					<TouchableOpacity onPress={goToCart}>
-						<Ionicons name="cart-outline" size={24} color="#000" />
-						<Badge
-							count={totalItemsInCart}
-							color={"white"}
-							backgroundColor={primaryColor}
-						/>
-					</TouchableOpacity>
-				</View>
+				<Header />
 
 				{/* Product Image */}
 				<Image source={{ uri: product.image }} style={styles.productImage} />
@@ -189,6 +161,7 @@ const styles = StyleSheet.create({
 		height: 200,
 		resizeMode: "contain",
 		marginVertical: 20,
+		marginTop: 10,
 	},
 	title: {
 		fontSize: 18,

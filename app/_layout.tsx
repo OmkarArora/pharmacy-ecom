@@ -58,6 +58,13 @@ export default function RootLayout() {
 						name="products/[productId]"
 						options={{ headerShown: false }}
 					/>
+					<Stack.Screen name="my-orders" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="manage-payments"
+						options={{ headerShown: false }}
+					/>
+					<Stack.Screen name="address-book" options={{ headerShown: false }} />
+
 					<Stack.Screen name="+not-found" />
 				</Stack>
 				<Toast />
