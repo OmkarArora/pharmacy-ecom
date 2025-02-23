@@ -22,25 +22,30 @@ type Actions = {
 	decreaseQuantity: (productId: string) => void;
 	clearCart: () => void;
 	getTotalPrice: () => number;
+	resetData: () => void;
 
 	// Selectors
 	selectProductQuantity: (state: State, productId: string) => number;
 	selectTotalItemsCount: (state: State) => number;
 };
 
+const initialData: State = {
+	items: [],
+};
+
 const useCartStore = create<State & Actions>()(
 	persist(
 		(set, get) => ({
-			items: [],
+			...initialData,
 			addItem: (product) => {
 				set((state) => {
 					const existingItem = state.items.find(
-						(item) => item.product.id === product.id
+						(item) => item.product.productId === product.productId
 					);
 
 					if (existingItem) {
 						const updatedItems = state.items.map((item) =>
-							item.product.id === product.id
+							item.product.productId === product.productId
 								? { ...item, quantity: item.quantity + 1 }
 								: item
 						);
@@ -52,13 +57,15 @@ const useCartStore = create<State & Actions>()(
 			},
 			removeItem: (productId) => {
 				set((state) => ({
-					items: state.items.filter((item) => item.product.id !== productId),
+					items: state.items.filter(
+						(item) => item.product.productId !== productId
+					),
 				}));
 			},
 			increaseQuantity: (productId) => {
 				set((state) => ({
 					items: state.items.map((item) =>
-						item.product.id === productId
+						item.product.productId === productId
 							? { ...item, quantity: item.quantity + 1 }
 							: item
 					),
@@ -67,7 +74,7 @@ const useCartStore = create<State & Actions>()(
 			decreaseQuantity: (productId) => {
 				set((state) => ({
 					items: state.items.map((item) =>
-						item.product.id === productId
+						item.product.productId === productId
 							? { ...item, quantity: Math.max(1, item.quantity - 1) }
 							: item
 					),
@@ -84,7 +91,7 @@ const useCartStore = create<State & Actions>()(
 			},
 			selectProductQuantity: (state: State, productId) => {
 				const existingItem = state.items.find(
-					(item) => item.product.id === productId
+					(item) => item.product.productId === productId
 				);
 
 				if (existingItem) {
@@ -96,6 +103,7 @@ const useCartStore = create<State & Actions>()(
 			selectTotalItemsCount: (state: State) => {
 				return state.items.reduce((acc, curr) => acc + curr.quantity, 0);
 			},
+			resetData: () => set({ ...initialData }),
 		}),
 		{
 			name: "cart-storage",

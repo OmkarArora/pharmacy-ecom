@@ -1,36 +1,68 @@
-import { Image, View, StyleSheet, Text } from "react-native";
-import { ThemedText } from "../ThemedText";
+import { View, StyleSheet, Text } from "react-native";
 
-export default function ProductCard() {
+import { Product } from "@/lib/types";
+import { Image } from "expo-image";
+import { Link } from "expo-router";
+
+export default function ProductCard({ data }: { data: Product }) {
+	const { image, name, description, price, discount, productId } = data;
+
 	return (
-		<View style={styles.card}>
-			<Image
-				source={{
-					uri: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-				}}
-				width={142}
-				height={146}
-				style={styles.image}
-			/>
-			<ThemedText style={styles.text}>Paracetomol</ThemedText>
-			<ThemedText style={styles.text}>stars</ThemedText>
-			<ThemedText style={styles.text}>₹ 150</ThemedText>
-			<ThemedText style={styles.text}>Add to cart</ThemedText>
-		</View>
+		<Link href={`/products/${productId}`}>
+			<View style={styles.card}>
+				<Image
+					source={
+						image || "https://m.media-amazon.com/images/I/31CsUtgSdiL.jpg"
+					}
+					style={styles.image}
+					contentFit="contain"
+				/>
+				<View style={{ paddingTop: 16, flexShrink: 1 }}>
+					<Text style={styles.name}>{name}</Text>
+					<Text numberOfLines={3} style={styles.description}>
+						{description}
+					</Text>
+
+					<Text style={styles.price}>₹{price || 0}</Text>
+
+					<Text style={styles.discount}>{discount}% off</Text>
+				</View>
+			</View>
+		</Link>
 	);
 }
 
 const styles = StyleSheet.create({
 	card: {
-		borderWidth: 1,
-		borderColor: "red",
+		flexDirection: "row",
+		justifyContent: "flex-start",
+		alignItems: "flex-start",
+		gap: 16,
+
+		height: 200,
 	},
 	image: {
 		borderRadius: 10,
-		width: 142,
-		height: 146,
+		width: 200,
+		height: 200,
 	},
-	text: {
+	name: {
+		fontSize: 22,
+		fontWeight: "600",
+	},
+	description: {
+		fontSize: 14,
+		marginTop: 4,
+		color: "#ADB3BC",
+	},
+	price: {
+		fontSize: 18,
+		color: "gray",
+		textDecorationLine: "line-through",
+		marginTop: 10,
+	},
+	discount: {
 		fontSize: 12,
+		color: "red",
 	},
 });

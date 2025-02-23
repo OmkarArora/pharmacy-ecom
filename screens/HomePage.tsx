@@ -1,13 +1,7 @@
 import ProductCard from "@/components/product/ProductCard";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+
 import { useSession } from "@/lib/SessionProvider";
-import {
-	HomePageCategoryItem,
-	HomePageItem,
-	isProduct,
-	Product,
-} from "@/lib/types";
+import { HomePageItem, isProduct, Product } from "@/lib/types";
 import {
 	FlatList,
 	StyleSheet,
@@ -45,7 +39,7 @@ export default function HomePage() {
 						console.error("Route not handled");
 						// router.push(`/ShopPage`)
 					} else {
-						router.push(`/products/${item.id}`);
+						router.push(`/products/${item.productId}`);
 					}
 				}}
 			>
@@ -55,24 +49,20 @@ export default function HomePage() {
 					contentFit="contain"
 				/>
 				<Text style={styles.cardTitle} numberOfLines={2}>
-					{item.title}
+					{item.name}
 				</Text>
 
 				{isProductType && item.price !== null && item.price !== undefined && (
 					<>
 						<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
-						{item.originalPrice !== null &&
-							item.originalPrice !== undefined && (
-								<Text style={styles.cardOriginalPrice}>
-									₹{item.originalPrice.toFixed(2)}
-								</Text>
-							)}
-						{item.discountPercent !== null &&
-							item.discountPercent !== undefined && (
-								<Text style={styles.cardDiscount}>
-									{item.discountPercent}% off
-								</Text>
-							)}
+						{item.price !== null && item.price !== undefined && (
+							<Text style={styles.cardOriginalPrice}>
+								₹{item.price.toFixed(2)}
+							</Text>
+						)}
+						{item.discount !== null && item.discount !== undefined && (
+							<Text style={styles.cardDiscount}>{item.discount}% off</Text>
+						)}
 					</>
 				)}
 			</TouchableOpacity>
@@ -109,34 +99,48 @@ export default function HomePage() {
 	];
 
 	const renderSection = ({ item }: { item: any }) => {
-		if (true) {
-			return (
-				<View>
-					{renderSectionHeader({ section: item })}
-					<FlatList
-						data={item.data}
-						renderItem={renderCard}
-						keyExtractor={(product) => product.id}
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={styles.horizontalList}
-					/>
-				</View>
-			);
-		} else {
-			return (
-				<View>
-					{renderSectionHeader({ section: item })}
-					<FlatList
-						data={item.data}
-						renderItem={renderCard}
-						keyExtractor={(product) => product.id}
-						numColumns={3}
-						columnWrapperStyle={styles.columnWrapper}
-					/>
-				</View>
-			);
-		}
+		return (
+			<View>
+				{renderSectionHeader({ section: item })}
+				<FlatList
+					data={item.data}
+					renderItem={renderCard}
+					keyExtractor={(product) => product.productId}
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={styles.horizontalList}
+				/>
+			</View>
+		);
+
+		// if (true) {
+		// 	return (
+		// 		<View>
+		// 			{renderSectionHeader({ section: item })}
+		// 			<FlatList
+		// 				data={item.data}
+		// 				renderItem={renderCard}
+		// 				keyExtractor={(product) => product.productId}
+		// 				horizontal
+		// 				showsHorizontalScrollIndicator={false}
+		// 				contentContainerStyle={styles.horizontalList}
+		// 			/>
+		// 		</View>
+		// 	);
+		// } else {
+		// 	return (
+		// 		<View>
+		// 			{renderSectionHeader({ section: item })}
+		// 			<FlatList
+		// 				data={item.data}
+		// 				renderItem={renderCard}
+		// 				keyExtractor={(product) => product.id}
+		// 				numColumns={3}
+		// 				columnWrapperStyle={styles.columnWrapper}
+		// 			/>
+		// 		</View>
+		// 	);
+		// }
 	};
 
 	return (

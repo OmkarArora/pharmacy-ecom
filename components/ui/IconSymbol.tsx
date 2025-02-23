@@ -17,6 +17,7 @@ const MAPPING = {
 	"person.fill": "account-circle",
 	person: "person-outline",
 	lock: "lock-outline",
+	magnifyingglass: "search",
 } as Partial<
 	Record<
 		import("expo-symbols").SymbolViewProps["name"],

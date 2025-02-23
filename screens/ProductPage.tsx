@@ -12,18 +12,16 @@ import ProductReviews from "./ProductReview";
 import { productsDB } from "@/lib/fake-data";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useRouter } from "expo-router";
 import useCartStore from "@/lib/store/cart-store";
 
 import useToastStore from "@/lib/store/toast-store";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import Badge from "@/components/Badge";
 import Header from "@/components/Header";
+import { getDiscountedPrice } from "@/lib/functions";
 
 const ProductPage = ({ productId }: { productId: string }) => {
 	const primaryColor = useThemeColor({}, "primary");
-	const router = useRouter();
 	const addItemToCart = useCartStore((state) => state.addItem);
 	const showToast = useToastStore((state) => state.show);
 
@@ -36,7 +34,7 @@ const ProductPage = ({ productId }: { productId: string }) => {
 		useShallow((state) => state.selectProductQuantity(state, productId))
 	);
 
-	const product = productsDB.find((item) => item.id === productId);
+	const product = productsDB.find((item) => item.productId === productId);
 
 	function addToCart() {
 		if (product) {
@@ -45,18 +43,23 @@ const ProductPage = ({ productId }: { productId: string }) => {
 		}
 	}
 
-	if (!product) return <Text>Product not found</Text>;
+	if (!product)
+		return (
+			<SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+				<Header />
+				<Text>Product not found</Text>;
+			</SafeAreaView>
+		);
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
+		<SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+			<Header />
 			<ScrollView style={styles.container}>
-				<Header />
-
 				{/* Product Image */}
 				<Image source={{ uri: product.image }} style={styles.productImage} />
 
 				{/* Product Title */}
-				<Text style={styles.title}>{product.title}</Text>
+				<Text style={styles.title}>{product.name}</Text>
 				<Text style={styles.title}>{product.category}</Text>
 				{/* Rating Section */}
 				<View style={styles.ratingContainer}>
@@ -73,10 +76,12 @@ const ProductPage = ({ productId }: { productId: string }) => {
 				{/* Price Section */}
 				<View style={styles.priceContainer}>
 					<View>
-						<Text style={styles.oldPrice}>MRP ₹{product.originalPrice}</Text>
-						<Text style={styles.discount}>{product.discountPercent}%</Text>
+						<Text style={styles.oldPrice}>MRP ₹{product.price}</Text>
+						<Text style={styles.discount}>{product.discount}%</Text>
 					</View>
-					<Text style={styles.newPrice}>₹{product.price}</Text>
+					<Text style={styles.newPrice}>
+						₹{getDiscountedPrice(product.price, product.discount || 0)}
+					</Text>
 				</View>
 				<Text style={styles.inclusive}>Inclusive of all taxes</Text>
 				<Text style={styles.inclusive}>Description {product.description}</Text>
@@ -112,19 +117,23 @@ const ProductPage = ({ productId }: { productId: string }) => {
 						<>
 							<View style={styles.itemQuantity}>
 								{quantityInCart === 1 ? (
-									<TouchableOpacity onPress={() => removeItem(product.id)}>
+									<TouchableOpacity
+										onPress={() => removeItem(product.productId)}
+									>
 										<MaterialIcons name="delete" size={30} />
 									</TouchableOpacity>
 								) : (
 									<TouchableOpacity
-										onPress={() => decreaseQuantity(product.id)}
+										onPress={() => decreaseQuantity(product.productId)}
 									>
 										<MaterialIcons name="remove-circle-outline" size={30} />
 									</TouchableOpacity>
 								)}
 
 								<Text style={styles.quantity}>{quantityInCart}</Text>
-								<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
+								<TouchableOpacity
+									onPress={() => increaseQuantity(product.productId)}
+								>
 									<MaterialIcons name="add-circle-outline" size={30} />
 								</TouchableOpacity>
 							</View>
@@ -147,8 +156,6 @@ const ProductPage = ({ productId }: { productId: string }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#fff",
-		paddingHorizontal: 16,
 	},
 	header: {
 		flexDirection: "row",

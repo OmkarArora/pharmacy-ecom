@@ -1,5 +1,6 @@
 import { PrimaryButton } from "@/components/ui/buttons";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { getDiscountedPrice } from "@/lib/functions";
 import useCartStore, { CartItem as CartItemType } from "@/lib/store/cart-store";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -26,15 +27,17 @@ export default function CartPage() {
 		useShallow((state) => state.selectTotalItemsCount(state))
 	);
 
-	const [totalPrice, fullNoDiscountPrice] = useMemo(() => {
+	const [priceToPay, fullNoDiscountPrice] = useMemo(() => {
 		let actualTotal = 0;
 		let preDiscountTotal = 0;
 		items.forEach((productCartItem) => {
 			preDiscountTotal +=
-				(productCartItem.product.originalPrice ||
-					productCartItem.product.price) * (productCartItem.quantity || 1);
-			actualTotal +=
 				productCartItem.product.price * (productCartItem.quantity || 1);
+			actualTotal +=
+				getDiscountedPrice(
+					productCartItem.product.price,
+					productCartItem.product.discount || 0
+				) * (productCartItem.quantity || 1);
 		});
 
 		return [actualTotal, preDiscountTotal];
@@ -147,11 +150,11 @@ export default function CartPage() {
 						<Text style={styles.breakdownTitle}>CART BREAKDOWN</Text>
 						<View style={styles.breakdownRow}>
 							<Text>Cart Total</Text>
-							<Text>₹{totalPrice}</Text>
+							<Text>₹{fullNoDiscountPrice}</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Discount on MRP</Text>
-							<Text>-₹{fullNoDiscountPrice - totalPrice}</Text>
+							<Text>-₹{fullNoDiscountPrice - priceToPay}</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Coupon Discount</Text>
@@ -171,11 +174,11 @@ export default function CartPage() {
 						</View>
 						<View style={styles.totalRow}>
 							<Text>To Pay</Text>
-							<Text>₹{totalPrice}</Text>
+							<Text>₹{priceToPay}</Text>
 						</View>
 						<View style={styles.savings}>
 							<Text>
-								You saved ₹{fullNoDiscountPrice - totalPrice} on this order
+								You saved ₹{fullNoDiscountPrice - priceToPay} on this order
 							</Text>
 						</View>
 					</View>
@@ -196,7 +199,7 @@ export default function CartPage() {
 
 function CartItem({ data }: { data: CartItemType }) {
 	const { product, quantity } = data;
-	const { image, title, price } = product;
+	const { image, name, price } = product;
 
 	const increaseQuantity = useCartStore((state) => state.increaseQuantity);
 	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
@@ -206,20 +209,22 @@ function CartItem({ data }: { data: CartItemType }) {
 		<View style={styles.item}>
 			<Image source={image} style={styles.itemImage} />
 			<View style={styles.itemDetails}>
-				<Text style={styles.itemTitle}>{title}</Text>
+				<Text style={styles.itemTitle}>{name}</Text>
 				<View style={styles.itemQuantity}>
 					{quantity === 1 ? (
-						<TouchableOpacity onPress={() => removeItem(product.id)}>
+						<TouchableOpacity onPress={() => removeItem(product.productId)}>
 							<MaterialIcons name="delete" size={16} />
 						</TouchableOpacity>
 					) : (
-						<TouchableOpacity onPress={() => decreaseQuantity(product.id)}>
+						<TouchableOpacity
+							onPress={() => decreaseQuantity(product.productId)}
+						>
 							<MaterialIcons name="remove-circle-outline" size={16} />
 						</TouchableOpacity>
 					)}
 
 					<Text style={styles.quantity}>{quantity}</Text>
-					<TouchableOpacity onPress={() => increaseQuantity(product.id)}>
+					<TouchableOpacity onPress={() => increaseQuantity(product.productId)}>
 						<MaterialIcons name="add-circle-outline" size={16} />
 					</TouchableOpacity>
 				</View>

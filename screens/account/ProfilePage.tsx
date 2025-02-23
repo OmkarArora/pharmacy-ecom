@@ -1,5 +1,6 @@
 import { clearStoredKeys } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import useCartStore from "@/lib/store/cart-store";
 import { LocalConfig } from "@/lib/values";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -44,6 +45,11 @@ const userName = "John Doe";
 export default function ProfilePage() {
 	const primaryColor = useThemeColor({}, "primary");
 	const router = useRouter();
+
+	function clearData() {
+		clearStoredKeys([LocalConfig.IS_ONBOARDED]);
+		useCartStore.getState().resetData();
+	}
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
@@ -120,7 +126,7 @@ export default function ProfilePage() {
 						<Text style={styles.logoutText}>Logout</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
-						onPress={() => clearStoredKeys([LocalConfig.IS_ONBOARDED])}
+						onPress={clearData}
 						style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
 					>
 						<Text

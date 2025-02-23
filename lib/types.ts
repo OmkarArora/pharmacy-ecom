@@ -1,23 +1,23 @@
 export type HomePageItem = Product | HomePageCategoryItem;
 
 export type HomePageCategoryItem = {
-	id: string;
+	productId: string;
 	category: string;
-	title: string;
+	name: string;
 	image: string;
 };
 
 export type Product = {
-	id: string;
-	category: string;
-	title: string;
+	productId: string;
+	name: string;
+	description?: string;
 	image: string;
 	price: number;
-	originalPrice: number | null;
-	discountPercent?: number;
+	discount?: number;
+
+	category: string;
 	reviews?: number;
 	recentlyBought?: number;
-	description?: string;
 	healthConditions?: string[];
 	ratings?: number;
 };
@@ -28,9 +28,9 @@ export function isHomePageCategoryItem(
 ): item is HomePageCategoryItem {
 	return (
 		(item as HomePageCategoryItem).category !== undefined &&
-		(item as HomePageCategoryItem).title !== undefined &&
+		(item as HomePageCategoryItem).name !== undefined &&
 		(item as HomePageCategoryItem).image !== undefined &&
-		(item as HomePageCategoryItem).id !== undefined &&
+		(item as HomePageCategoryItem).productId !== undefined &&
 		(item as Product).price === undefined
 	); // Ensure it's not a Product
 }
