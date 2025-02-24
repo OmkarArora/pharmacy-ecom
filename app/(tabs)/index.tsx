@@ -16,10 +16,11 @@ import CartPageBeforeLogin from "@/screens/CartPageBeforeLogin";
 import CartPageAfterLogin from "@/screens/CartPageAfterLogin";
 import AlertPage from "../../screens/AlertPage";
 import Home from "@/screens/Home";
+import Checkout from "@/screens/CheckOut";
 // import MyAccountProfile from "@/screens/MyAccountProfile";
 
 export default function HomeScreen() {
-	 return <Home />;
+	 return <Checkout />;
 	// return <MyAccountProfile/>;
 	// return <CartPageBeforeLogin />; // bad
 	// return <CartPageAfterLogin />; // good

@@ -1,0 +1,194 @@
+export type Product = {
+	id: '1';
+	category: 'Product of the Day';
+	title: 'Digene Mint Flavour Chewable Table 15';
+	image: 'https://via.placeholder.com/150';
+	price: 29;
+	originalPrice: 0 | null;
+	discountPercent?: 0;
+	reviews?: 10;
+	recentlyBought?: 3;
+	description?: 'Digene is an antacid that is known to provide effective relief from acidity and its symptoms such as heartburn, stomach discomfort, and abdominal pain ';
+	healthConditions?: string[];
+	ratings?:4;
+
+    id: '2';
+	category: 'Product of the Day';
+	title: 'VLCC Ayurveda Deep Pore Cleansing Face Wash';
+	image: 'https://via.placeholder.com/150';
+	price: 129;
+	originalPrice: 200 | null;
+	discountPercent?: 35;
+	reviews?: 50;
+	recentlyBought?: 30;
+	description?: 'VLCC Ayurveda is a deep pore cleansing and skin brightening face wash enriched with Haldi’s antioxidant properties.';
+	healthConditions?: string[];
+	ratings?:4;
+
+    id: '3';
+	category: 'Product of the Day';
+	title: 'Fair & Handsome Nature First Radiance Face Wash, 100 gm';
+	image: 'https://via.placeholder.com/150';
+	price: 290;
+	originalPrice: 500 | null;
+	discountPercent?: 42;
+	reviews?: 5;
+	recentlyBought?: 3;
+	description?: 'This face wash reduces 99.9% pimple bacteria and reduces pimple marks. Softens razor-induced roughness and provides instant brightness. ';
+	healthConditions?: string[];
+	ratings?:3;
+
+    id: '4';
+	category: 'Product of the Day';
+	title: 'OZiva Shaker Green, 600 ml';
+	image: 'https://via.placeholder.com/150';
+	price: 200;
+	originalPrice: 300 | null;
+	discountPercent?: 33;
+	reviews?: 5;
+	recentlyBought?: 3;
+	description?: 'This compact and stylish protein shake shaker features a unisex design, making it ideal for both men and women to carry their protein shakes, smoothies, or with water ';
+	healthConditions?: string[];
+	ratings?:3;
+
+    id: '5';
+	category: 'Product of the Day';
+	title: 'Pantene Shampoo, 600 ml';
+	image: 'https://via.placeholder.com/150';
+	price: 490;
+	originalPrice: 600 | null;
+	discountPercent?: 18;
+	reviews?: 5;
+	recentlyBought?: 3;
+	description?: 'Pantene Advanced Hairfall Solution range helps you reduce hair fall effectively with its Pro-Vitamin B5 and Fermented Rice Water formula. ';
+	healthConditions?: string[];
+	ratings?:3.5;
+
+    id: '6';
+	category: 'Product of the Day';
+	title: 'Little's Soft Cleansing Baby Wipes, 80 Units';
+	image: 'https://via.placeholder.com/150';
+	price: 95;
+	originalPrice: 190 | null;
+	discountPercent?: 50;
+	reviews?: 100;
+	recentlyBought?: 12;
+	description?: 'Little's Soft Cleansing Baby Wipes are perfect for parents seeking a gentle, effective solution for their baby's cleansing needs. ';
+	healthConditions?: string[];
+	ratings?:3;
+
+    id: '7';
+	category: 'Top Brands';
+	title: 'Himalyan';
+	image: 'https://via.placeholder.com/150';
+	
+   	id: '8';
+	category: 'Top Brands';
+	title: 'Cetaphil';
+	image: 'https://via.placeholder.com/150';
+
+	id: '9';
+	category: 'Top Brands';
+	title: 'Zandu';
+	image: 'https://via.placeholder.com/150';
+
+	id: '10';
+	category: 'Top Brands';
+	title: 'Cipla';
+	image: 'https://via.placeholder.com/150';
+
+	id: '11';
+	category: 'Top Brands';
+	title: 'Nivea';
+	image: 'https://via.placeholder.com/150';
+
+	id: '12';
+	category: 'Top Brands';
+	title: 'Man Force';
+	image: 'https://via.placeholder.com/150';
+
+	id: '13';
+      category: 'browseByHealthCondition';
+      title: 'Cough & Cold';
+      image: 'https://via.placeholder.com/150';
+    
+      id: '14';
+      category: 'browseByHealthCondition';
+      title: 'Diabetes';
+      image: 'https://via.placeholder.com/150';
+
+      id: '15';
+      category: 'browseByHealthCondition';
+      title: 'Cardiac Care';
+      image: 'https://via.placeholder.com/150';
+
+      id: '16';
+      category: 'browseByHealthCondition';
+      title: 'Stomach Care';
+      image: 'https://via.placeholder.com/150';
+
+	id: '17';
+	category: 'Ayurveda';
+	title: 'Dabur Tulsi Drop for Immunity & Respiratory Health';
+	image: 'https://via.placeholder.com/150';
+	price: 164;
+	originalPrice: 195 | null;
+	discountPercent?: 16;
+	reviews?: 237;
+	recentlyBought?: 1120;
+	description?: 'Carefully formulated using 40 powerful herbal ingredients';
+	healthConditions?: string[];
+	ratings?:4;
+
+	id: '18';
+	category: 'Ayurveda';
+	title: 'Dabur Chyawanprash | 3X Immunity Action | Builds Strength, Stamina & Overall Health with Dabur Honey 100gm Free';
+	image: 'https://via.placeholder.com/150';
+	price: 709;
+	originalPrice: 795 | null;
+	discountPercent?: 11;
+	reviews?: 100;
+	recentlyBought?: 12;
+	description?: 'Carefully formulated using 40 powerful herbal ingredients';
+	healthConditions?: string[];
+	ratings?:3;
+
+	id: '19';
+	category: 'Ayurveda';
+	title: 'Baidyanath (Nagpur) Bhringrajasava for Immunity & Respiratory Health';
+	image: 'https://via.placeholder.com/150';
+	price: 164;
+	originalPrice: 219 | null;
+	discountPercent?: 25;
+	reviews?: 100;
+	recentlyBought?: 12;
+	description?: 'Helps in boosting immunity
+	healthConditions?: string[];
+	ratings?:3;
+
+	id: '20';
+	category: 'Ayurveda';
+	title: 'Zandu Chyavanprash Avaleha | For Immunity, Strength & Stamina
+	image: 'https://via.placeholder.com/150';
+	price: 210;
+	originalPrice: 230 | null;
+	discountPercent?: 19;
+	reviews?: 149;
+	recentlyBought?: 12;
+	description?: 'Helps keep common ailments such as cold and cough at bay';
+	healthConditions?: string[];
+	ratings?:2;
+
+	id: '21';
+	category: 'Ayurveda';
+	title: 'Himalaya Herbals Purifying Neem Face Wash | For Acne & Pimple Relief | Paraben and Soap Free Face Care Product';
+	image: 'https://via.placeholder.com/150';
+	price: 280;
+	originalPrice: 325 | null;
+	discountPercent?: 14;
+	reviews?: 188;
+	recentlyBought?: 120;
+	description?: 'Encompasses antibacterial and anti-inflammatory properties';
+	healthConditions?: string[];
+	ratings?:5;
+};
