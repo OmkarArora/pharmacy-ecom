@@ -17,6 +17,7 @@ import { useStorageState } from "@/hooks/useStorageState";
 import { LocalConfig } from "@/lib/values";
 import Toast from "@/components/ui/toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { View } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -55,10 +56,20 @@ export default function RootLayout() {
 
 					<Stack>
 						{/* <Stack.Screen name='login'/> */}
-						<Stack.Screen name="onboarding" options={{ headerShown: false }} />
+						<Stack.Screen
+							name="onboarding"
+							options={{
+								headerShown: false,
+							}}
+						/>
 						<Stack.Screen name="sign-in" options={{ headerShown: false }} />
 
-						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+						<Stack.Screen
+							name="(tabs)"
+							options={{
+								headerShown: false,
+							}}
+						/>
 						<Stack.Screen
 							name="products/[productId]"
 							options={{ headerShown: false }}

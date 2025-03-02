@@ -8,16 +8,121 @@ import {
 	Text,
 	View,
 	TouchableOpacity,
+	ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
 import { homePageCategoryItemsDB, productsDB } from "@/lib/fake-data";
+import AddressWidget from "@/components/AddressWidget";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import ServiceCard from "@/components/ServiceCard";
+import Spacer from "@/components/ui/spacer";
+import CategoryCard from "@/components/CategoryCard";
 
 const products: HomePageItem[] = [...productsDB, ...homePageCategoryItemsDB];
 
 export default function HomePage() {
+	return (
+		<SafeAreaView style={{ flex: 1 }}>
+			<ScrollView style={{ flex: 1 }}>
+				<AddressWidget />
+
+				<Spacer height={10} />
+
+				<View
+					style={{
+						backgroundColor: "#FDFDFD",
+						padding: 16,
+						borderRadius: 19,
+						flexDirection: "row",
+						gap: 16,
+					}}
+				>
+					<IconSymbol size={20} name="magnifyingglass" color={"#303134"} />
+					<Text
+						style={{ fontWeight: "semibold", color: "#B7B7B7", fontSize: 15 }}
+					>
+						Search
+					</Text>
+				</View>
+
+				<Spacer height={20} />
+
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={{ gap: 2 }}
+				>
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+				</ScrollView>
+
+				<Spacer height={10} />
+
+				<Image
+					source={"https://picsum.photos/id/123/400"}
+					style={{
+						// width: 300,
+						// height: 300,
+						aspectRatio: 312 / 176,
+						// borderRadius: 0,
+						// minHeight: 176,
+						// backgroundColor: "red",
+						width: "100%",
+						// height: 400,
+					}}
+				/>
+
+				<Spacer height={12} />
+
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-between",
+						paddingHorizontal: 9,
+						paddingBottom: 6,
+						paddingTop: 5,
+						alignItems: "center",
+					}}
+				>
+					<Text
+						style={{ color: "#5B5B5B", fontWeight: "semibold", fontSize: 18 }}
+					>
+						Shop by Category
+					</Text>
+					<Text
+						style={{ color: "#ACC6CA", fontWeight: "semibold", fontSize: 14 }}
+					>
+						See all
+					</Text>
+				</View>
+
+				<Spacer height={5} />
+
+				<View
+					style={{
+						gap: 5,
+						justifyContent: "center",
+						flexDirection: "row",
+					}}
+				>
+					<CategoryCard heading="Top products" />
+					<CategoryCard heading="Elderly care" />
+					<CategoryCard heading="Personal care" />
+				</View>
+			</ScrollView>
+		</SafeAreaView>
+	);
+}
+
+function HomePageOld() {
 	const { signOut } = useSession();
 	const router = useRouter();
 

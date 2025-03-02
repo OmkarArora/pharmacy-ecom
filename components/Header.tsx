@@ -6,6 +6,7 @@ import { useStore } from "zustand";
 import useCartStore from "@/lib/store/cart-store";
 import { useShallow } from "zustand/react/shallow";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import CartButton from "./CartButton";
 
 export default function Header() {
 	const primaryColor = useThemeColor({}, "primary");
@@ -30,14 +31,7 @@ export default function Header() {
 				<Ionicons name="arrow-back" size={24} color="#000" />
 			</TouchableOpacity>
 
-			<TouchableOpacity onPress={goToCart}>
-				<Ionicons name="cart-outline" size={24} color="#000" />
-				<Badge
-					count={totalItemsInCart}
-					color={"white"}
-					backgroundColor={primaryColor}
-				/>
-			</TouchableOpacity>
+			<CartButton />
 		</View>
 	);
 }

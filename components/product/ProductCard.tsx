@@ -11,40 +11,70 @@ export default function ProductCard({ data }: { data: Product }) {
 		<Link href={`/products/${productId}`}>
 			<View style={styles.card}>
 				<Image
-					source={
-						image || "https://m.media-amazon.com/images/I/31CsUtgSdiL.jpg"
-					}
+					source={image || "https://placehold.co/100"}
 					style={styles.image}
 					contentFit="contain"
 				/>
-				<View style={{ paddingTop: 16, flexShrink: 1 }}>
-					<Text style={styles.name}>{name}</Text>
-					<Text numberOfLines={3} style={styles.description}>
-						{description}
-					</Text>
+				<Text
+					style={{
+						fontWeight: "semibold",
+						color: "#7E7E7E",
+						fontSize: 14,
+						maxWidth: 132,
+						marginTop: 7,
+					}}
+					numberOfLines={4}
+				>
+					Everherb Giloy Tulsi Juice-Body Defence System
+				</Text>
 
-					<Text style={styles.price}>₹{price || 0}</Text>
+				<Text
+					style={{
+						color: "#C0C0C0",
+						fontSize: 12,
+						fontWeight: "semibold",
+						marginTop: 5,
+					}}
+				>
+					90 capsules
+				</Text>
 
-					<Text style={styles.discount}>{discount}% off</Text>
-				</View>
+				{/* 7px spacer */}
 			</View>
 		</Link>
 	);
+
+	// return (
+	// 	<Link href={`/products/${productId}`}>
+	// 		<View style={styles.card}>
+	// 			<Image
+	// 				source={
+	// 					image || "https://m.media-amazon.com/images/I/31CsUtgSdiL.jpg"
+	// 				}
+	// 				style={styles.image}
+	// 				contentFit="contain"
+	// 			/>
+	// 			<View style={{ paddingTop: 16, flexShrink: 1 }}>
+	// 				<Text style={styles.name}>{name}</Text>
+	// 				<Text numberOfLines={3} style={styles.description}>
+	// 					{description}
+	// 				</Text>
+
+	// 				<Text style={styles.price}>₹{price || 0}</Text>
+
+	// 				<Text style={styles.discount}>{discount}% off</Text>
+	// 			</View>
+	// 		</View>
+	// 	</Link>
+	// );
 }
 
 const styles = StyleSheet.create({
-	card: {
-		flexDirection: "row",
-		justifyContent: "flex-start",
-		alignItems: "flex-start",
-		gap: 16,
-
-		height: 200,
-	},
+	card: {},
 	image: {
-		borderRadius: 10,
-		width: 200,
-		height: 200,
+		borderRadius: 7,
+		width: 132,
+		height: 132,
 	},
 	name: {
 		fontSize: 22,

@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 	badgeContainer: {
 		position: "absolute",
 		top: -5,
-		right: -5,
+		left: -5,
 		justifyContent: "center",
 		alignItems: "center",
 	},

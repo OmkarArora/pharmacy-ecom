@@ -1,7 +1,10 @@
-import MyAccount from "@/screens/account/MyAccount";
+import ScreenWrapper from "@/components/ui/ScreenWrapper";
 import ProfilePage from "@/screens/account/ProfilePage";
 
 export default function Page() {
-	return <ProfilePage />;
-	return <MyAccount />;
+	return (
+		<ScreenWrapper>
+			<ProfilePage />
+		</ScreenWrapper>
+	);
 }
