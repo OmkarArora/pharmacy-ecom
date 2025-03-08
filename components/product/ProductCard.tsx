@@ -1,31 +1,44 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import { Product } from "@/lib/types";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import Spacer from "../ui/spacer";
+import { getDiscountedPrice } from "@/lib/functions";
+import { RUPEE_SYMBOL } from "@/lib/values";
+import AddButton from "./AddButton";
 
 export default function ProductCard({ data }: { data: Product }) {
-	const { image, name, description, price, discount, productId } = data;
+	const { image, name, description, price, discount, productId, ratings } =
+		data;
 
+	const router = useRouter();
+	// href={`/products/${productId}`}
 	return (
-		<Link href={`/products/${productId}`}>
+		<TouchableOpacity
+			onPress={() => {
+				router.push(`/products/${productId}`);
+			}}
+			style={{ flex: 1 }}
+		>
 			<View style={styles.card}>
 				<Image
 					source={image || "https://placehold.co/100"}
 					style={styles.image}
-					contentFit="contain"
+					contentFit="cover"
 				/>
 				<Text
 					style={{
 						fontWeight: "semibold",
-						color: "#7E7E7E",
+						color: "#808080",
 						fontSize: 14,
-						maxWidth: 132,
+
 						marginTop: 7,
 					}}
 					numberOfLines={4}
 				>
-					Everherb Giloy Tulsi Juice-Body Defence System
+					{name || "Everherb Giloy Tulsi Juice-Body Defence System"}
 				</Text>
 
 				<Text
@@ -39,9 +52,43 @@ export default function ProductCard({ data }: { data: Product }) {
 					90 capsules
 				</Text>
 
-				{/* 7px spacer */}
+				<Spacer height={7} />
+				{!!ratings && (
+					<View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+						<RatingPill rating={ratings} />
+						<Text
+							style={{ color: "#A8A8A8", fontSize: 11, fontWeight: "semibold" }}
+						>
+							{"("}150 Reviews{")"}
+						</Text>
+					</View>
+				)}
+
+				<View
+					style={{
+						marginTop: 10,
+						flexDirection: "row",
+						alignItems: "center",
+						gap: 5,
+					}}
+				>
+					<Text style={{ color: "#646464" }}>
+						{RUPEE_SYMBOL}
+						{getDiscountedPrice(price, discount || 0)}
+					</Text>
+					<Text style={{ color: "#C9C9C9" }}>
+						{RUPEE_SYMBOL}
+						{price}
+					</Text>
+				</View>
+
+				<View style={{ flex: 1 }} />
+
+				<View style={{ paddingVertical: 4 }}>
+					<AddButton data={data} />
+				</View>
 			</View>
-		</Link>
+		</TouchableOpacity>
 	);
 
 	// return (
@@ -69,12 +116,33 @@ export default function ProductCard({ data }: { data: Product }) {
 	// );
 }
 
+function RatingPill({ rating }: { rating: number }) {
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				gap: "2px",
+				alignItems: "center",
+				backgroundColor: "#d2ebf5",
+				borderRadius: 20,
+				padding: 4,
+				paddingHorizontal: 8,
+			}}
+		>
+			<FontAwesome name="star" size={15} color="#8BB8BF" />
+			<Text style={{ fontSize: 14, color: "#8BB8BF" }}>{rating}</Text>
+		</View>
+	);
+}
+
 const styles = StyleSheet.create({
-	card: {},
+	card: {
+		flex: 1,
+	},
 	image: {
 		borderRadius: 7,
-		width: 132,
-		height: 132,
+		width: "100%",
+		aspectRatio: 1,
 	},
 	name: {
 		fontSize: 22,

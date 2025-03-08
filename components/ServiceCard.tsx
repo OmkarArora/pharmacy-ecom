@@ -5,10 +5,12 @@ export default function ServiceCard({ heading }: { heading: string }) {
 	return (
 		<View style={styles.container}>
 			<Image
-				source={"https://placehold.co/69x69"}
-				style={{ width: 69, height: 69, borderRadius: 8.25 }}
+				source={"https://placehold.co/70"}
+				style={{ width: 70, height: 70, borderRadius: 8.25 }}
 			/>
-			<Text style={styles.text}>{heading}</Text>
+			<Text style={styles.text} numberOfLines={1}>
+				{heading}
+			</Text>
 		</View>
 	);
 }
@@ -20,10 +22,12 @@ const styles = StyleSheet.create({
 		paddingTop: 5,
 		paddingBottom: 4,
 		alignItems: "center",
+		maxWidth: 70,
 	},
 	text: {
 		color: "#878787",
 		fontWeight: "semibold",
 		fontSize: 12,
+		textAlign: "center",
 	},
 });

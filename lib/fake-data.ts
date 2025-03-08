@@ -7,7 +7,7 @@ export const productsDB: Product[] = [
 		name: "OZiva Shaker Green, 600 ml",
 		image:
 			"https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-		ratings: 4.5,
+		ratings: 3.8,
 		price: 499,
 		discount: 10,
 		reviews: 100,

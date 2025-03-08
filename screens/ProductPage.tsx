@@ -19,6 +19,7 @@ import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import Header from "@/components/Header";
 import { getDiscountedPrice } from "@/lib/functions";
+import AddButton from "@/components/product/AddButton";
 
 const ProductPage = ({ productId }: { productId: string }) => {
 	const primaryColor = useThemeColor({}, "primary");
@@ -86,60 +87,7 @@ const ProductPage = ({ productId }: { productId: string }) => {
 				<Text style={styles.inclusive}>Inclusive of all taxes</Text>
 				<Text style={styles.inclusive}>Description {product.description}</Text>
 
-				{/* Add to Cart */}
-
-				<View
-					style={{
-						height: 70,
-						justifyContent: "center",
-						alignItems: "center",
-						paddingVertical: 10,
-					}}
-				>
-					{quantityInCart === 0 && (
-						<TouchableOpacity
-							style={[
-								styles.addToCartButton,
-								{
-									backgroundColor: primaryColor,
-									width: "100%",
-									height: "100%",
-								},
-							]}
-							onPress={addToCart}
-						>
-							<Ionicons name="add" size={16} color="#fff" />
-							<Text style={styles.addToCartText}>Add to Cart</Text>
-						</TouchableOpacity>
-					)}
-
-					{quantityInCart > 0 && (
-						<>
-							<View style={styles.itemQuantity}>
-								{quantityInCart === 1 ? (
-									<TouchableOpacity
-										onPress={() => removeItem(product.productId)}
-									>
-										<MaterialIcons name="delete" size={30} />
-									</TouchableOpacity>
-								) : (
-									<TouchableOpacity
-										onPress={() => decreaseQuantity(product.productId)}
-									>
-										<MaterialIcons name="remove-circle-outline" size={30} />
-									</TouchableOpacity>
-								)}
-
-								<Text style={styles.quantity}>{quantityInCart}</Text>
-								<TouchableOpacity
-									onPress={() => increaseQuantity(product.productId)}
-								>
-									<MaterialIcons name="add-circle-outline" size={30} />
-								</TouchableOpacity>
-							</View>
-						</>
-					)}
-				</View>
+				<AddButton data={product} />
 
 				{/* Product Details */}
 				<View style={styles.detailsContainer}>

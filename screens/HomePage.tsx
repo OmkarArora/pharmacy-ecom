@@ -21,12 +21,12 @@ import ServiceCard from "@/components/ServiceCard";
 import Spacer from "@/components/ui/spacer";
 import CategoryCard from "@/components/CategoryCard";
 
-const products: HomePageItem[] = [...productsDB, ...homePageCategoryItemsDB];
+const products: Product[] = [...productsDB];
 
 export default function HomePage() {
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
-			<ScrollView style={{ flex: 1 }}>
+			<ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 				<AddressWidget />
 
 				<Spacer height={10} />
@@ -56,9 +56,9 @@ export default function HomePage() {
 					contentContainerStyle={{ gap: 2 }}
 				>
 					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Healthcare" />
+					<ServiceCard heading="Lab Test" />
+					<ServiceCard heading="Doctor Consultation" />
 					<ServiceCard heading="Medicines" />
 					<ServiceCard heading="Medicines" />
 					<ServiceCard heading="Medicines" />
@@ -82,27 +82,7 @@ export default function HomePage() {
 
 				<Spacer height={12} />
 
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-between",
-						paddingHorizontal: 9,
-						paddingBottom: 6,
-						paddingTop: 5,
-						alignItems: "center",
-					}}
-				>
-					<Text
-						style={{ color: "#5B5B5B", fontWeight: "semibold", fontSize: 18 }}
-					>
-						Shop by Category
-					</Text>
-					<Text
-						style={{ color: "#ACC6CA", fontWeight: "semibold", fontSize: 14 }}
-					>
-						See all
-					</Text>
-				</View>
+				<SubHeading heading="Shop by Category" />
 
 				<Spacer height={5} />
 
@@ -117,8 +97,66 @@ export default function HomePage() {
 					<CategoryCard heading="Elderly care" />
 					<CategoryCard heading="Personal care" />
 				</View>
+
+				<Spacer height={12} />
+
+				<SubHeading heading="Top Products" />
+
+				<Spacer height={5} />
+
+				<View
+					style={{
+						flex: 1,
+						flexDirection: "row",
+						flexWrap: "wrap",
+						justifyContent: "center",
+						gap: 10,
+						paddingTop: 0,
+						padding: 0,
+					}}
+				>
+					{products.map((item) => (
+						<View
+							style={{
+								flexBasis: "46%", // Use a percentage to allow for margins
+								flexGrow: 0, // Prevent the item from growing
+								flexShrink: 0, // Prevent the item from shrinking
+								// backgroundColor: "#4CAF50",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+							key={item.productId}
+						>
+							<ProductCard data={item} />
+						</View>
+					))}
+				</View>
+
+				<Spacer height={100} />
 			</ScrollView>
 		</SafeAreaView>
+	);
+}
+
+function SubHeading({ heading }: { heading: string }) {
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				justifyContent: "space-between",
+				paddingHorizontal: 9,
+				paddingBottom: 6,
+				paddingTop: 5,
+				alignItems: "center",
+			}}
+		>
+			<Text style={{ color: "#5B5B5B", fontWeight: "semibold", fontSize: 18 }}>
+				{heading}
+			</Text>
+			<Text style={{ color: "#ACC6CA", fontWeight: "semibold", fontSize: 14 }}>
+				See all
+			</Text>
+		</View>
 	);
 }
 

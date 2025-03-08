@@ -2,6 +2,8 @@ export const LocalConfig = {
 	IS_ONBOARDED: "IS_ONBOARDED",
 };
 
+export const RUPEE_SYMBOL = "₹";
+
 export const BASE_URL =
 	"https://2vc96ddlw9.execute-api.us-east-1.amazonaws.com/Test";
 
