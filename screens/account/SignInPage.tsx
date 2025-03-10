@@ -6,6 +6,7 @@ import { useSession } from "@/lib/SessionProvider";
 import { useRouter } from "expo-router";
 import {
 	ActivityIndicator,
+	Alert,
 	Keyboard,
 	KeyboardAvoidingView,
 	Platform,
@@ -48,6 +49,7 @@ export default function SignInPage() {
 		} catch (error) {
 			showToast("Something went wrong!");
 			console.log("ERROR", error);
+			Alert.alert(`SIGn In Error ${error}`);
 		}
 	};
 

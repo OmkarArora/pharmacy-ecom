@@ -56,6 +56,7 @@ export default function SignUpPage() {
 			await signUp(data.username, data.password);
 		} catch (error) {
 			console.log("ERROR", error);
+			Alert.alert(`SIGn UP Error ${error}`);
 		}
 	};
 
@@ -68,6 +69,7 @@ export default function SignUpPage() {
 			router.replace("/(tabs)");
 		} catch (error) {
 			console.log("ERROR", error);
+			Alert.alert(`SUBMIT OTP Error ${error}`);
 		}
 	};
 

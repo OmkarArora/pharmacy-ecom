@@ -94,7 +94,7 @@ export default function RootLayout() {
 						<Stack.Screen name="+not-found" />
 					</Stack>
 					<Toast />
-					<StatusBar style="auto" />
+					<StatusBar style="dark" />
 				</ThemeProvider>
 			</SessionProvider>
 		</QueryClientProvider>
