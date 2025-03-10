@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/product/ProductCard";
 import useCategoryProducts from "@/lib/hooks/category/useCategoryProducts";
 import { FlashList } from "@shopify/flash-list";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,7 +18,12 @@ export default function CategoryPage({
 			<Header />
 			<FlashList
 				data={products || []}
-				renderItem={({ item }) => <ProductCard data={item} />}
+				numColumns={2}
+				renderItem={({ item }) => (
+					<View style={styles.itemContainer}>
+						<ProductCard data={item} />
+					</View>
+				)}
 				keyExtractor={(item) => item.productId}
 				estimatedItemSize={200}
 				ListFooterComponent={() => (isFetching ? <ActivityIndicator /> : null)}
@@ -26,3 +31,9 @@ export default function CategoryPage({
 		</SafeAreaView>
 	);
 }
+
+const styles = StyleSheet.create({
+	itemContainer: {
+		margin: 8,
+	},
+});

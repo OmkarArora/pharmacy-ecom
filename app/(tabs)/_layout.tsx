@@ -10,9 +10,11 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageState } from "@/hooks/useStorageState";
 import { LocalConfig } from "@/lib/values";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useSession } from "@/lib/SessionProvider";
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme();
+	const { session, isLoading } = useSession();
 
 	const bgColor = useThemeColor({}, "background");
 
@@ -23,6 +25,8 @@ export default function TabLayout() {
 	if (isOnboardingStateLoading) return null;
 
 	if (!isOnboarded) return <Redirect href="/onboarding" />;
+
+	if (!session && !isLoading) return <Redirect href={"/sign-in"} />;
 
 	return (
 		<Tabs

@@ -1,16 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "../../values";
+import { useSession } from "@/lib/SessionProvider";
 
 export type CategoryType = { name: string };
 
 export default function useCategories() {
+	const { session } = useSession();
+
 	return useQuery({
 		queryKey: ["categories"],
 		queryFn: async () => {
 			try {
 				const response = await axios.get<{ categories: CategoryType[] }>(
-					`${BASE_URL}/category`
+					`${BASE_URL}/category`,
+					{
+						headers: { Authorization: `${session}` },
+					}
 				);
 				if (response.data.categories) {
 					return response.data.categories;
@@ -21,5 +27,6 @@ export default function useCategories() {
 				return [];
 			}
 		},
+		enabled: !!session,
 	});
 }

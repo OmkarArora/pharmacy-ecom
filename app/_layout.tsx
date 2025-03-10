@@ -19,6 +19,8 @@ import Toast from "@/components/ui/toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { View } from "react-native";
 
+import "../lib/amplifyConfig";
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -63,6 +65,7 @@ export default function RootLayout() {
 							}}
 						/>
 						<Stack.Screen name="sign-in" options={{ headerShown: false }} />
+						<Stack.Screen name="sign-up" options={{ headerShown: false }} />
 
 						<Stack.Screen
 							name="(tabs)"

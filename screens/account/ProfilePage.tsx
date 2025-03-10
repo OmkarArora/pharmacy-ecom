@@ -1,5 +1,6 @@
 import { clearStoredKeys } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useSession } from "@/lib/SessionProvider";
 import useCartStore from "@/lib/store/cart-store";
 import { LocalConfig } from "@/lib/values";
 import { useRouter } from "expo-router";
@@ -45,6 +46,7 @@ const userName = "John Doe";
 export default function ProfilePage() {
 	const primaryColor = useThemeColor({}, "primary");
 	const router = useRouter();
+	const { signOut } = useSession();
 
 	function clearData() {
 		clearStoredKeys([LocalConfig.IS_ONBOARDED]);
@@ -122,7 +124,7 @@ export default function ProfilePage() {
 
 				<View style={styles.footer}>
 					<Text style={styles.versionText}>Version 1.3.9</Text>
-					<TouchableOpacity style={styles.logoutButton}>
+					<TouchableOpacity style={styles.logoutButton} onPress={signOut}>
 						<Text style={styles.logoutText}>Logout</Text>
 					</TouchableOpacity>
 					<TouchableOpacity

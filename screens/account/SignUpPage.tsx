@@ -6,8 +6,10 @@ import { useSession } from "@/lib/SessionProvider";
 import { useRouter } from "expo-router";
 import {
 	ActivityIndicator,
+	Alert,
 	Keyboard,
 	KeyboardAvoidingView,
+	Modal,
 	Platform,
 	StyleSheet,
 	Text,
@@ -16,9 +18,10 @@ import {
 } from "react-native";
 
 import { useForm, Controller } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LOGIN_SCHEMA } from "@/lib/schema";
-import useToastStore from "@/lib/store/toast-store";
+import { useState } from "react";
 
 // Define the form data type
 type FormData = {
@@ -26,10 +29,17 @@ type FormData = {
 	password: string;
 };
 
-export default function SignInPage() {
-	const { signIn, status } = useSession();
+export default function SignUpPage() {
+	const {
+		signUp,
+		status,
+		showEmailConfirmOTPInput,
+		confirmSignUp,
+		cancelSignUpConfirmation,
+	} = useSession();
 	const router = useRouter();
-	const showToast = useToastStore((state) => state.show);
+
+	const [otp, setOtp] = useState("");
 
 	const {
 		control,
@@ -43,10 +53,20 @@ export default function SignInPage() {
 		Keyboard.dismiss();
 
 		try {
-			await signIn(data.username, data.password);
+			await signUp(data.username, data.password);
+		} catch (error) {
+			console.log("ERROR", error);
+		}
+	};
+
+	const submitOtp = async () => {
+		Keyboard.dismiss();
+
+		try {
+			await confirmSignUp(otp);
+			console.log("REDIRECTING TO HOME");
 			router.replace("/(tabs)");
 		} catch (error) {
-			showToast("Something went wrong!");
 			console.log("ERROR", error);
 		}
 	};
@@ -64,7 +84,7 @@ export default function SignInPage() {
 					textAlign: "center",
 				}}
 			>
-				Welcome back!
+				Welcome to Medivery!
 			</Text>
 
 			<Controller
@@ -117,33 +137,66 @@ export default function SignInPage() {
 
 			<Spacer width={"100%"} height={16} />
 
-			<PrimaryButton onPress={handleSubmit(onSubmit)} title="Log In" />
+			<PrimaryButton onPress={handleSubmit(onSubmit)} title="Sign Up" />
 
 			<Spacer width={"100%"} height={8} />
 
 			<View style={{ flexDirection: "row" }}>
-				<Text>New here? </Text>
+				<Text>Already regsitered? </Text>
 				<SecondaryButton
 					onPress={() => {
 						Keyboard.dismiss();
-						router.push("/sign-up");
+						router.replace("/sign-in");
 					}}
-					title="Sign Up"
+					title="Log In"
 					textStyle={{
 						textDecorationLine: "underline",
 					}}
 				/>
-				{/* <Text> or </Text>
-				<SecondaryButton
-					onPress={() => {
-						Keyboard.dismiss();
-						router.replace("/(tabs)");
-					}}
-					title="Skip"
-				/> */}
 			</View>
 
 			{status === "loading" && <ActivityIndicator style={{ padding: 20 }} />}
+
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={showEmailConfirmOTPInput}
+				onRequestClose={() => {
+					Alert.alert("Modal has been closed.");
+				}}
+			>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						<Text style={{ fontSize: 18, marginBottom: 16 }}>
+							Check your email for an OTP
+						</Text>
+						<InputWrapper>
+							<TextInput
+								placeholder="Verification OTP"
+								autoComplete="one-time-code"
+								style={styles.input}
+								onChangeText={(e) => setOtp(e)}
+								value={otp}
+								placeholderTextColor={"grey"}
+							/>
+						</InputWrapper>
+
+						<View style={{ flex: 1 }} />
+
+						<PrimaryButton onPress={submitOtp} title="Submit" />
+						<SecondaryButton
+							onPress={() => {
+								Keyboard.dismiss();
+								cancelSignUpConfirmation();
+							}}
+							title="Cancel"
+							textStyle={{
+								textDecorationLine: "underline",
+							}}
+						/>
+					</View>
+				</View>
+			</Modal>
 		</KeyboardAvoidingView>
 	);
 }
@@ -175,5 +228,27 @@ const styles = StyleSheet.create({
 		marginBottom: 12,
 		textAlign: "left",
 		width: "100%",
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalView: {
+		margin: 20,
+		backgroundColor: "white",
+		borderRadius: 20,
+		padding: 35,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+		width: "80%",
+		height: 250,
 	},
 });
