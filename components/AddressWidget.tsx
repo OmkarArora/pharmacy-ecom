@@ -1,14 +1,23 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CartButton from "./CartButton";
+import { useRouter } from "expo-router";
 
 export default function AddressWidget() {
+	const router = useRouter();
+
 	return (
 		<View style={styles.container}>
-			<View style={styles.locationIcon}>
+			<TouchableOpacity
+				style={styles.locationIcon}
+				onPress={() => router.push("/address-book")}
+			>
 				<Ionicons name="location-outline" size={20} color="black" />
-			</View>
-			<View style={styles.addressContainer}>
+			</TouchableOpacity>
+			<TouchableOpacity
+				style={styles.addressContainer}
+				onPress={() => router.push("/address-book")}
+			>
 				<Text
 					style={{ color: "#c2c2c2", fontSize: 12, fontWeight: "semibold" }}
 				>
@@ -19,7 +28,7 @@ export default function AddressWidget() {
 				>
 					12 Rich Terrace, Wigram, NZ
 				</Text>
-			</View>
+			</TouchableOpacity>
 
 			<CartButton />
 		</View>

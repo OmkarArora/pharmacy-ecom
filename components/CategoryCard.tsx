@@ -1,15 +1,21 @@
 import { Image } from "expo-image";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function CategoryCard({ heading }: { heading: string }) {
+	const router = useRouter();
+
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity
+			style={styles.container}
+			onPress={() => router.push(`/category/${heading}`)}
+		>
 			<Image
 				source={"https://placehold.co/100"}
 				style={{ width: "100%", aspectRatio: 89 / 90, borderRadius: 8.25 }}
 			/>
 			<Text style={styles.text}>{heading}</Text>
-		</View>
+		</TouchableOpacity>
 	);
 }
 

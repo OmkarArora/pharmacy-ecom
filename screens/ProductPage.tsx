@@ -48,7 +48,7 @@ const ProductPage = ({ productId }: { productId: string }) => {
 		return (
 			<SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
 				<Header />
-				<Text>Product not found</Text>;
+				<Text>Product not found</Text>
 			</SafeAreaView>
 		);
 
