@@ -1,8 +1,5 @@
-import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
-} from "@react-navigation/native";
+import "react-native-get-random-values"; // This import is needed to suport getRandomValue function used in AWS Amplify crypto.js
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -12,12 +9,8 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SessionProvider } from "@/lib/SessionProvider";
-import OnboardingPage from "@/screens/onboarding/OnboardingPage";
-import { useStorageState } from "@/hooks/useStorageState";
-import { LocalConfig } from "@/lib/values";
 import Toast from "@/components/ui/toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { View } from "react-native";
 
 import "../lib/amplifyConfig";
 
