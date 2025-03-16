@@ -1,4 +1,10 @@
-import "react-native-get-random-values"; // This import is needed to suport getRandomValue function used in AWS Amplify crypto.js
+// This import is needed to suport getRandomValue function used in AWS Amplify crypto.js
+
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
+
+// ----------------------
+
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
