@@ -4,44 +4,28 @@ import {
 	Text,
 	Image,
 	StyleSheet,
-	TouchableOpacity,
 	ScrollView,
+	ActivityIndicator,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import ProductReviews from "./ProductReview";
-import { productsDB } from "@/lib/fake-data";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import useCartStore from "@/lib/store/cart-store";
 
-import useToastStore from "@/lib/store/toast-store";
-import { useStore } from "zustand";
-import { useShallow } from "zustand/react/shallow";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import Header from "@/components/Header";
 import { getDiscountedPrice } from "@/lib/functions";
 import AddButton from "@/components/product/AddButton";
+import useProductDetails from "@/lib/hooks/useProductDetails";
 
 const ProductPage = ({ productId }: { productId: string }) => {
-	const primaryColor = useThemeColor({}, "primary");
-	const addItemToCart = useCartStore((state) => state.addItem);
-	const showToast = useToastStore((state) => state.show);
+	const { data: product, isLoading } = useProductDetails(productId);
 
-	const increaseQuantity = useCartStore((state) => state.increaseQuantity);
-	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
-	const removeItem = useCartStore((state) => state.removeItem);
-
-	const quantityInCart = useStore(
-		useCartStore,
-		useShallow((state) => state.selectProductQuantity(state, productId))
-	);
-
-	const product = productsDB.find((item) => item.productId === productId);
-
-	function addToCart() {
-		if (product) {
-			addItemToCart(product);
-			showToast("Added to Cart!");
-		}
+	if (isLoading) {
+		return (
+			<SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+				<ActivityIndicator style={{ padding: 20 }} />
+			</SafeAreaView>
+		);
 	}
 
 	if (!product)
@@ -62,17 +46,22 @@ const ProductPage = ({ productId }: { productId: string }) => {
 				{/* Product Title */}
 				<Text style={styles.title}>{product.name}</Text>
 				<Text style={styles.title}>{product.category}</Text>
+
 				{/* Rating Section */}
-				<View style={styles.ratingContainer}>
-					<Text style={styles.rating}>{product.ratings}</Text>
-					<Ionicons name="star" size={16} color="#FFD700" />
-					<Text style={styles.ratingText}>({product.reviews} Ratings)</Text>
-				</View>
+				{!!product.ratings && (
+					<View style={styles.ratingContainer}>
+						<Text style={styles.rating}>{product.ratings}</Text>
+						<Ionicons name="star" size={16} color="#FFD700" />
+						<Text style={styles.ratingText}>({product.reviews} Ratings)</Text>
+					</View>
+				)}
 
 				{/* Recently Bought */}
-				<Text style={styles.recentlyBought}>
-					{product.recentlyBought} people bought this recently
-				</Text>
+				{!!product.recentlyBought && (
+					<Text style={styles.recentlyBought}>
+						{product.recentlyBought} people bought this recently
+					</Text>
+				)}
 
 				{/* Price Section */}
 				<View style={styles.priceContainer}>

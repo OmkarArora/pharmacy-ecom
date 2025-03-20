@@ -2,7 +2,7 @@ import { HomePageCategoryItem, Product } from "./types";
 
 export const productsDB: Product[] = [
 	{
-		productId: "1",
+		productId: "1111",
 		category: "Product of the Day",
 		name: "OZiva Shaker Green, 600 ml",
 		image:
@@ -15,7 +15,7 @@ export const productsDB: Product[] = [
 		description: "This is a description of the product",
 	},
 	{
-		productId: "2",
+		productId: "2222",
 		category: "Product of the Day",
 		name: "Apollo Life Biotin 5000 mcg, 60 Tablets",
 		image:
@@ -28,7 +28,7 @@ export const productsDB: Product[] = [
 		description: "This is a description of the product",
 	},
 	{
-		productId: "7",
+		productId: "7777",
 		category: "Top Brands",
 		name: "Pantene Shampoo, 600 ml",
 		image:
@@ -41,7 +41,7 @@ export const productsDB: Product[] = [
 		description: "This is a description of the product",
 	},
 	{
-		productId: "8",
+		productId: "8888",
 		category: "Top Brands",
 		name: "VLCC Ayurveda Deep Pore Cleansing Face Wash",
 		image:

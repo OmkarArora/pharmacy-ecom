@@ -173,7 +173,7 @@ function CategoiesContainer() {
 			}}
 		>
 			{data.map((item) => (
-				<CategoryCard key={item.name} heading={item.name} />
+				<CategoryCard key={item.categoryId} data={item} />
 			))}
 		</View>
 	);

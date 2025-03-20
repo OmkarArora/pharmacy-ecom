@@ -1,20 +1,22 @@
+import { CategoryType } from "@/lib/hooks/category/useCategories";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function CategoryCard({ heading }: { heading: string }) {
+export default function CategoryCard({ data }: { data: CategoryType }) {
 	const router = useRouter();
+	const { name, image } = data;
 
 	return (
 		<TouchableOpacity
 			style={styles.container}
-			onPress={() => router.push(`/category/${heading}`)}
+			onPress={() => router.push(`/category/${name}`)}
 		>
 			<Image
-				source={"https://placehold.co/100"}
+				source={image || "https://placehold.co/100"}
 				style={{ width: "100%", aspectRatio: 89 / 90, borderRadius: 8.25 }}
 			/>
-			<Text style={styles.text}>{heading}</Text>
+			<Text style={styles.text}>{name}</Text>
 		</TouchableOpacity>
 	);
 }
@@ -31,6 +33,6 @@ const styles = StyleSheet.create({
 	text: {
 		color: "#878787",
 		fontWeight: "semibold",
-		fontSize: 12,
+		fontSize: 16,
 	},
 });

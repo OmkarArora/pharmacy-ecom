@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../../values";
 import { useSession } from "@/lib/SessionProvider";
 
-export type CategoryType = { name: string };
+export type CategoryType = { name: string; categoryId: string; image: string };
 
 export default function useCategories() {
 	const { session } = useSession();
