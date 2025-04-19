@@ -1,302 +1,346 @@
 import ProductCard from "@/components/product/ProductCard";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useSession } from "@/lib/SessionProvider";
-import { ProductItem } from "@/lib/types";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+
+import { Product } from "@/lib/types";
 import {
 	FlatList,
 	StyleSheet,
 	Text,
 	View,
 	TouchableOpacity,
+	ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
-import { clearStoredKeys } from "@/hooks/useStorageState";
-import { LocalConfig } from "@/lib/values";
+import { productsDB } from "@/lib/fake-data";
+import AddressWidget from "@/components/AddressWidget";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import ServiceCard from "@/components/ServiceCard";
+import Spacer from "@/components/ui/spacer";
+import CategoryCard from "@/components/CategoryCard";
+import useCategories from "@/lib/hooks/category/useCategories";
 
-const DATA = [
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-		title: "Second Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72n",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72t",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72e",
-		title: "Third Item",
-	},
-	{
-		id: "58694a0f-3da1-471f-bd96-145571e29d72w",
-		title: "Third Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba4",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f633",
-		title: "Second Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba2",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f631mmmm",
-		title: "Second Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f633mmm",
-		title: "Second Item",
-	},
-	{
-		id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba2mm",
-		title: "First Item",
-	},
-	{
-		id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f631m",
-		title: "Second Item",
-	},
-];
-
-interface Product {
-	id: string;
-	category: string;
-	title: string;
-	image: string;
-	ratings?: number;
-	price?: number;
-	discount?: number;
-	oldPrice?: number | null;
-	reviews?: number;
-	recentlyBought?: number;
-	description?: string;
-	healthConditions?: string[];
-}
-
-const products: Product[] = [
-	{
-		id: "1",
-		category: "Product of the Day",
-		title: "OZiva Shaker Green, 600 ml",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 499,
-		discount: 3,
-		oldPrice: 599,
-		reviews: 100,
-		recentlyBought: 200,
-		description: "This is a description of the product",
-	},
-	{
-		id: "2",
-		category: "Product of the Day",
-		title: "Apollo Life Biotin 5000 mcg, 60 Tablets",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 475,
-		discount: 10,
-		oldPrice: 525,
-		reviews: 150,
-		recentlyBought: 250,
-		description: "This is a description of the product",
-	},
-	{
-		id: "3",
-		category: "browseByHealthCondition",
-		title: "Cough & Cold",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "4",
-		category: "browseByHealthCondition",
-		title: "Diabetes",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "5",
-		category: "browseByHealthCondition",
-		title: "Cardiac Care",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "6",
-		category: "browseByHealthCondition",
-		title: "Stomach Care",
-		image: "https://via.placeholder.com/150",
-	},
-	{
-		id: "7",
-		category: "Top Brands",
-		title: "Pantene Shampoo, 600 ml",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 499,
-		discount: 3,
-		oldPrice: 599,
-		reviews: 100,
-		recentlyBought: 200,
-		description: "This is a description of the product",
-	},
-	{
-		id: "8",
-		category: "Top Brands",
-		title: "VLCC Ayurveda Deep Pore Cleansing Face Wash",
-		image: "https://via.placeholder.com/150",
-		ratings: 4.5,
-		price: 130,
-		discount: 3,
-		oldPrice: 150,
-		reviews: 120,
-		recentlyBought: 180,
-		description: "This is a description of the product",
-	},
-];
+const products: Product[] = [...productsDB];
 
 export default function HomePage() {
-	const { signOut } = useSession();
 	const router = useRouter();
 
-	const renderCard = ({ item }: { item: Product }) => (
-		<TouchableOpacity
-			style={styles.card}
-			onPress={() => {
-				if (item.category === "browseByHealthCondition") {
-					// navigation.navigate('ShopPage', { healthCondition: item.title })
-					console.error("Route not handled");
-					// router.push(`/ShopPage`)
-				} else {
-					router.push(`/products/${item.id}`);
-				}
-			}}
-		>
-			<Image source={{ uri: item.image }} style={styles.cardImage} />
-			<Text style={styles.cardTitle}>{item.title}</Text>
-			{item.price !== null && item.price !== undefined && (
-				<>
-					<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
-					{item.oldPrice !== null && item.oldPrice !== undefined && (
-						<Text style={styles.cardOriginalPrice}>
-							₹{item.oldPrice.toFixed(2)}
-						</Text>
-					)}
-					{item.discount !== null && item.discount !== undefined && (
-						<Text style={styles.cardDiscount}>{item.discount}% off</Text>
-					)}
-				</>
-			)}
-		</TouchableOpacity>
-	);
-
-	const renderSectionHeader = ({ section }: { section: any }) => (
-		<View>
-			<Text style={styles.categoryTitle}>{section.title}</Text>
-			{section.promotion && <Text style={styles.promotionTag}>Promotion</Text>}
-		</View>
-	);
-
-	const groupedProducts = [
-		{
-			title: "Product of the Day",
-			data: products.filter(
-				(product) => product.category === "Product of the Day"
-			),
-			horizontal: true,
-		},
-		{
-			title: "Browse by Health Condition",
-			data: products.filter(
-				(product) => product.category === "browseByHealthCondition"
-			),
-			horizontal: false,
-		},
-		{
-			title: "Top Brands",
-			data: products.filter((product) => product.category === "Top Brands"),
-			horizontal: true,
-		},
-	];
-
-	const renderSection = ({ item }: { item: any }) => {
-		if (item.horizontal) {
-			return (
-				<View>
-					{renderSectionHeader({ section: item })}
-					<FlatList
-						data={item.data}
-						renderItem={renderCard}
-						keyExtractor={(product) => product.id}
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={styles.horizontalList}
-					/>
-				</View>
-			);
-		} else {
-			return (
-				<View>
-					{renderSectionHeader({ section: item })}
-					<FlatList
-						data={item.data}
-						renderItem={renderCard}
-						keyExtractor={(product) => product.id}
-						numColumns={2}
-						columnWrapperStyle={styles.columnWrapper}
-					/>
-				</View>
-			);
-		}
-	};
-
 	return (
-		<SafeAreaView style={styles.container}>
-			<FlatList
-				data={groupedProducts}
-				renderItem={renderSection}
-				keyExtractor={(section) => section.title}
-				ListHeaderComponent={
-					<View style={styles.promotionSection}>
-						<Text style={styles.categoryTitle}>Promotion</Text>
-						<View style={styles.promotionCard}>
-							{/* Add promotional content here */}
-							<Text style={styles.promotionText}>Exclusive Offer!</Text>
-							<Text style={styles.promotionDescription}>
-								Get 20% off on all products this week!
-							</Text>
+		<SafeAreaView style={{ flex: 1 }}>
+			<ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+				<AddressWidget />
+
+				<Spacer height={10} />
+
+				<TouchableOpacity
+					onPress={() => router.push("/search")}
+					style={{
+						backgroundColor: "#FDFDFD",
+						padding: 16,
+						borderRadius: 19,
+						flexDirection: "row",
+						gap: 16,
+					}}
+				>
+					<IconSymbol size={20} name="magnifyingglass" color={"#303134"} />
+					<Text
+						style={{ fontWeight: "semibold", color: "#B7B7B7", fontSize: 15 }}
+					>
+						Search
+					</Text>
+				</TouchableOpacity>
+
+				<Spacer height={20} />
+
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={{ gap: 2 }}
+				>
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Healthcare" />
+					<ServiceCard heading="Lab Test" />
+					<ServiceCard heading="Doctor Consultation" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+					<ServiceCard heading="Medicines" />
+				</ScrollView>
+
+				<Spacer height={10} />
+
+				<Image
+					source={"https://picsum.photos/id/123/400"}
+					style={{
+						// width: 300,
+						// height: 300,
+						aspectRatio: 312 / 176,
+						// borderRadius: 0,
+						// minHeight: 176,
+						// backgroundColor: "red",
+						width: "100%",
+						// height: 400,
+					}}
+				/>
+
+				<Spacer height={12} />
+
+				<SubHeading heading="Shop by Category" />
+
+				<Spacer height={5} />
+
+				<CategoiesContainer />
+
+				<Spacer height={12} />
+
+				<SubHeading heading="Top Products" />
+
+				<Spacer height={5} />
+
+				<View
+					style={{
+						flex: 1,
+						flexDirection: "row",
+						flexWrap: "wrap",
+						justifyContent: "center",
+						gap: 10,
+						paddingTop: 0,
+						padding: 0,
+					}}
+				>
+					{products.map((item) => (
+						<View
+							style={{
+								flexBasis: "46%", // Use a percentage to allow for margins
+								flexGrow: 0, // Prevent the item from growing
+								flexShrink: 0, // Prevent the item from shrinking
+								// backgroundColor: "#4CAF50",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+							key={item.productId}
+						>
+							<ProductCard data={item} />
 						</View>
-					</View>
-				}
-				ListFooterComponent={
-					<View style={styles.footer}>
-						<Text style={styles.footerText}>End of List</Text>
-					</View>
-				}
-				ListHeaderComponentStyle={styles.promotionHeader}
-				ListFooterComponentStyle={styles.footerStyle}
-			/>
+					))}
+				</View>
+
+				<Spacer height={100} />
+			</ScrollView>
 		</SafeAreaView>
 	);
 }
+
+function SubHeading({ heading }: { heading: string }) {
+	const router = useRouter();
+
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				justifyContent: "space-between",
+				paddingHorizontal: 9,
+				paddingBottom: 6,
+				paddingTop: 5,
+				alignItems: "center",
+			}}
+		>
+			<Text style={{ color: "#5B5B5B", fontWeight: "semibold", fontSize: 18 }}>
+				{heading}
+			</Text>
+			<TouchableOpacity onPress={() => router.push("/search")}>
+				<Text
+					style={{ color: "#ACC6CA", fontWeight: "semibold", fontSize: 14 }}
+				>
+					See all
+				</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+function CategoiesContainer() {
+	const { data } = useCategories();
+
+	if (!data || data.length === 0) return <></>;
+
+	return (
+		<View
+			style={{
+				gap: 5,
+				justifyContent: "center",
+				flexDirection: "row",
+			}}
+		>
+			{data.map((item) => (
+				<CategoryCard key={item.categoryId} data={item} />
+			))}
+		</View>
+	);
+}
+
+// function HomePageOld() {
+// 	const { signOut } = useSession();
+// 	const router = useRouter();
+
+// 	const renderCard = ({ item }: { item: HomePageItem }) => {
+// 		const isProductType = isProduct(item);
+
+// 		// let renderData = isProductType
+// 		// 	? (item as Product)
+// 		// 	: (item as HomePageCategoryItem);
+
+// 		return (
+// 			<TouchableOpacity
+// 				style={styles.card}
+// 				onPress={() => {
+// 					if (item.category === "browseByHealthCondition") {
+// 						// navigation.navigate('ShopPage', { healthCondition: item.title })
+// 						router.push("/products/2");
+
+// 						console.error("Route not handled");
+// 						// router.push(`/ShopPage`)
+// 					} else {
+// 						router.push(`/products/${item.productId}`);
+// 					}
+// 				}}
+// 			>
+// 				<Image
+// 					source={item.image}
+// 					style={styles.cardImage}
+// 					contentFit="contain"
+// 				/>
+// 				<Text style={styles.cardTitle} numberOfLines={2}>
+// 					{item.name}
+// 				</Text>
+
+// 				{isProductType && item.price !== null && item.price !== undefined && (
+// 					<>
+// 						<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
+// 						{item.price !== null && item.price !== undefined && (
+// 							<Text style={styles.cardOriginalPrice}>
+// 								₹{item.price.toFixed(2)}
+// 							</Text>
+// 						)}
+// 						{item.discount !== null && item.discount !== undefined && (
+// 							<Text style={styles.cardDiscount}>{item.discount}% off</Text>
+// 						)}
+// 					</>
+// 				)}
+// 			</TouchableOpacity>
+// 		);
+// 	};
+
+// 	const renderSectionHeader = ({ section }: { section: any }) => (
+// 		<View>
+// 			<Text style={styles.categoryTitle}>{section.title}</Text>
+// 			{section.promotion && <Text style={styles.promotionTag}>Promotion</Text>}
+// 		</View>
+// 	);
+
+// 	const groupedProducts = [
+// 		{
+// 			title: "Product of the Day",
+// 			data: products.filter(
+// 				(product) => product.category === "Product of the Day"
+// 			),
+// 			horizontal: true,
+// 		},
+// 		{
+// 			title: "Browse by Health Condition",
+// 			data: products.filter(
+// 				(product) => product.category === "browseByHealthCondition"
+// 			),
+// 			horizontal: false,
+// 		},
+// 		{
+// 			title: "Top Brands",
+// 			data: products.filter((product) => product.category === "Top Brands"),
+// 			horizontal: true,
+// 		},
+// 	];
+
+// 	const renderSection = ({ item }: { item: any }) => {
+// 		return (
+// 			<View>
+// 				{renderSectionHeader({ section: item })}
+// 				<FlatList
+// 					data={item.data}
+// 					renderItem={renderCard}
+// 					keyExtractor={(product) => product.productId}
+// 					horizontal
+// 					showsHorizontalScrollIndicator={false}
+// 					contentContainerStyle={styles.horizontalList}
+// 				/>
+// 			</View>
+// 		);
+
+// 		// if (true) {
+// 		// 	return (
+// 		// 		<View>
+// 		// 			{renderSectionHeader({ section: item })}
+// 		// 			<FlatList
+// 		// 				data={item.data}
+// 		// 				renderItem={renderCard}
+// 		// 				keyExtractor={(product) => product.productId}
+// 		// 				horizontal
+// 		// 				showsHorizontalScrollIndicator={false}
+// 		// 				contentContainerStyle={styles.horizontalList}
+// 		// 			/>
+// 		// 		</View>
+// 		// 	);
+// 		// } else {
+// 		// 	return (
+// 		// 		<View>
+// 		// 			{renderSectionHeader({ section: item })}
+// 		// 			<FlatList
+// 		// 				data={item.data}
+// 		// 				renderItem={renderCard}
+// 		// 				keyExtractor={(product) => product.id}
+// 		// 				numColumns={3}
+// 		// 				columnWrapperStyle={styles.columnWrapper}
+// 		// 			/>
+// 		// 		</View>
+// 		// 	);
+// 		// }
+// 	};
+
+// 	return (
+// 		<SafeAreaView style={styles.container}>
+// 			<FlatList
+// 				data={groupedProducts}
+// 				renderItem={renderSection}
+// 				keyExtractor={(section) => section.title}
+// 				ListHeaderComponent={
+// 					<View style={styles.promotionSection}>
+// 						<Text style={styles.categoryTitle}>Promotion</Text>
+// 						<View style={styles.promotionCard}>
+// 							{/* Add promotional content here */}
+// 							<Text style={styles.promotionText}>Exclusive Offer!</Text>
+// 							<Text style={styles.promotionDescription}>
+// 								Get 20% off on all products this week!
+// 							</Text>
+// 						</View>
+// 					</View>
+// 				}
+// 				ListFooterComponent={
+// 					<View style={styles.footer}>
+// 						<Text style={styles.footerText}>End of List</Text>
+// 					</View>
+// 				}
+// 				ListHeaderComponentStyle={styles.promotionHeader}
+// 				ListFooterComponentStyle={styles.footerStyle}
+// 			/>
+// 		</SafeAreaView>
+// 	);
+// }
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#fff",
 		padding: 10,
+		paddingHorizontal: 16,
 	},
 	categoryTitle: {
 		fontSize: 20,
@@ -321,12 +365,12 @@ const styles = StyleSheet.create({
 	cardImage: {
 		width: 100,
 		height: 100,
-		resizeMode: "contain",
 	},
 	cardTitle: {
 		fontSize: 16,
 		fontWeight: "bold",
 		marginTop: 10,
+		textAlign: "center",
 	},
 	cardPrice: {
 		fontSize: 14,

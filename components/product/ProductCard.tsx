@@ -1,36 +1,166 @@
-import { Image, View, StyleSheet, Text } from "react-native";
-import { ThemedText } from "../ThemedText";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 
-export default function ProductCard() {
+import { Product } from "@/lib/types";
+import { Image } from "expo-image";
+import { Link, useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import Spacer from "../ui/spacer";
+import { getDiscountedPrice } from "@/lib/functions";
+import { RUPEE_SYMBOL } from "@/lib/values";
+import AddButton from "./AddButton";
+
+export default function ProductCard({ data }: { data: Product }) {
+	const { image, name, description, price, discount, productId, ratings } =
+		data;
+
+	const router = useRouter();
+	// href={`/products/${productId}`}
 	return (
-		<View style={styles.card}>
-			<Image
-				source={{
-					uri: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-				}}
-				width={142}
-				height={146}
-				style={styles.image}
-			/>
-			<ThemedText style={styles.text}>Paracetomol</ThemedText>
-			<ThemedText style={styles.text}>stars</ThemedText>
-			<ThemedText style={styles.text}>₹ 150</ThemedText>
-			<ThemedText style={styles.text}>Add to cart</ThemedText>
+		<TouchableOpacity
+			onPress={() => {
+				router.push(`/products/${productId}`);
+			}}
+			style={{ flex: 1 }}
+		>
+			<View style={styles.card}>
+				<Image
+					source={image || "https://placehold.co/100"}
+					style={styles.image}
+					contentFit="cover"
+				/>
+				<Text
+					style={{
+						fontWeight: "semibold",
+						color: "#808080",
+						fontSize: 14,
+
+						marginTop: 7,
+					}}
+					numberOfLines={4}
+				>
+					{name || "Everherb Giloy Tulsi Juice-Body Defence System"}
+				</Text>
+
+				<Text
+					style={{
+						color: "#C0C0C0",
+						fontSize: 12,
+						fontWeight: "semibold",
+						marginTop: 5,
+					}}
+				>
+					90 capsules
+				</Text>
+
+				<Spacer height={7} />
+				{!!ratings && (
+					<View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+						<RatingPill rating={ratings} />
+						<Text
+							style={{ color: "#A8A8A8", fontSize: 11, fontWeight: "semibold" }}
+						>
+							{"("}150 Reviews{")"}
+						</Text>
+					</View>
+				)}
+
+				<View
+					style={{
+						marginTop: 10,
+						flexDirection: "row",
+						alignItems: "center",
+						gap: 5,
+					}}
+				>
+					<Text style={{ color: "#646464" }}>
+						{RUPEE_SYMBOL}
+						{getDiscountedPrice(price, discount || 0)}
+					</Text>
+					<Text style={{ color: "#C9C9C9" }}>
+						{RUPEE_SYMBOL}
+						{price}
+					</Text>
+				</View>
+
+				<View style={{ flex: 1 }} />
+
+				<View style={{ paddingVertical: 4 }}>
+					<AddButton data={data} />
+				</View>
+			</View>
+		</TouchableOpacity>
+	);
+
+	// return (
+	// 	<Link href={`/products/${productId}`}>
+	// 		<View style={styles.card}>
+	// 			<Image
+	// 				source={
+	// 					image || "https://m.media-amazon.com/images/I/31CsUtgSdiL.jpg"
+	// 				}
+	// 				style={styles.image}
+	// 				contentFit="contain"
+	// 			/>
+	// 			<View style={{ paddingTop: 16, flexShrink: 1 }}>
+	// 				<Text style={styles.name}>{name}</Text>
+	// 				<Text numberOfLines={3} style={styles.description}>
+	// 					{description}
+	// 				</Text>
+
+	// 				<Text style={styles.price}>₹{price || 0}</Text>
+
+	// 				<Text style={styles.discount}>{discount}% off</Text>
+	// 			</View>
+	// 		</View>
+	// 	</Link>
+	// );
+}
+
+function RatingPill({ rating }: { rating: number }) {
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				gap: "2px",
+				alignItems: "center",
+				backgroundColor: "#d2ebf5",
+				borderRadius: 20,
+				padding: 4,
+				paddingHorizontal: 8,
+			}}
+		>
+			<FontAwesome name="star" size={15} color="#8BB8BF" />
+			<Text style={{ fontSize: 14, color: "#8BB8BF" }}>{rating}</Text>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	card: {
-		borderWidth: 1,
-		borderColor: "red",
+		flex: 1,
 	},
 	image: {
-		borderRadius: 10,
-		width: 142,
-		height: 146,
+		borderRadius: 7,
+		width: "100%",
+		aspectRatio: 1,
 	},
-	text: {
+	name: {
+		fontSize: 22,
+		fontWeight: "600",
+	},
+	description: {
+		fontSize: 14,
+		marginTop: 4,
+		color: "#ADB3BC",
+	},
+	price: {
+		fontSize: 18,
+		color: "gray",
+		textDecorationLine: "line-through",
+		marginTop: 10,
+	},
+	discount: {
 		fontSize: 12,
+		color: "red",
 	},
 });

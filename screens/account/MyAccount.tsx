@@ -1,3 +1,5 @@
+import { clearStoredKeys } from "@/hooks/useStorageState";
+import { LocalConfig } from "@/lib/values";
 import { Redirect, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -10,6 +12,7 @@ import {
 	ScrollView,
 	Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyAccount = () => {
 	const [activeSection, setActiveSection] = useState("ManageProfile");
@@ -65,47 +68,64 @@ const MyAccount = () => {
 	};
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.sidebar}>
-				<TouchableOpacity
-					onPress={() => setActiveSection("ManageProfile")}
-					style={styles.sidebarButton}
+		<SafeAreaView style={{ flex: 1 }}>
+			<TouchableOpacity
+				onPress={() => clearStoredKeys([LocalConfig.IS_ONBOARDED])}
+				style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
+			>
+				<Text
+					style={{
+						color: "white",
+						fontSize: 20,
+						textTransform: "uppercase",
+						textAlign: "center",
+					}}
 				>
-					<Text style={styles.sidebarText}>Manage Profile</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => setActiveSection("MyPayments")}
-					style={styles.sidebarButton}
-				>
-					<Text style={styles.sidebarText}>My Payments</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => setActiveSection("AddressBook")}
-					style={styles.sidebarButton}
-				>
-					<Text style={styles.sidebarText}>Address Book</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => setActiveSection("NeedHelp")}
-					style={styles.sidebarButton}
-				>
-					<Text style={styles.sidebarText}>Need Help</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => router.push("/my-orders")}
-					style={styles.sidebarButton}
-				>
-					<Text style={styles.sidebarText}>My Orders</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					onPress={() => alert("Logged Out")}
-					style={styles.sidebarButton}
-				>
-					<Text style={styles.sidebarText}>Logout</Text>
-				</TouchableOpacity>
+					Clear App Settings
+				</Text>
+			</TouchableOpacity>
+			<View style={styles.container}>
+				<View style={styles.sidebar}>
+					<TouchableOpacity
+						onPress={() => setActiveSection("ManageProfile")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>Manage Profile</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => setActiveSection("MyPayments")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>My Payments</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => setActiveSection("AddressBook")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>Address Book</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => setActiveSection("NeedHelp")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>Need Help</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => router.push("/my-orders")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>My Orders</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => alert("Logged Out")}
+						style={styles.sidebarButton}
+					>
+						<Text style={styles.sidebarText}>Logout</Text>
+					</TouchableOpacity>
+				</View>
+				<View style={styles.content}>{renderContent()}</View>
 			</View>
-			<View style={styles.content}>{renderContent()}</View>
-		</View>
+		</SafeAreaView>
 	);
 };
 

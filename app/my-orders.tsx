@@ -1,5 +1,5 @@
-import MyOrders from "@/screens/MyOrders";
+import MyOrdersPage from "@/screens/account/MyOrdersPage";
 
 export default function Page() {
-	return <MyOrders />;
+	return <MyOrdersPage />;
 }
