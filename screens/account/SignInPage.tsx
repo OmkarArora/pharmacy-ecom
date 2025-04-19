@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import {
 	ActivityIndicator,
 	Alert,
+	Button,
 	Keyboard,
 	KeyboardAvoidingView,
 	Platform,
@@ -28,7 +29,7 @@ type FormData = {
 };
 
 export default function SignInPage() {
-	const { signIn, status } = useSession();
+	const { signIn, status, debugForceSignIn } = useSession();
 	const router = useRouter();
 	const showToast = useToastStore((state) => state.show);
 
@@ -58,6 +59,22 @@ export default function SignInPage() {
 			style={styles.container}
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 		>
+			<View
+				style={{
+					position: "absolute",
+					top: 150,
+					left: 50,
+					backgroundColor: "red",
+				}}
+			>
+				<Button
+					title="FORCE IN"
+					onPress={() => {
+						debugForceSignIn();
+						router.replace("/(tabs)");
+					}}
+				/>
+			</View>
 			<Text
 				style={{
 					fontSize: 25,

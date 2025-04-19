@@ -12,6 +12,7 @@ import { wait } from "./utils";
 
 const AuthContext = createContext<{
 	signIn: (username: string, password: string) => Promise<void>;
+	debugForceSignIn: () => Promise<void>;
 	signUp: (username: string, password: string) => Promise<void>;
 	confirmSignUp: (otp: string) => Promise<void>;
 	signOut: () => void;
@@ -22,6 +23,7 @@ const AuthContext = createContext<{
 	showEmailConfirmOTPInput: boolean;
 }>({
 	signIn: () => Promise.resolve(),
+	debugForceSignIn: () => Promise.resolve(),
 	signUp: () => Promise.resolve(),
 	confirmSignUp: () => Promise.resolve(),
 	signOut: () => null,
@@ -88,6 +90,11 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		}
 	}
 
+	async function debugForceSignIn() {
+		setSession("sample");
+		setStatus("authenticated");
+	}
+
 	async function signUp(email: string, password: string) {
 		setStatus("loading");
 		setAuthDetails({ email, password });
@@ -129,6 +136,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		<AuthContext.Provider
 			value={{
 				signIn,
+				debugForceSignIn,
 				signUp,
 				signOut: () => {
 					setSession(null);
