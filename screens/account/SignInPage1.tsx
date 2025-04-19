@@ -58,7 +58,7 @@ export default function SignInPage() {
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 		>
 			<Image
-				source={require("@/assets/bag-logo.png")} // Replace with your logo image
+				source={require("@/assets/images/icon.png")} // Replace with your logo image
 				style={styles.logo}
 				resizeMode="contain"
 			/>

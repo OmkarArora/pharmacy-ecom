@@ -21,6 +21,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LOGIN_SCHEMA } from "@/lib/schema";
 import useToastStore from "@/lib/store/toast-store";
+import { Image } from "expo-image";
 
 // Define the form data type
 type FormData = {
@@ -59,31 +60,14 @@ export default function SignInPage() {
 			style={styles.container}
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 		>
-			<View
-				style={{
-					position: "absolute",
-					top: 150,
-					left: 50,
-					backgroundColor: "red",
-				}}
-			>
-				<Button
-					title="FORCE IN"
-					onPress={() => {
-						debugForceSignIn();
-						router.replace("/(tabs)");
-					}}
-				/>
-			</View>
-			<Text
-				style={{
-					fontSize: 25,
-					paddingBottom: 30,
-					fontWeight: "semibold",
-					textAlign: "center",
-				}}
-			>
-				Welcome back!
+			<Image
+				source={require("@/assets/images/icon.png")} // Replace with your logo image
+				style={styles.logo}
+				resizeMode="contain"
+			/>
+			<Text style={styles.title}>
+				Welcome{"\n"}
+				<Text style={styles.titleHighlight}>Back!</Text>
 			</Text>
 
 			<Controller
@@ -91,7 +75,7 @@ export default function SignInPage() {
 				name="username"
 				render={({ field: { onChange, onBlur, value } }) => (
 					<InputWrapper>
-						<IconSymbol name="person" color={"#111111"} />
+						<IconSymbol name="person" color={"#6B7280"} />
 						<TextInput
 							placeholder="Email"
 							style={styles.input}
@@ -116,7 +100,7 @@ export default function SignInPage() {
 				name="password"
 				render={({ field: { onChange, onBlur, value } }) => (
 					<InputWrapper>
-						<IconSymbol name="lock" color={"#111111"} />
+						<IconSymbol name="lock" color={"#6B7280"} />
 						<TextInput
 							placeholder="Password"
 							autoComplete="password"
@@ -162,6 +146,14 @@ export default function SignInPage() {
 				/> */}
 			</View>
 
+			<Button
+				title="Bypass Auth"
+				onPress={() => {
+					debugForceSignIn();
+					router.replace("/(tabs)");
+				}}
+			/>
+
 			{status === "loading" && <ActivityIndicator style={{ padding: 20 }} />}
 		</KeyboardAvoidingView>
 	);
@@ -183,6 +175,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		gap: 10,
 		height: 50,
+		backgroundColor: "#F6F0E8",
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		marginBottom: 12,
 	},
 	input: {
 		flex: 1,
@@ -194,5 +190,23 @@ const styles = StyleSheet.create({
 		marginBottom: 12,
 		textAlign: "left",
 		width: "100%",
+	},
+	logo: {
+		width: 60,
+		height: 60,
+		marginBottom: 20,
+		alignSelf: "flex-start",
+	},
+	title: {
+		fontSize: 28,
+		textAlign: "left",
+		color: "#2F855A",
+		fontWeight: "400",
+		width: "100%",
+		marginBottom: 40,
+	},
+	titleHighlight: {
+		color: "#C79D73",
+		fontWeight: "bold",
 	},
 });
