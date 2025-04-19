@@ -33,7 +33,7 @@ export default function Search() {
 
 function CategoryItem({ category }: { category: CategoryType }) {
 	return (
-		<Link href={`/category/${category.name}`}>
+		<Link href={`/category/${category.category_id}`}>
 			<View style={styles.categoryItem}>
 				<Text style={styles.categoryName}>{category.name}</Text>
 

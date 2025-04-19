@@ -48,9 +48,9 @@ const ProductPage = ({ productId }: { productId: string }) => {
 				<Text style={styles.title}>{product.category}</Text>
 
 				{/* Rating Section */}
-				{!!product.ratings && (
+				{!!product.rating_count && (
 					<View style={styles.ratingContainer}>
-						<Text style={styles.rating}>{product.ratings}</Text>
+						<Text style={styles.rating}>{product.rating_count}</Text>
 						<Ionicons name="star" size={16} color="#FFD700" />
 						<Text style={styles.ratingText}>({product.reviews} Ratings)</Text>
 					</View>

@@ -53,6 +53,8 @@ export default function SignUpPage() {
 	const onSubmit = async (data: FormData) => {
 		Keyboard.dismiss();
 
+		console.log("submit click");
+
 		try {
 			await signUp(data.username, data.password);
 		} catch (error) {

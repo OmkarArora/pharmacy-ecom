@@ -5,12 +5,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function CategoryCard({ data }: { data: CategoryType }) {
 	const router = useRouter();
-	const { name, image } = data;
+	const { name, image, category_id } = data;
 
 	return (
 		<TouchableOpacity
 			style={styles.container}
-			onPress={() => router.push(`/category/${name}`)}
+			onPress={() => router.push(`/category/${category_id}`)}
 		>
 			<Image
 				source={image || "https://placehold.co/100"}

@@ -40,12 +40,12 @@ const useCartStore = create<State & Actions>()(
 			addItem: (product) => {
 				set((state) => {
 					const existingItem = state.items.find(
-						(item) => item.product.productId === product.productId
+						(item) => item.product.product_id === product.product_id
 					);
 
 					if (existingItem) {
 						const updatedItems = state.items.map((item) =>
-							item.product.productId === product.productId
+							item.product.product_id === product.product_id
 								? { ...item, quantity: item.quantity + 1 }
 								: item
 						);
@@ -58,14 +58,14 @@ const useCartStore = create<State & Actions>()(
 			removeItem: (productId) => {
 				set((state) => ({
 					items: state.items.filter(
-						(item) => item.product.productId !== productId
+						(item) => item.product.product_id !== productId
 					),
 				}));
 			},
 			increaseQuantity: (productId) => {
 				set((state) => ({
 					items: state.items.map((item) =>
-						item.product.productId === productId
+						item.product.product_id === productId
 							? { ...item, quantity: item.quantity + 1 }
 							: item
 					),
@@ -74,7 +74,7 @@ const useCartStore = create<State & Actions>()(
 			decreaseQuantity: (productId) => {
 				set((state) => ({
 					items: state.items.map((item) =>
-						item.product.productId === productId
+						item.product.product_id === productId
 							? { ...item, quantity: Math.max(1, item.quantity - 1) }
 							: item
 					),
@@ -91,7 +91,7 @@ const useCartStore = create<State & Actions>()(
 			},
 			selectProductQuantity: (state: State, productId) => {
 				const existingItem = state.items.find(
-					(item) => item.product.productId === productId
+					(item) => item.product.product_id === productId
 				);
 
 				if (existingItem) {

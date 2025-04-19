@@ -12,11 +12,13 @@ export default function useProductDetails(productId: string) {
 		queryKey: ["product", productId],
 		queryFn: async () => {
 			try {
-				const product = productsDB.find((item) => item.productId === productId);
+				const product = productsDB.find(
+					(item) => item.product_id === productId
+				);
 
 				if (!!product) return product;
 
-				const response = await axios.get(`${BASE_URL}/${productId}/product`, {
+				const response = await axios.get(`${BASE_URL}/products/${productId}`, {
 					headers: { Authorization: `${session}` },
 				});
 

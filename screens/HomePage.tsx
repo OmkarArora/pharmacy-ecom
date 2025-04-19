@@ -118,7 +118,7 @@ export default function HomePage() {
 								alignItems: "center",
 								justifyContent: "center",
 							}}
-							key={item.productId}
+							key={item.product_id}
 						>
 							<ProductCard data={item} />
 						</View>
@@ -173,7 +173,7 @@ function CategoiesContainer() {
 			}}
 		>
 			{data.map((item) => (
-				<CategoryCard key={item.categoryId} data={item} />
+				<CategoryCard key={item.category_id} data={item} />
 			))}
 		</View>
 	);

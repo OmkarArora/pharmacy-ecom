@@ -3,10 +3,10 @@ import CategoryPage from "@/screens/CategoryPage";
 import { useLocalSearchParams } from "expo-router";
 
 export default function Page() {
-	const { categoryName } = useLocalSearchParams();
+	const { categoryId } = useLocalSearchParams();
 	return (
 		<ScreenWrapper>
-			<CategoryPage categoryName={categoryName as string} />
+			<CategoryPage categoryId={categoryId as string} />
 		</ScreenWrapper>
 	);
 }

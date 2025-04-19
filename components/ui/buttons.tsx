@@ -53,7 +53,7 @@ export function SecondaryButton({
 
 const styles = StyleSheet.create({
 	primaryButton: {
-		borderRadius: 50,
+		borderRadius: 12,
 		justifyContent: "center",
 		alignItems: "center",
 		alignSelf: "stretch",

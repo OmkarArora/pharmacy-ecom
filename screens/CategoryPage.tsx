@@ -6,12 +6,8 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function CategoryPage({
-	categoryName,
-}: {
-	categoryName: string;
-}) {
-	const { data: products, isFetching } = useCategoryProducts(categoryName);
+export default function CategoryPage({ categoryId }: { categoryId: string }) {
+	const { data: products, isFetching } = useCategoryProducts(categoryId);
 
 	return (
 		<SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
@@ -24,7 +20,7 @@ export default function CategoryPage({
 						<ProductCard data={item} />
 					</View>
 				)}
-				keyExtractor={(item) => item.productId}
+				keyExtractor={(item) => item.product_id}
 				estimatedItemSize={200}
 				ListFooterComponent={() => (isFetching ? <ActivityIndicator /> : null)}
 			/>

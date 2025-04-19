@@ -146,13 +146,13 @@ export default function SignInPage() {
 				/> */}
 			</View>
 
-			<Button
+			{/* <Button
 				title="Bypass Auth"
 				onPress={() => {
 					debugForceSignIn();
 					router.replace("/(tabs)");
 				}}
-			/>
+			/> */}
 
 			{status === "loading" && <ActivityIndicator style={{ padding: 20 }} />}
 		</KeyboardAvoidingView>

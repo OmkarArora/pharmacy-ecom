@@ -255,19 +255,21 @@ function CartItem({ data }: { data: CartItemType }) {
 				<Text style={styles.itemTitle}>{name}</Text>
 				<View style={styles.itemQuantity}>
 					{quantity === 1 ? (
-						<TouchableOpacity onPress={() => removeItem(product.productId)}>
+						<TouchableOpacity onPress={() => removeItem(product.product_id)}>
 							<MaterialIcons name="delete" size={16} />
 						</TouchableOpacity>
 					) : (
 						<TouchableOpacity
-							onPress={() => decreaseQuantity(product.productId)}
+							onPress={() => decreaseQuantity(product.product_id)}
 						>
 							<MaterialIcons name="remove-circle-outline" size={16} />
 						</TouchableOpacity>
 					)}
 
 					<Text style={styles.quantity}>{quantity}</Text>
-					<TouchableOpacity onPress={() => increaseQuantity(product.productId)}>
+					<TouchableOpacity
+						onPress={() => increaseQuantity(product.product_id)}
+					>
 						<MaterialIcons name="add-circle-outline" size={16} />
 					</TouchableOpacity>
 				</View>

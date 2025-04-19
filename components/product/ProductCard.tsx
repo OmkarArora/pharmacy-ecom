@@ -10,15 +10,22 @@ import { RUPEE_SYMBOL } from "@/lib/values";
 import AddButton from "./AddButton";
 
 export default function ProductCard({ data }: { data: Product }) {
-	const { image, name, description, price, discount, productId, ratings } =
-		data;
+	const {
+		image,
+		name,
+		description,
+		price,
+		discount,
+		product_id,
+		rating_count,
+	} = data;
 
 	const router = useRouter();
 	// href={`/products/${productId}`}
 	return (
 		<TouchableOpacity
 			onPress={() => {
-				router.push(`/products/${productId}`);
+				router.push(`/products/${product_id}`);
 			}}
 			style={{ flex: 1 }}
 		>
@@ -53,9 +60,9 @@ export default function ProductCard({ data }: { data: Product }) {
 				</Text>
 
 				<Spacer height={7} />
-				{!!ratings && (
+				{!!rating_count && (
 					<View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
-						<RatingPill rating={ratings} />
+						<RatingPill rating={rating_count} />
 						<Text
 							style={{ color: "#A8A8A8", fontSize: 11, fontWeight: "semibold" }}
 						>

@@ -1,14 +1,14 @@
 export type HomePageItem = Product | HomePageCategoryItem;
 
 export type HomePageCategoryItem = {
-	productId: string;
+	product_id: string;
 	category: string;
 	name: string;
 	image: string;
 };
 
 export type Product = {
-	productId: string;
+	product_id: string;
 	name: string;
 	description?: string;
 	image: string;
@@ -19,7 +19,7 @@ export type Product = {
 	reviews?: number;
 	recentlyBought?: number;
 	healthConditions?: string[];
-	ratings?: number;
+	rating_count?: number;
 };
 
 // Type guard for HomePageCategoryItem
@@ -30,7 +30,7 @@ export function isHomePageCategoryItem(
 		(item as HomePageCategoryItem).category !== undefined &&
 		(item as HomePageCategoryItem).name !== undefined &&
 		(item as HomePageCategoryItem).image !== undefined &&
-		(item as HomePageCategoryItem).productId !== undefined &&
+		(item as HomePageCategoryItem).product_id !== undefined &&
 		(item as Product).price === undefined
 	); // Ensure it's not a Product
 }

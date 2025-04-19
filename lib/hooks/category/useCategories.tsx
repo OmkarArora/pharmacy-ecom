@@ -3,7 +3,12 @@ import axios from "axios";
 import { BASE_URL } from "../../values";
 import { useSession } from "@/lib/SessionProvider";
 
-export type CategoryType = { name: string; categoryId: string; image: string };
+export type CategoryType = {
+	name: string;
+	category_id: string;
+	image: string;
+	description: string;
+};
 
 export default function useCategories() {
 	const { session } = useSession();
@@ -13,7 +18,7 @@ export default function useCategories() {
 		queryFn: async () => {
 			try {
 				const response = await axios.get<{ categories: CategoryType[] }>(
-					`${BASE_URL}/category`,
+					`${BASE_URL}/categories`,
 					{
 						headers: { Authorization: `${session}` },
 					}

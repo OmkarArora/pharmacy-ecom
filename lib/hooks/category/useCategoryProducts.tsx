@@ -4,15 +4,15 @@ import { BASE_URL } from "../../values";
 import { Product } from "@/lib/types";
 import { useSession } from "@/lib/SessionProvider";
 
-export default function useCategoryProducts(categoryName: string) {
+export default function useCategoryProducts(categoryId: string) {
 	const { session } = useSession();
 
 	return useQuery({
-		queryKey: ["category-products", categoryName],
+		queryKey: ["category-products", categoryId],
 		queryFn: async () => {
 			try {
 				const response = await axios.get<{ products: Product[] }>(
-					`${BASE_URL}/product?category=${categoryName}`,
+					`${BASE_URL}/products?category=${categoryId}`,
 					{
 						headers: { Authorization: `${session}` },
 					}
