@@ -1,3 +1,4 @@
+import usePlaceOrder from "@/lib/hooks/order/usePlaceOrder";
 import React, { useState } from "react";
 import {
 	View,
@@ -16,7 +17,10 @@ const MoneyTransfer: React.FC = () => {
 
 	const handleTransfer = async () => {
 		if (!recipientName || parseFloat(amount) <= 0) {
-			Alert.alert("Invalid input", "Please enter valid recipient name and amount.");
+			Alert.alert(
+				"Invalid input",
+				"Please enter valid recipient name and amount."
+			);
 			return;
 		}
 
@@ -25,7 +29,10 @@ const MoneyTransfer: React.FC = () => {
 			const response = await fetch("http://127.0.0.1:3000/create-order", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ amount: parseInt(amount) * 100, currency: "INR" }), // Razorpay expects paise
+				body: JSON.stringify({
+					amount: parseInt(amount) * 100,
+					currency: "INR",
+				}), // Razorpay expects paise
 			});
 			const data = await response.json();
 
@@ -54,11 +61,14 @@ const MoneyTransfer: React.FC = () => {
 			RazorpayCheckout.open(options)
 				.then(async (paymentData) => {
 					// 3. Verify Payment
-					const verifyRes = await fetch("http://127.0.0.1:3000/verify-payment", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(paymentData),
-					});
+					const verifyRes = await fetch(
+						"http://127.0.0.1:3000/verify-payment",
+						{
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify(paymentData),
+						}
+					);
 					const verifyJson = await verifyRes.json();
 
 					if (verifyJson.success) {

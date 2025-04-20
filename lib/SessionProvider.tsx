@@ -59,6 +59,8 @@ export type SessionStatus =
 
 export function SessionProvider({ children }: PropsWithChildren) {
 	const [[isLoading, session], setSession] = useStorageState("session");
+	const [_, setUsername] = useStorageState("username");
+
 	const [status, setStatus] = useState<SessionStatus>("unauthenticated");
 	const [showEmailConfirmOTPInput, setShowEmailConfirmOTPInput] =
 		useState(false);
@@ -77,6 +79,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		try {
 			const data = await Auth.signIn(username, password);
 			setStatus("authenticated");
+
+			if (data.username) {
+				setUsername(data.username);
+			}
 
 			if (data?.signInUserSession?.accessToken?.jwtToken) {
 				setSession(data.signInUserSession.accessToken.jwtToken);

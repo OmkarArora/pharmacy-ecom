@@ -7,6 +7,5 @@ export const RUPEE_SYMBOL = "₹";
 export const BASE_URL =
 	"https://b9l0b9ymdd.execute-api.ap-south-1.amazonaws.com/Test";
 
-// https://2vc96ddlw9.execute-api.us-east-1.amazonaws.com/Test/product?category=General
-// https://2vc96ddlw9.execute-api.us-east-1.amazonaws.com/Test/category
-// https://vkiip9lpqk.execute-api.us-east-1.amazonaws.com/Test/product?category=General
+export const ORDERS_BASE_URL =
+	"https://nbwpc2xgl1.execute-api.ap-south-1.amazonaws.com/Test";

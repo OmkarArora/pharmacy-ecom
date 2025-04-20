@@ -1,10 +1,10 @@
 import ScreenWrapper from "@/components/ui/ScreenWrapper";
-import Checkout from "@/screens/CheckOut";
+import CustomerCheckOut from "@/screens/CustomerCheckOut";
 
 export default function Page() {
 	return (
 		<ScreenWrapper>
-			<Checkout />
+			<CustomerCheckOut />
 		</ScreenWrapper>
 	);
 }

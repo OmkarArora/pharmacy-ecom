@@ -151,9 +151,7 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
-		padding: 20,
 		paddingTop: 40,
-		backgroundColor: "#fff",
 	},
 	header: {
 		marginBottom: 20,

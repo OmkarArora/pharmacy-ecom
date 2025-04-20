@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function AddButton({ data }: Props) {
-	const { productId } = data;
+	const { product_id: productId } = data;
 
 	const primaryColor = useThemeColor({}, "primary");
 	const quantityInCart = useStore(

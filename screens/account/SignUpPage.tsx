@@ -84,7 +84,7 @@ export default function SignUpPage() {
 			<Image
 				source={require("@/assets/images/icon.png")} // Replace with your logo image
 				style={styles.logo}
-				resizeMode="contain"
+				contentFit="contain"
 			/>
 			<Text style={styles.title}>
 				Welcome to{"\n"}

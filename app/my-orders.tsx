@@ -1,5 +1,10 @@
-import MyOrdersPage from "@/screens/account/MyOrdersPage";
+import ScreenWrapper from "@/components/ui/ScreenWrapper";
+import MyOrders from "@/screens/account/MyOrders";
 
 export default function Page() {
-	return <MyOrdersPage />;
+	return (
+		<ScreenWrapper>
+			<MyOrders />
+		</ScreenWrapper>
+	);
 }
