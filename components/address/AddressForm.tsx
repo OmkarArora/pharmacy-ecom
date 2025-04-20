@@ -36,24 +36,32 @@ export default function AddressForm({
 
 	const primaryColor = useThemeColor({}, "primary");
 
+	const [errors, setErrors] = useState<string[]>([]);
+
 	const handleLocationSelect = async () => {
-		const { status } = await Location.requestForegroundPermissionsAsync();
-		console.log("LOCATION STATUS", status);
-		if (status !== "granted") {
-			Alert.alert("Permission to access location was denied");
-			return;
+		try {
+			const { status } = await Location.requestForegroundPermissionsAsync();
+			console.log("LOCATION STATUS", status);
+			if (status !== "granted") {
+				Alert.alert("Permission to access location was denied");
+				return;
+			}
+
+			const location = await Location.getCurrentPositionAsync({});
+
+			console.log("LOCATION", location);
+
+			setFormData({
+				...formData,
+				latitude: location.coords.latitude,
+				longitude: location.coords.longitude,
+			});
+			setShowMap(true);
+		} catch (error) {
+			console.error("Error getting location", error);
+			Alert.alert("Error getting location", "Please try again later.");
+			setErrors((prevErrors) => [...prevErrors, `LOCATION ERROR: ${error}`]);
 		}
-
-		const location = await Location.getCurrentPositionAsync({});
-
-		console.log("LOCATION", location);
-
-		setFormData({
-			...formData,
-			latitude: location.coords.latitude,
-			longitude: location.coords.longitude,
-		});
-		setShowMap(true);
 	};
 
 	const handleSubmit = () => {
@@ -172,6 +180,17 @@ export default function AddressForm({
 							<Text style={styles.cancelButtonText}>Cancel</Text>
 						</TouchableOpacity>
 					</View>
+
+					{errors.length > 0 && (
+						<View style={{ marginTop: 16 }}>
+							<Text style={{ color: "red", fontWeight: "bold" }}>Errors:</Text>
+							{errors.map((error, index) => (
+								<Text key={index} style={{ color: "red" }}>
+									- {error}
+								</Text>
+							))}
+						</View>
+					)}
 				</ScrollView>
 			</SafeAreaView>
 		</Modal>

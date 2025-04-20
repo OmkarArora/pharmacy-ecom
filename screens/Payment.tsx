@@ -8,12 +8,16 @@ import {
 	StyleSheet,
 	Alert,
 	Platform,
+	ScrollView,
 } from "react-native";
 import RazorpayCheckout from "react-native-razorpay";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MoneyTransfer: React.FC = () => {
 	const [recipientName, setRecipientName] = useState("");
 	const [amount, setAmount] = useState("");
+
+	const [errors, setErrors] = useState<string[]>([]);
 
 	const handleTransfer = async () => {
 		if (!recipientName || parseFloat(amount) <= 0) {
@@ -84,41 +88,56 @@ const MoneyTransfer: React.FC = () => {
 		} catch (err) {
 			console.error(err);
 			Alert.alert("Error", "Something went wrong.");
+
+			setErrors((prevErrors) => [...prevErrors, `PAYMENT ERROR: ${err}`]);
 		}
 	};
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.card}>
-				<Text style={styles.title}>Money Transfer</Text>
-				<Text style={styles.subtitle}>
-					Enter recipient's details and transfer amount below:
-				</Text>
+		<SafeAreaView style={{ flex: 1 }}>
+			<ScrollView style={styles.container}>
+				<View style={styles.card}>
+					<Text style={styles.title}>Money Transfer</Text>
+					<Text style={styles.subtitle}>
+						Enter recipient's details and transfer amount below:
+					</Text>
 
-				<TextInput
-					style={styles.input}
-					placeholder="Recipient Name"
-					value={recipientName}
-					onChangeText={setRecipientName}
-					placeholderTextColor="#aaa"
-				/>
+					<TextInput
+						style={styles.input}
+						placeholder="Recipient Name"
+						value={recipientName}
+						onChangeText={setRecipientName}
+						placeholderTextColor="#aaa"
+					/>
 
-				<TextInput
-					style={styles.input}
-					placeholder="Amount to Transfer (₹)"
-					value={amount}
-					onChangeText={setAmount}
-					keyboardType="numeric"
-					placeholderTextColor="#aaa"
-				/>
+					<TextInput
+						style={styles.input}
+						placeholder="Amount to Transfer (₹)"
+						value={amount}
+						onChangeText={setAmount}
+						keyboardType="numeric"
+						placeholderTextColor="#aaa"
+					/>
 
-				<TouchableOpacity style={styles.button} onPress={handleTransfer}>
-					<Text style={styles.buttonText}>Transfer Now</Text>
-				</TouchableOpacity>
+					<TouchableOpacity style={styles.button} onPress={handleTransfer}>
+						<Text style={styles.buttonText}>Transfer Now</Text>
+					</TouchableOpacity>
 
-				<Text style={styles.note}>Secure and instant transfers.</Text>
-			</View>
-		</View>
+					<Text style={styles.note}>Secure and instant transfers.</Text>
+				</View>
+
+				{errors.length > 0 && (
+					<View style={{ marginTop: 16 }}>
+						<Text style={{ color: "red", fontWeight: "bold" }}>Errors:</Text>
+						{errors.map((error, index) => (
+							<Text key={index} style={{ color: "red" }}>
+								- {error}
+							</Text>
+						))}
+					</View>
+				)}
+			</ScrollView>
+		</SafeAreaView>
 	);
 };
 
