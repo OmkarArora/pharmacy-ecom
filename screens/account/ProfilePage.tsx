@@ -1,6 +1,7 @@
 import { clearStoredKeys } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useSession } from "@/lib/SessionProvider";
+import { useAddressStore } from "@/lib/store/address-store";
 import useCartStore from "@/lib/store/cart-store";
 import { LocalConfig } from "@/lib/values";
 import { useRouter } from "expo-router";
@@ -51,6 +52,7 @@ export default function ProfilePage() {
 	function clearData() {
 		clearStoredKeys([LocalConfig.IS_ONBOARDED]);
 		useCartStore.getState().resetData();
+		useAddressStore.getState().resetData();
 	}
 
 	return (

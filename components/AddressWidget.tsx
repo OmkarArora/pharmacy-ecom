@@ -12,9 +12,10 @@ import { useRouter } from "expo-router";
 import { useAddressStore } from "@/lib/store/address-store";
 import { useState } from "react";
 import AddressForm from "./address/AddressForm";
-import { MapPin, Plus } from "lucide-react-native";
+import { Delete, DeleteIcon, MapPin, Plus, Trash } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import useAddress from "@/lib/hooks/address/useAddress";
 
 export default function AddressWidget() {
 	const router = useRouter();
@@ -46,7 +47,7 @@ export default function AddressWidget() {
 					<Text
 						style={{ color: "#838383", fontSize: 16, fontWeight: "semibold" }}
 					>
-						{selectedAddress?.nickname}
+						{selectedAddress?.type}
 						{!!selectedAddress?.city && " - "}
 						{selectedAddress?.city}
 					</Text>
@@ -89,6 +90,14 @@ export function SelectAddressModal({
 	const { addresses, selectedAddress, selectAddress } = useAddressStore();
 	const primaryColor = useThemeColor({}, "primary");
 
+	const { deleteAddressMutation } = useAddress();
+	const removeAddress = useAddressStore((state) => state.removeAddress);
+
+	function onClickDelete(address_id: string) {
+		deleteAddressMutation.mutate(address_id);
+		removeAddress(address_id);
+	}
+
 	return (
 		<Modal
 			visible={isVisible}
@@ -103,25 +112,40 @@ export function SelectAddressModal({
 
 					<ScrollView style={styles.addressList}>
 						{addresses.map((address) => (
-							<TouchableOpacity
-								key={address.id}
+							<View
 								style={[
 									styles.addressItem,
-									selectedAddress?.id === address.id && styles.selectedAddress,
+									selectedAddress?.address_id === address.address_id &&
+										styles.selectedAddress,
 								]}
-								onPress={() => {
-									selectAddress(address);
-									setIsVisible(false);
-								}}
+								key={address.address_id}
 							>
-								<MapPin size={20} color="#666" />
-								<View style={styles.addressDetails}>
-									<Text style={styles.nickname}>{address.nickname}</Text>
-									<Text style={styles.addressText}>
-										{address.street}, {address.city}
-									</Text>
-								</View>
-							</TouchableOpacity>
+								<TouchableOpacity
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										flexShrink: 1,
+									}}
+									onPress={() => {
+										selectAddress(address);
+										setIsVisible(false);
+									}}
+								>
+									<MapPin size={20} color="#666" />
+									<View style={styles.addressDetails}>
+										<Text style={styles.nickname}>{address.type}</Text>
+										<Text style={styles.addressText}>
+											{address.line1}, {address.line2}, {address.city}
+										</Text>
+									</View>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={{ flexShrink: 0 }}
+									onPress={() => onClickDelete(address.address_id)}
+								>
+									<Trash color={"red"} />
+								</TouchableOpacity>
+							</View>
 						))}
 					</ScrollView>
 

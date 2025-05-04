@@ -16,3 +16,10 @@ export function generateTransactionId() {
 		.padStart(4, "0");
 	return `txn${randomNumber}`;
 }
+
+export function generateAddressId() {
+	const randomNumber = Math.floor(Math.random() * 10000)
+		.toString()
+		.padStart(4, "0");
+	return `addr${randomNumber}`;
+}

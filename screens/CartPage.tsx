@@ -2,9 +2,12 @@ import AddressForm from "@/components/address/AddressForm";
 import { SelectAddressModal } from "@/components/AddressWidget";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { PrimaryButton } from "@/components/ui/buttons";
+import { useStorageState } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { getDiscountedPrice } from "@/lib/functions";
+import useCart from "@/lib/hooks/cart/useCart";
 import usePlaceOrder from "@/lib/hooks/order/usePlaceOrder";
+import { useSession } from "@/lib/SessionProvider";
 import { useAddressStore } from "@/lib/store/address-store";
 import useCartStore, { CartItem as CartItemType } from "@/lib/store/cart-store";
 
@@ -196,7 +199,7 @@ export default function CartPage() {
 					</View>
 
 					{!!selectedAddress ? (
-						<Text>Delivering to - {selectedAddress.nickname}</Text>
+						<Text>Delivering to - {selectedAddress.type}</Text>
 					) : (
 						<TouchableOpacity
 							style={[
@@ -250,6 +253,9 @@ function CartItem({ data }: { data: CartItemType }) {
 	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
 	const removeItem = useCartStore((state) => state.removeItem);
 
+	const { session } = useSession();
+	const [[_, username]] = useStorageState("username");
+
 	return (
 		<View style={styles.item}>
 			<Image source={image} style={styles.itemImage} />
@@ -257,12 +263,22 @@ function CartItem({ data }: { data: CartItemType }) {
 				<Text style={styles.itemTitle}>{name}</Text>
 				<View style={styles.itemQuantity}>
 					{quantity === 1 ? (
-						<TouchableOpacity onPress={() => removeItem(product.product_id)}>
+						<TouchableOpacity
+							onPress={() =>
+								removeItem(product.product_id, username || "", session || "")
+							}
+						>
 							<MaterialIcons name="delete" size={16} />
 						</TouchableOpacity>
 					) : (
 						<TouchableOpacity
-							onPress={() => decreaseQuantity(product.product_id)}
+							onPress={() =>
+								decreaseQuantity(
+									product.product_id,
+									username || "",
+									session || ""
+								)
+							}
 						>
 							<MaterialIcons name="remove-circle-outline" size={16} />
 						</TouchableOpacity>
@@ -270,7 +286,13 @@ function CartItem({ data }: { data: CartItemType }) {
 
 					<Text style={styles.quantity}>{quantity}</Text>
 					<TouchableOpacity
-						onPress={() => increaseQuantity(product.product_id)}
+						onPress={() =>
+							increaseQuantity(
+								product.product_id,
+								username || "",
+								session || ""
+							)
+						}
 					>
 						<MaterialIcons name="add-circle-outline" size={16} />
 					</TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	View,
 	Text,
@@ -8,12 +8,20 @@ import {
 	Modal,
 	ScrollView,
 	Alert,
+	Platform,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { useAddressStore } from "@/lib/store/address-store";
+import {
+	Address,
+	getEmptyAddressObject,
+	useAddressStore,
+} from "@/lib/store/address-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useStorageState } from "@/hooks/useStorageState";
+import useAddress from "@/lib/hooks/address/useAddress";
+import { MapPin, Plus, CircleAlert as AlertCircle } from "lucide-react-native";
 
 export default function AddressForm({
 	isVisible,
@@ -22,40 +30,70 @@ export default function AddressForm({
 	isVisible: boolean;
 	onClose: () => void;
 }) {
+	const [[_, username]] = useStorageState("username");
+
 	const { addAddress } = useAddressStore();
 	const [showMap, setShowMap] = useState(false);
-	const [formData, setFormData] = useState({
-		nickname: "",
-		street: "",
-		city: "",
-		state: "",
-		zipCode: "",
-		latitude: 37.78825,
-		longitude: -122.4324,
+	const [formData, setFormData] = useState<Address>({
+		...getEmptyAddressObject(),
+		user_name: username || "",
 	});
+
+	const { addAddressMutation } = useAddress();
+
+	useEffect(() => {
+		if (!!username) setFormData((prev) => ({ ...prev, user_name: username }));
+	}, [username]);
 
 	const primaryColor = useThemeColor({}, "primary");
 
 	const [errors, setErrors] = useState<string[]>([]);
 
+	const [locationPermission, setLocationPermission] = useState<boolean | null>(
+		null
+	);
+
+	useEffect(() => {
+		checkLocationPermission();
+	}, []);
+
+	useEffect(() => {
+		if (locationPermission) {
+			grabCurrentLocation();
+		}
+	}, [locationPermission]);
+
+	const checkLocationPermission = async () => {
+		const { status } = await Location.getForegroundPermissionsAsync();
+		setLocationPermission(status === "granted");
+	};
+
+	const requestLocationPermission = async () => {
+		const { status } = await Location.requestForegroundPermissionsAsync();
+
+		setLocationPermission(status === "granted");
+	};
+
+	const grabCurrentLocation = async () => {
+		const location = await Location.getCurrentPositionAsync({});
+
+		setFormData({
+			...formData,
+			latitude: location.coords.latitude,
+			longitude: location.coords.longitude,
+		});
+	};
+
 	const handleLocationSelect = async () => {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
-			console.log("LOCATION STATUS", status);
+
 			if (status !== "granted") {
 				Alert.alert("Permission to access location was denied");
 				return;
 			}
 
-			const location = await Location.getCurrentPositionAsync({});
-
-			console.log("LOCATION", location);
-
-			setFormData({
-				...formData,
-				latitude: location.coords.latitude,
-				longitude: location.coords.longitude,
-			});
+			grabCurrentLocation();
 			setShowMap(true);
 		} catch (error) {
 			console.error("Error getting location", error);
@@ -66,15 +104,8 @@ export default function AddressForm({
 
 	const handleSubmit = () => {
 		addAddress(formData);
-		setFormData({
-			nickname: "",
-			street: "",
-			city: "",
-			state: "",
-			zipCode: "",
-			latitude: 37.78825,
-			longitude: -122.4324,
-		});
+		addAddressMutation.mutate({ ...formData, is_default: true });
+		setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
 		setShowMap(false);
 		onClose();
 	};
@@ -82,116 +113,168 @@ export default function AddressForm({
 	return (
 		<Modal visible={isVisible} animationType="slide">
 			<SafeAreaView style={{ flex: 1 }}>
-				<ScrollView style={styles.container}>
-					<Text style={styles.title}>Add New Address</Text>
-
-					<View style={styles.form}>
-						<TextInput
-							style={styles.input}
-							placeholder="Nickname (e.g., Home, Work)"
-							value={formData.nickname}
-							onChangeText={(text) =>
-								setFormData({ ...formData, nickname: text })
-							}
-							autoCapitalize="words"
-						/>
-
-						<TextInput
-							style={styles.input}
-							placeholder="Street Address"
-							value={formData.street}
-							onChangeText={(text) =>
-								setFormData({ ...formData, street: text })
-							}
-							autoCapitalize="words"
-						/>
-
-						<TextInput
-							style={styles.input}
-							placeholder="City"
-							value={formData.city}
-							onChangeText={(text) => setFormData({ ...formData, city: text })}
-							autoCapitalize="words"
-						/>
-
-						<TextInput
-							style={styles.input}
-							placeholder="State"
-							value={formData.state}
-							onChangeText={(text) => setFormData({ ...formData, state: text })}
-							autoCapitalize="words"
-						/>
-
-						<TextInput
-							style={styles.input}
-							placeholder="ZIP Code"
-							value={formData.zipCode}
-							onChangeText={(text) =>
-								setFormData({ ...formData, zipCode: text })
-							}
-							keyboardType="numeric"
-						/>
-
-						<TouchableOpacity
-							style={styles.locationButton}
-							onPress={handleLocationSelect}
-						>
-							<Text style={styles.locationButtonText}>
-								Select Location on Map
+				{locationPermission === null && (
+					<View style={styles.container}>
+						<Text style={styles.loadingText}>
+							Checking location permissions...
+						</Text>
+					</View>
+				)}
+				{locationPermission === false && (
+					<View style={styles.container}>
+						<View style={styles.permissionContainer}>
+							<AlertCircle size={48} color="#ff4444" style={styles.icon} />
+							<Text style={styles.permissionTitle}>
+								Location Access Required
 							</Text>
-						</TouchableOpacity>
-
-						{showMap && (
-							<View style={styles.mapContainer}>
-								<MapView
-									style={styles.map}
-									initialRegion={{
-										latitude: formData.latitude,
-										longitude: formData.longitude,
-										latitudeDelta: 0.0922,
-										longitudeDelta: 0.0421,
-									}}
-									onPress={(e) =>
-										setFormData({
-											...formData,
-											latitude: e.nativeEvent.coordinate.latitude,
-											longitude: e.nativeEvent.coordinate.longitude,
-										})
-									}
+							<Text style={styles.permissionText}>
+								We need access to your location to provide accurate address
+								information.
+								{Platform.OS === "ios"
+									? " Please enable location services in your device settings."
+									: ""}
+							</Text>
+							{Platform.OS !== "ios" && (
+								<TouchableOpacity
+									style={styles.permissionButton}
+									onPress={requestLocationPermission}
 								>
-									<Marker
-										coordinate={{
+									<Text style={styles.permissionButtonText}>
+										Grant Permission
+									</Text>
+								</TouchableOpacity>
+							)}
+						</View>
+					</View>
+				)}
+				{locationPermission && (
+					<ScrollView style={styles.container}>
+						<Text style={styles.title}>Add New Address</Text>
+
+						<View style={styles.form}>
+							<TextInput
+								style={styles.input}
+								placeholder="Type (e.g., Home, Work)"
+								value={formData.type}
+								onChangeText={(text) =>
+									setFormData({ ...formData, type: text })
+								}
+								autoCapitalize="words"
+							/>
+
+							<TextInput
+								style={styles.input}
+								placeholder="Line 1"
+								value={formData.line1}
+								onChangeText={(text) =>
+									setFormData({ ...formData, line1: text })
+								}
+								autoCapitalize="words"
+							/>
+
+							<TextInput
+								style={styles.input}
+								placeholder="Line 2"
+								value={formData.line2}
+								onChangeText={(text) =>
+									setFormData({ ...formData, line2: text })
+								}
+								autoCapitalize="words"
+							/>
+
+							<TextInput
+								style={styles.input}
+								placeholder="City"
+								value={formData.city}
+								onChangeText={(text) =>
+									setFormData({ ...formData, city: text })
+								}
+								autoCapitalize="words"
+							/>
+
+							<TextInput
+								style={styles.input}
+								placeholder="State"
+								value={formData.state}
+								onChangeText={(text) =>
+									setFormData({ ...formData, state: text })
+								}
+								autoCapitalize="words"
+							/>
+
+							<TextInput
+								style={styles.input}
+								placeholder="ZIP Code"
+								value={formData.pincode}
+								onChangeText={(text) =>
+									setFormData({ ...formData, pincode: text })
+								}
+								keyboardType="numeric"
+							/>
+
+							<TouchableOpacity
+								style={styles.locationButton}
+								onPress={handleLocationSelect}
+							>
+								<Text style={styles.locationButtonText}>
+									Select Location on Map
+								</Text>
+							</TouchableOpacity>
+
+							{showMap && (
+								<View style={styles.mapContainer}>
+									<MapView
+										style={styles.map}
+										initialRegion={{
 											latitude: formData.latitude,
 											longitude: formData.longitude,
+											latitudeDelta: 0.0922,
+											longitudeDelta: 0.0421,
 										}}
-									/>
-								</MapView>
+										onPress={(e) =>
+											setFormData({
+												...formData,
+												latitude: e.nativeEvent.coordinate.latitude,
+												longitude: e.nativeEvent.coordinate.longitude,
+											})
+										}
+									>
+										<Marker
+											coordinate={{
+												latitude: formData.latitude,
+												longitude: formData.longitude,
+											}}
+										/>
+									</MapView>
+								</View>
+							)}
+
+							<TouchableOpacity
+								style={[styles.submitButton, { backgroundColor: primaryColor }]}
+								onPress={handleSubmit}
+							>
+								<Text style={styles.submitButtonText}>Save Address</Text>
+							</TouchableOpacity>
+
+							<TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+								<Text style={styles.cancelButtonText}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+
+						{errors.length > 0 && (
+							<View style={{ marginTop: 16 }}>
+								<Text style={{ color: "red", fontWeight: "bold" }}>
+									Errors:
+								</Text>
+								{errors.map((error, index) => (
+									<Text key={index} style={{ color: "red" }}>
+										- {error}
+									</Text>
+								))}
 							</View>
 						)}
-
-						<TouchableOpacity
-							style={[styles.submitButton, { backgroundColor: primaryColor }]}
-							onPress={handleSubmit}
-						>
-							<Text style={styles.submitButtonText}>Save Address</Text>
-						</TouchableOpacity>
-
-						<TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-							<Text style={styles.cancelButtonText}>Cancel</Text>
-						</TouchableOpacity>
-					</View>
-
-					{errors.length > 0 && (
-						<View style={{ marginTop: 16 }}>
-							<Text style={{ color: "red", fontWeight: "bold" }}>Errors:</Text>
-							{errors.map((error, index) => (
-								<Text key={index} style={{ color: "red" }}>
-									- {error}
-								</Text>
-							))}
-						</View>
-					)}
-				</ScrollView>
+					</ScrollView>
+				)}
 			</SafeAreaView>
 		</Modal>
 	);
@@ -268,5 +351,49 @@ const styles = StyleSheet.create({
 	cancelButtonText: {
 		color: "#666",
 		fontSize: 16,
+	},
+	loadingText: {
+		fontSize: 16,
+		color: "#666",
+		textAlign: "center",
+	},
+	permissionContainer: {
+		backgroundColor: "#fff",
+		padding: 24,
+		borderRadius: 12,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 2,
+	},
+	icon: {
+		marginBottom: 16,
+	},
+	permissionTitle: {
+		fontSize: 20,
+		fontWeight: "bold",
+		color: "#333",
+		marginBottom: 12,
+		textAlign: "center",
+	},
+	permissionText: {
+		fontSize: 16,
+		color: "#666",
+		textAlign: "center",
+		marginBottom: 20,
+		lineHeight: 24,
+	},
+	permissionButton: {
+		backgroundColor: "#2196f3",
+		paddingVertical: 12,
+		paddingHorizontal: 24,
+		borderRadius: 8,
+	},
+	permissionButtonText: {
+		color: "#fff",
+		fontSize: 16,
+		fontWeight: "bold",
 	},
 });

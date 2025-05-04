@@ -1,4 +1,6 @@
+import { useStorageState } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useSession } from "@/lib/SessionProvider";
 import useCartStore from "@/lib/store/cart-store";
 import useToastStore from "@/lib/store/toast-store";
 import { Product } from "@/lib/types";
@@ -26,9 +28,12 @@ export default function AddButton({ data }: Props) {
 	const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
 	const removeItem = useCartStore((state) => state.removeItem);
 
+	const { session } = useSession();
+	const [[_, username]] = useStorageState("username");
+
 	function addToCart() {
-		if (data) {
-			addItemToCart(data);
+		if (data && username && session) {
+			addItemToCart(data, username || "", session);
 			showToast("Added to Cart!");
 		}
 	}
@@ -62,17 +67,29 @@ export default function AddButton({ data }: Props) {
 				<>
 					<View style={styles.itemQuantity}>
 						{quantityInCart === 1 ? (
-							<TouchableOpacity onPress={() => removeItem(productId)}>
+							<TouchableOpacity
+								onPress={() =>
+									removeItem(productId, username || "", session || "")
+								}
+							>
 								<MaterialIcons name="delete" size={18} />
 							</TouchableOpacity>
 						) : (
-							<TouchableOpacity onPress={() => decreaseQuantity(productId)}>
+							<TouchableOpacity
+								onPress={() =>
+									decreaseQuantity(productId, username || "", session || "")
+								}
+							>
 								<MaterialIcons name="remove" size={18} />
 							</TouchableOpacity>
 						)}
 
 						<Text style={styles.quantity}>{quantityInCart}</Text>
-						<TouchableOpacity onPress={() => increaseQuantity(productId)}>
+						<TouchableOpacity
+							onPress={() =>
+								increaseQuantity(productId, username || "", session || "")
+							}
+						>
 							<MaterialIcons name="add" size={18} />
 						</TouchableOpacity>
 					</View>

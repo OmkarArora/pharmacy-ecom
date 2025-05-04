@@ -56,7 +56,7 @@ export default function usePlaceOrder() {
 			});
 		},
 		onSuccess: () => {
-			clearCart();
+			clearCart(username || "", session || "");
 			showToast("Order placed successfully!");
 
 			setTimeout(() => {
