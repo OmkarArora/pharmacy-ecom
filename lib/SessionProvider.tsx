@@ -105,10 +105,11 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		setStatus("loading");
 		setAuthDetails({ email, password });
 		try {
+			// "custom:userType": "customer"
 			const data = await Auth.signUp({
 				username: email,
 				password,
-				attributes: { email }, // You can add more attributes like name, phone_number, etc.
+				attributes: { email },
 			});
 			if (data.userConfirmed) {
 				signIn(email, password);
