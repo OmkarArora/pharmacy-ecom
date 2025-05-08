@@ -12,6 +12,8 @@ import {
 	getDiscountedPrice,
 } from "@/lib/functions";
 
+import { useAddressStore } from "@/lib/store/address-store";
+
 export interface OrderType {
 	order_id: string;
 	address_id: string;
@@ -46,6 +48,8 @@ export default function usePlaceOrder() {
 	const clearCart = useCartStore((state) => state.clearCart);
 	const router = useRouter();
 
+	const selectedAddress = useAddressStore((state) => state.selectedAddress);
+
 	const [[_, username]] = useStorageState("username");
 	const { session } = useSession();
 
@@ -61,7 +65,7 @@ export default function usePlaceOrder() {
 
 			setTimeout(() => {
 				router.push("/(tabs)");
-			}, 2000);
+			}, 1000);
 		},
 	});
 
@@ -92,7 +96,7 @@ export default function usePlaceOrder() {
 
 		const orderDetails: OrderType = {
 			order_id: generateOrderId(),
-			address_id: "",
+			address_id: selectedAddress?.address_id || "",
 			delivered_at: null,
 			delivery_partner_id: "",
 			delivery_status: "order_placed",

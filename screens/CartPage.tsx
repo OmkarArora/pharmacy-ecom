@@ -1,11 +1,10 @@
 import AddressForm from "@/components/address/AddressForm";
 import { SelectAddressModal } from "@/components/AddressWidget";
-import FullScreenLoader from "@/components/FullScreenLoader";
 import { PrimaryButton } from "@/components/ui/buttons";
 import { useStorageState } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { getDiscountedPrice } from "@/lib/functions";
-import useCart from "@/lib/hooks/cart/useCart";
+
 import usePlaceOrder from "@/lib/hooks/order/usePlaceOrder";
 import { useSession } from "@/lib/SessionProvider";
 import { useAddressStore } from "@/lib/store/address-store";
@@ -41,6 +40,8 @@ export default function CartPage() {
 		useState(false);
 	const [isFormVisible, setIsFormVisible] = useState(false);
 	// ----------------
+
+	const { placeOrder, isPending: isPlaceOrderPending } = usePlaceOrder();
 
 	const [priceToPay, fullNoDiscountPrice] = useMemo(() => {
 		let actualTotal = 0;
@@ -199,7 +200,10 @@ export default function CartPage() {
 					</View>
 
 					{!!selectedAddress ? (
-						<Text>Delivering to - {selectedAddress.type}</Text>
+						<Text>
+							Delivering to - {selectedAddress.type}, {selectedAddress.line1},{" "}
+							{selectedAddress.line2}, {selectedAddress.city}
+						</Text>
 					) : (
 						<TouchableOpacity
 							style={[
@@ -218,9 +222,15 @@ export default function CartPage() {
 								styles.addAddressButton,
 								{ backgroundColor: primaryColor },
 							]}
-							onPress={() => router.push("/checkout")}
+							onPress={() => {
+								// router.push("/checkout")
+								placeOrder();
+							}}
+							disabled={isPlaceOrderPending}
 						>
-							<Text style={styles.addAddressText}>CHECKOUT</Text>
+							<Text style={styles.addAddressText}>
+								{isPlaceOrderPending ? "PLACING ORDER..." : "PLACE ORDER"}
+							</Text>
 						</TouchableOpacity>
 					)}
 				</View>
@@ -241,6 +251,8 @@ export default function CartPage() {
 				isVisible={isFormVisible}
 				onClose={() => setIsFormVisible(false)}
 			/>
+
+			{/* <FullScreenLoader visible={isPlaceOrderPending} text="Placing order..." /> */}
 		</SafeAreaView>
 	);
 }
