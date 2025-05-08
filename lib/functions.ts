@@ -1,6 +1,16 @@
+/**
+ * Rounds a number to two decimal places.
+ *
+ * @param num The number to round.
+ * @returns The rounded number.
+ */
+export function roundToTwoDecimals(num: number): number {
+	return Math.round(num * 100) / 100;
+}
+
 export function getDiscountedPrice(price: number, discount: number) {
 	if (discount === 0) return price;
-	return Math.round(price - (price * discount) / 100);
+	return roundToTwoDecimals(Math.round(price - (price * discount) / 100));
 }
 
 export function generateOrderId() {

@@ -10,6 +10,7 @@ import {
 	generateOrderId,
 	generateTransactionId,
 	getDiscountedPrice,
+	roundToTwoDecimals,
 } from "@/lib/functions";
 
 import { useAddressStore } from "@/lib/store/address-store";
@@ -82,7 +83,9 @@ export default function usePlaceOrder() {
 				) * (productCartItem.quantity || 1);
 		});
 
-		return [actualTotal, preDiscountTotal, preDiscountTotal - actualTotal];
+		return [actualTotal, preDiscountTotal, preDiscountTotal - actualTotal].map(
+			(item) => roundToTwoDecimals(item)
+		);
 	}
 
 	function placeOrder() {

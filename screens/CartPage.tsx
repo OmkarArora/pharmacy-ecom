@@ -3,7 +3,7 @@ import { SelectAddressModal } from "@/components/AddressWidget";
 import { PrimaryButton } from "@/components/ui/buttons";
 import { useStorageState } from "@/hooks/useStorageState";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { getDiscountedPrice } from "@/lib/functions";
+import { getDiscountedPrice, roundToTwoDecimals } from "@/lib/functions";
 
 import usePlaceOrder from "@/lib/hooks/order/usePlaceOrder";
 import { useSession } from "@/lib/SessionProvider";
@@ -170,7 +170,9 @@ export default function CartPage() {
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Discount on MRP</Text>
-							<Text>-₹{fullNoDiscountPrice - priceToPay}</Text>
+							<Text>
+								-₹{roundToTwoDecimals(fullNoDiscountPrice - priceToPay)}
+							</Text>
 						</View>
 						<View style={styles.breakdownRow}>
 							<Text>Coupon Discount</Text>
@@ -194,7 +196,9 @@ export default function CartPage() {
 						</View>
 						<View style={styles.savings}>
 							<Text>
-								You saved ₹{fullNoDiscountPrice - priceToPay} on this order
+								You saved ₹
+								{roundToTwoDecimals(fullNoDiscountPrice - priceToPay)} on this
+								order
 							</Text>
 						</View>
 					</View>
