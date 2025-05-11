@@ -1,20 +1,19 @@
 import Header from "@/components/Header";
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import React from "react";
+import { View, Text, Button, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAddress from "@/lib/hooks/address/useAddress";
 
-
 export default function AddressBookPage() {
+	const { addressQuery } = useAddress();
+	const { data } = addressQuery;
 
-    const {addressQuery} = useAddress();
-	const {data, isLoading} = addressQuery;
-	const renderAddress = ({ item } : any) => (
+	const renderAddress = ({ item }: any) => (
 		<View style={styles.addressItem}>
 			<Text style={styles.label}>
-							{item.line1}
-							{item.line2 ? `, ${item.line2}` : ''}
-							{`, ${item.city}, ${item.state} - ${item.pincode}`}
+				{item.line1}
+				{item.line2 ? `, ${item.line2}` : ""}
+				{`, ${item.city}, ${item.state} - ${item.pincode}`}
 			</Text>
 			<View style={styles.buttonRow}>
 				<Button title="Edit" onPress={() => alert(`Edit ${item.id}`)} />
@@ -22,6 +21,7 @@ export default function AddressBookPage() {
 			</View>
 		</View>
 	);
+
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<View style={{ padding: 16 }}>
@@ -33,7 +33,10 @@ export default function AddressBookPage() {
 						keyExtractor={(item) => item.address_id.toString()}
 						renderItem={renderAddress}
 					/>
-					<Button title="Add New Address" onPress={() => alert('Add Address')} />
+					<Button
+						title="Add New Address"
+						onPress={() => alert("Add Address")}
+					/>
 				</View>
 			</View>
 		</SafeAreaView>
