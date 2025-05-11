@@ -38,7 +38,6 @@ export default function useAddress() {
 						headers: { Authorization: `${session}` },
 					}
 				);
-				console.log('response', response)
 				if (response.data) {
 					return response.data as Address[];
 				}

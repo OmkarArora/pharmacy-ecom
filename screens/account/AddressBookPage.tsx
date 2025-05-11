@@ -9,7 +9,6 @@ export default function AddressBookPage() {
 
     const {addressQuery} = useAddress();
 	const {data, isLoading} = addressQuery;
-	console.log('data', data)
 	const renderAddress = ({ item } : any) => (
 		<View style={styles.addressItem}>
 			<Text style={styles.label}>
