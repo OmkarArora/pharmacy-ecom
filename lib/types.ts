@@ -22,6 +22,22 @@ export type Product = {
 	rating_count?: number;
 };
 
+export type Address = {
+  address_id: string;
+  city: string;
+  created_at: string;
+  is_default: boolean;
+  latitude: number;
+  line1: string;
+  line2: string;
+  longitude: number;
+  pincode: string;
+  state: string;
+  type: string;
+  updated_at: string;
+  user_name: string;
+};
+
 // Type guard for HomePageCategoryItem
 export function isHomePageCategoryItem(
 	item: HomePageItem
