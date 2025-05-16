@@ -125,10 +125,10 @@ export default function ProfilePage() {
 					<TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
-							router.push("/random");
+							router.push("/payment-screen");
 						}}
 					>
-						<Text style={styles.sectionText}>Random</Text>
+						<Text style={styles.sectionText}>Payment Screen</Text>
 					</TouchableOpacity>
 					
 				</View>
