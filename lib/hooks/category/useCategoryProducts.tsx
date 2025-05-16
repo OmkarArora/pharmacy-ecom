@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "../../values";
 import { Product } from "@/lib/types";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 
 export default function useCategoryProducts(categoryId: string) {
 	const { session } = useSession();
@@ -14,7 +14,7 @@ export default function useCategoryProducts(categoryId: string) {
 				const response = await axios.get<{ products: Product[] }>(
 					`${BASE_URL}/products?category=${categoryId}`,
 					{
-						headers: { Authorization: `${session}` },
+						headers: { Authorization: `${await getAccessToken()}` },
 					}
 				);
 				if (response.data.products) {

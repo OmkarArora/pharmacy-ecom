@@ -5,7 +5,7 @@ import useToastStore from "@/lib/store/toast-store";
 import useCartStore from "@/lib/store/cart-store";
 import { useRouter } from "expo-router";
 import { useStorageState } from "@/hooks/useStorageState";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 import {
 	generateOrderId,
 	generateTransactionId,
@@ -55,9 +55,9 @@ export default function usePlaceOrder() {
 	const { session } = useSession();
 
 	const mutation = useMutation({
-		mutationFn: (data: OrderType) => {
+		mutationFn: async (data: OrderType) => {
 			return axios.post(`${ORDERS_BASE_URL}/create-order`, data, {
-				headers: { Authorization: `${session}` },
+				headers: { Authorization: `${await getAccessToken()}` },
 			});
 		},
 		onSuccess: () => {

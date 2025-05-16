@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "../../values";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 
 export type CategoryType = {
 	name: string;
@@ -20,7 +20,7 @@ export default function useCategories() {
 				const response = await axios.get<{ categories: CategoryType[] }>(
 					`${BASE_URL}/categories`,
 					{
-						headers: { Authorization: `${session}` },
+						headers: { Authorization: `${await getAccessToken()}` },
 					}
 				);
 				if (response.data.categories) {
