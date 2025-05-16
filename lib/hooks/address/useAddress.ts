@@ -1,5 +1,5 @@
 import { useStorageState } from "@/hooks/useStorageState";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 import { Address } from "@/lib/store/address-store";
 import { ADDRESS_BASE_URL } from "@/lib/values";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -10,19 +10,19 @@ export default function useAddress() {
 	const { session } = useSession();
 
 	const addAddressMutation = useMutation({
-		mutationFn: (data: Address) => {
+		mutationFn: async (data: Address) => {
 			return axios.put(`${ADDRESS_BASE_URL}/address`, data, {
-				headers: { Authorization: `${session}` },
+				headers: { Authorization: `${await getAccessToken()}` },
 			});
 		},
 	});
 
 	const deleteAddressMutation = useMutation({
-		mutationFn: (address_id: string) => {
+		mutationFn: async (address_id: string) => {
 			return axios.delete(
 				`${ADDRESS_BASE_URL}/address?address_id=${address_id}`,
 				{
-					headers: { Authorization: `${session}` },
+					headers: { Authorization: `${await getAccessToken()}` },
 				}
 			);
 		},
@@ -35,7 +35,7 @@ export default function useAddress() {
 				const response = await axios.get(
 					`${ADDRESS_BASE_URL}/address?user_name=${username}`,
 					{
-						headers: { Authorization: `${session}` },
+						headers: { Authorization: `${await getAccessToken()}` },
 					}
 				);
 				if (response.data) {

@@ -8,7 +8,6 @@ import {
 } from "react";
 
 import { Auth } from "aws-amplify";
-import { wait } from "./utils";
 
 const AuthContext = createContext<{
 	signIn: (username: string, password: string) => Promise<void>;
@@ -45,6 +44,16 @@ export function useSession() {
 
 	return value;
 }
+export const getAccessToken = async () => {
+  try {
+    const session = await Auth.currentSession(); // Auto-refresh if expired
+    const accessToken = session.getAccessToken().getJwtToken(); // Use this in your Authorization header
+    return accessToken;
+  } catch (error) {
+    console.error('Error getting current session:', error);
+    // Redirect to login if refresh token expired
+  }
+};
 
 type AuthDetails = {
 	email: string;
