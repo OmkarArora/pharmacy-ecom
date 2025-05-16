@@ -122,6 +122,15 @@ export default function ProfilePage() {
 					>
 						<Text style={styles.sectionText}>About the company</Text>
 					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.sectionItem}
+						onPress={() => {
+							router.push("/random");
+						}}
+					>
+						<Text style={styles.sectionText}>Random</Text>
+					</TouchableOpacity>
+					
 				</View>
 
 				<View style={styles.footer}>

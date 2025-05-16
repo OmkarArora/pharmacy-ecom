@@ -1,8 +1,8 @@
 import ScreenWrapper from "@/components/ui/ScreenWrapper";
-import MyOrders from "@/screens/account/MyOrders";
 import PaymentScreen from "@/screens/PaymentScreen";
 
 export default function Page() {
+    console.log('random')
 	return (
 		<ScreenWrapper>
 			<PaymentScreen />

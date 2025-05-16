@@ -1,0 +1,35 @@
+<!-- Save this as assets/razorpay.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body onload="payNow()">
+    <script>
+      function payNow() {
+        var options = {
+          key: 'rzp_test_EcRTe0bVtl5Dyo',
+          amount: window.amount, // 500.00 INR in paise
+          currency: 'INR',
+          name: 'Medipharm',
+          description: 'Test Transaction',
+          image: '',
+          handler: function (response) {
+            window.ReactNativeWebView.postMessage(JSON.stringify(response));
+          },
+          prefill: {
+            name: 'John Doe',
+            email: 'john@example.com',
+            contact: '9999999999',
+          },
+          theme: {
+            color: '#3399cc',
+          },
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+      }
+    </script>
+  </body>
+</html>
