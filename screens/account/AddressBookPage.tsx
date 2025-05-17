@@ -1,12 +1,33 @@
 import Header from "@/components/Header";
-import React from "react";
-import { View, Text, Button, StyleSheet, FlatList } from "react-native";
+import React, {  useState } from "react";
+import { View, Text, Button, StyleSheet, FlatList, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAddress from "@/lib/hooks/address/useAddress";
+import AddressForm from "@/components/address/AddressForm";
+import { Address } from "@/lib/store/address-store"; 
+
 
 export default function AddressBookPage() {
-	const { addressQuery } = useAddress();
+	const { addressQuery, deleteAddressMutation } = useAddress();
 	const { data } = addressQuery;
+	const [isFormVisible, setIsFormVisible] = useState(false);
+	const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+		
+	function onClickDelete(address_id: string) {
+		deleteAddressMutation.mutate(address_id, {
+				onSuccess: () => {
+					addressQuery.refetch();    
+				},
+				onError: (error) => {
+					console.error("Delete failed:", error);
+					Alert.alert("Error", "Failed to delete the address. Please try again.");
+				},
+			});
+	}
+	const handleEdit = (address: Address) => {
+		setEditingAddress(address);   
+		setIsFormVisible(true); 
+	};
 
 	const renderAddress = ({ item }: any) => (
 		<View style={styles.addressItem}>
@@ -16,8 +37,8 @@ export default function AddressBookPage() {
 				{`, ${item.city}, ${item.state} - ${item.pincode}`}
 			</Text>
 			<View style={styles.buttonRow}>
-				<Button title="Edit" onPress={() => alert(`Edit ${item.id}`)} />
-				<Button title="Delete" onPress={() => alert(`Delete ${item.id}`)} />
+				<Button title="Edit" onPress={() => handleEdit(item)} />
+				<Button title="Delete" onPress={() =>  onClickDelete(item.address_id)} />
 			</View>
 		</View>
 	);
@@ -35,9 +56,20 @@ export default function AddressBookPage() {
 					/>
 					<Button
 						title="Add New Address"
-						onPress={() => alert("Add Address")}
+						onPress={() => setIsFormVisible(true)}
 					/>
 				</View>
+				<AddressForm
+					isVisible={isFormVisible}
+					onClose={() => {
+						setIsFormVisible(false);
+						setEditingAddress(null);
+					}}
+					initialData={editingAddress}
+					onSuccess={() => {
+						addressQuery.refetch(); 
+					}}
+				/>
 			</View>
 		</SafeAreaView>
 	);

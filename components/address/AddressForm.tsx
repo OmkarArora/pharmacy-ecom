@@ -21,14 +21,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useStorageState } from "@/hooks/useStorageState";
 import useAddress from "@/lib/hooks/address/useAddress";
-import { MapPin, Plus, CircleAlert as AlertCircle } from "lucide-react-native";
+import { CircleAlert as AlertCircle } from "lucide-react-native";
 
 export default function AddressForm({
 	isVisible,
 	onClose,
+	onSuccess,
+	initialData
 }: {
 	isVisible: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
+	initialData?: Address | null
 }) {
 	const [[_, username]] = useStorageState("username");
 
@@ -44,6 +48,20 @@ export default function AddressForm({
 	useEffect(() => {
 		if (!!username) setFormData((prev) => ({ ...prev, user_name: username }));
 	}, [username]);
+	useEffect(() => {
+		if (initialData) {
+			setFormData(initialData);
+		}
+	}, [initialData, isVisible]);
+
+	useEffect(() => {
+		if (!isVisible) {
+			// Reset form when modal closes
+			setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
+			setErrors([]);
+			setShowMap(false);
+		}
+	}, [isVisible]);
 
 	const primaryColor = useThemeColor({}, "primary");
 
@@ -104,10 +122,21 @@ export default function AddressForm({
 
 	const handleSubmit = () => {
 		addAddress(formData);
-		addAddressMutation.mutate({ ...formData, is_default: true });
-		setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
-		setShowMap(false);
-		onClose();
+		addAddressMutation.mutate(
+			{ ...formData, is_default: true },
+			{
+			onSuccess: () => {
+				setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
+				setShowMap(false);
+				onClose();     // Close the modal
+				onSuccess?.(); // Notify parent to refetch addresses
+			},
+			onError: (error) => {
+				console.error("Failed to save address:", error);
+				Alert.alert("Error", "Failed to save the address. Please try again.");
+			},
+		}
+		);
 	};
 
 	return (

@@ -36,8 +36,7 @@ export default function CartPage() {
 
 	// Address controls
 	const { selectedAddress } = useAddressStore();
-	const [isSelectModalVisible, setIsSelectAddressModalVisible] =
-		useState(false);
+	const [isSelectModalVisible, setIsSelectAddressModalVisible] = useState(false);
 	const [isFormVisible, setIsFormVisible] = useState(false);
 	// ----------------
 
@@ -245,11 +244,10 @@ export default function CartPage() {
 
 			<SelectAddressModal
 				isVisible={isSelectModalVisible}
+				isFormVisible={isFormVisible}
 				setIsVisible={setIsSelectAddressModalVisible}
-				onClickAdd={() => {
-					setIsSelectAddressModalVisible(false);
-					setIsFormVisible(true);
-				}}
+				setIsFormVisible={setIsFormVisible}
+				setIsSelectModalVisible={setIsSelectAddressModalVisible}
 			/>
 			<AddressForm
 				isVisible={isFormVisible}

@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
+	Alert,
 	Modal,
 	ScrollView,
 	StyleSheet,
@@ -10,9 +11,9 @@ import {
 import CartButton from "./CartButton";
 import { useRouter } from "expo-router";
 import { useAddressStore } from "@/lib/store/address-store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddressForm from "./address/AddressForm";
-import { Delete, DeleteIcon, MapPin, Plus, Trash } from "lucide-react-native";
+import { MapPin, Plus, Trash } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import useAddress from "@/lib/hooks/address/useAddress";
@@ -23,6 +24,7 @@ export default function AddressWidget() {
 	const { selectedAddress } = useAddressStore();
 	const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
 	const [isFormVisible, setIsFormVisible] = useState(false);
+	const { addressQuery } = useAddress();	
 
 	return (
 		<View style={styles.container}>
@@ -64,15 +66,19 @@ export default function AddressWidget() {
 
 			<SelectAddressModal
 				isVisible={isSelectModalVisible}
+				isFormVisible={isFormVisible}
 				setIsVisible={setIsSelectModalVisible}
-				onClickAdd={() => {
-					setIsSelectModalVisible(false);
-					setIsFormVisible(true);
-				}}
+				setIsFormVisible={setIsFormVisible}
+				setIsSelectModalVisible={setIsSelectModalVisible}
 			/>
 			<AddressForm
 				isVisible={isFormVisible}
-				onClose={() => setIsFormVisible(false)}
+				onClose={() => {
+					setIsFormVisible(false)
+				}}
+				onSuccess={() => {
+					addressQuery.refetch();
+				}}	
 			/>
 		</View>
 	);
@@ -80,23 +86,41 @@ export default function AddressWidget() {
 
 export function SelectAddressModal({
 	isVisible,
+	isFormVisible,
 	setIsVisible,
-	onClickAdd,
+	setIsSelectModalVisible,
+	setIsFormVisible
 }: {
 	isVisible: boolean;
+	isFormVisible: boolean;
 	setIsVisible: (val: boolean) => void;
-	onClickAdd: () => void;
+	setIsSelectModalVisible: (val: boolean) => void;
+	setIsFormVisible: (val: boolean) => void;
 }) {
-	const { addresses, selectedAddress, selectAddress } = useAddressStore();
+	const { selectedAddress, selectAddress } = useAddressStore();
 	const primaryColor = useThemeColor({}, "primary");
+	const { addressQuery, deleteAddressMutation } = useAddress();	
+	const { data } = addressQuery;
 
-	const { deleteAddressMutation } = useAddress();
 	const removeAddress = useAddressStore((state) => state.removeAddress);
 
 	function onClickDelete(address_id: string) {
-		deleteAddressMutation.mutate(address_id);
-		removeAddress(address_id);
-	}
+	deleteAddressMutation.mutate(address_id, {
+		onSuccess: () => {
+			removeAddress(address_id);    
+			addressQuery.refetch();    
+		},
+		onError: (error) => {
+			console.error("Delete failed:", error);
+			Alert.alert("Error", "Failed to delete the address. Please try again.");
+		},
+	});
+}
+
+	function onClickAdd(){
+		setIsSelectModalVisible(false);
+		setIsFormVisible(true);
+	} 
 
 	return (
 		<Modal
@@ -107,11 +131,11 @@ export function SelectAddressModal({
 			<SafeAreaView style={{ flex: 1 }}>
 				<View style={styles.modalContainer}>
 					<Text style={styles.modalTitle}>
-						{addresses.length === 0 ? "Add a new address" : "Select Address"}
+						{data?.length === 0 ? "Add a new address" : "Select Address"}
 					</Text>
 
 					<ScrollView style={styles.addressList}>
-						{addresses.map((address) => (
+						{data?.map((address) => (
 							<View
 								style={[
 									styles.addressItem,
