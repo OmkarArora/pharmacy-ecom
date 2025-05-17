@@ -11,7 +11,7 @@ export default function useAddress() {
 
 	const addAddressMutation = useMutation({
 		mutationFn: async (data: Address) => {
-			return axios.put(`${ADDRESS_BASE_URL}/address`, data, {
+			return axios.put(`${ADDRESS_BASE_URL}/address`, {...data, user_name : username}, {
 				headers: { Authorization: `${await getAccessToken()}` },
 			});
 		},
