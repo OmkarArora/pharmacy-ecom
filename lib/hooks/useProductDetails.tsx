@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "../values";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 import { Product } from "../types";
 import { productsDB } from "../fake-data";
 
@@ -19,7 +19,7 @@ export default function useProductDetails(productId: string) {
 				if (!!product) return product;
 
 				const response = await axios.get(`${BASE_URL}/products/${productId}`, {
-					headers: { Authorization: `${session}` },
+					headers: { Authorization: `${await getAccessToken()}` },
 				});
 
 				if (response.data) {
