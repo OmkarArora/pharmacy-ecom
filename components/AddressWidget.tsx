@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
+	Alert,
 	Modal,
 	ScrollView,
 	StyleSheet,
@@ -12,7 +13,7 @@ import { useRouter } from "expo-router";
 import { useAddressStore } from "@/lib/store/address-store";
 import { useEffect, useState } from "react";
 import AddressForm from "./address/AddressForm";
-import { Delete, DeleteIcon, MapPin, Plus, Trash } from "lucide-react-native";
+import { MapPin, Plus, Trash } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import useAddress from "@/lib/hooks/address/useAddress";
@@ -23,6 +24,7 @@ export default function AddressWidget() {
 	const { selectedAddress } = useAddressStore();
 	const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
 	const [isFormVisible, setIsFormVisible] = useState(false);
+	const { addressQuery } = useAddress();	
 
 	return (
 		<View style={styles.container}>
@@ -74,6 +76,9 @@ export default function AddressWidget() {
 				onClose={() => {
 					setIsFormVisible(false)
 				}}
+				onSuccess={() => {
+					addressQuery.refetch();
+				}}	
 			/>
 		</View>
 	);
@@ -100,20 +105,22 @@ export function SelectAddressModal({
 	const removeAddress = useAddressStore((state) => state.removeAddress);
 
 	function onClickDelete(address_id: string) {
-		deleteAddressMutation.mutate(address_id);
-		removeAddress(address_id);
-		addressQuery.refetch();
-	}
+	deleteAddressMutation.mutate(address_id, {
+		onSuccess: () => {
+			removeAddress(address_id);    
+			addressQuery.refetch();    
+		},
+		onError: (error) => {
+			console.error("Delete failed:", error);
+			Alert.alert("Error", "Failed to delete the address. Please try again.");
+		},
+	});
+}
+
 	function onClickAdd(){
 		setIsSelectModalVisible(false);
 		setIsFormVisible(true);
 	} 
-	useEffect(() => {
-		if(!isFormVisible){
-			addressQuery.refetch();
-		}
-		
-	}, [isVisible])
 
 	return (
 		<Modal

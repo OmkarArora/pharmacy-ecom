@@ -1,12 +1,20 @@
 import Header from "@/components/Header";
-import React from "react";
+import React, {  useState } from "react";
 import { View, Text, Button, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAddress from "@/lib/hooks/address/useAddress";
+import AddressForm from "@/components/address/AddressForm";
 
 export default function AddressBookPage() {
-	const { addressQuery } = useAddress();
+	const { addressQuery, deleteAddressMutation } = useAddress();
 	const { data } = addressQuery;
+	const [isFormVisible, setIsFormVisible] = useState(false);
+		
+	function onClickDelete(address_id: string) {
+		console.log('hello');
+		deleteAddressMutation.mutate(address_id);
+		addressQuery.refetch();
+	}
 
 	const renderAddress = ({ item }: any) => (
 		<View style={styles.addressItem}>
@@ -16,8 +24,8 @@ export default function AddressBookPage() {
 				{`, ${item.city}, ${item.state} - ${item.pincode}`}
 			</Text>
 			<View style={styles.buttonRow}>
-				<Button title="Edit" onPress={() => alert(`Edit ${item.id}`)} />
-				<Button title="Delete" onPress={() => alert(`Delete ${item.id}`)} />
+				<Button title="Edit" onPress={() => alert(`Edit ${item.address_id}`)} />
+				<Button title="Delete" onPress={() =>  onClickDelete(item.address_id)} />
 			</View>
 		</View>
 	);
@@ -35,9 +43,18 @@ export default function AddressBookPage() {
 					/>
 					<Button
 						title="Add New Address"
-						onPress={() => alert("Add Address")}
+						onPress={() => setIsFormVisible(true)}
 					/>
 				</View>
+				<AddressForm
+					isVisible={isFormVisible}
+					onClose={() => {
+						setIsFormVisible(false);
+					}}
+					onSuccess={() => {
+						addressQuery.refetch(); 
+					}}
+				/>
 			</View>
 		</SafeAreaView>
 	);
