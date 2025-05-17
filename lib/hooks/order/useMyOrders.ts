@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL, ORDERS_BASE_URL } from "../../values";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 import { useStorageState } from "@/hooks/useStorageState";
 import { OrderType } from "./usePlaceOrder";
 
@@ -23,7 +23,7 @@ export default function useMyOrders() {
 				const response = await axios.get<{ orders: OrderType[] }>(
 					`${ORDERS_BASE_URL}/get-orders-by-user?user_name=${username}`,
 					{
-						headers: { Authorization: `${session}` },
+						headers: { Authorization: `${await getAccessToken()}` },
 					}
 				);
 

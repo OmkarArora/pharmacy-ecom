@@ -1,5 +1,5 @@
 import { useStorageState } from "@/hooks/useStorageState";
-import { useSession } from "@/lib/SessionProvider";
+import { getAccessToken, useSession } from "@/lib/SessionProvider";
 import { ORDERS_BASE_URL } from "@/lib/values";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -15,7 +15,7 @@ export default function useCart() {
 				const response = await axios.get(
 					`${ORDERS_BASE_URL}/get-cart?user_name=${username}`,
 					{
-						headers: { Authorization: `${session}` },
+						headers: { Authorization: `${await getAccessToken()}` },
 					}
 				);
 
@@ -45,7 +45,7 @@ export async function addItemToCart(
 	session: string
 ) {
 	return axios.post(`${ORDERS_BASE_URL}/add-cart`, data, {
-		headers: { Authorization: `${session}` },
+		headers: { Authorization: `${await getAccessToken()}` },
 	});
 }
 
@@ -57,7 +57,7 @@ export async function deleteItemFromCart(
 	return axios.delete(
 		`${ORDERS_BASE_URL}/delete-item-cart?user_name=${user_name}product_id=${product_id}`,
 		{
-			headers: { Authorization: `${session}` },
+			headers: { Authorization: `${await getAccessToken()}` },
 		}
 	);
 }
