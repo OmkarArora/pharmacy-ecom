@@ -8,11 +8,12 @@ import {
 	View,
 	TouchableOpacity,
 	ScrollView,
+	Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { productsDB } from "@/lib/fake-data";
 import AddressWidget from "@/components/AddressWidget";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -22,15 +23,56 @@ import CategoryCard from "@/components/CategoryCard";
 import useCategories from "@/lib/hooks/category/useCategories";
 
 const products: Product[] = [...productsDB];
+const bannerImages = [
+	"https://www.netmeds.com/images/cms/offers/1606731039_Landing_Page1-pricedrop.jpg",
+	"https://www.netmeds.com/images/cms/wysiwyg/offers/mrp-ka-the-end-nms20/2018/04/16b/web/lp.jpg?v=25",
+	"https://img.freepik.com/free-vector/flat-design-healthcare-service-sale-banner_23-2150766982.jpg",
+];
 
 export default function HomePage() {
 	const router = useRouter();
+	const { width } = Dimensions.get("window");
+	const bannerRef = useRef<FlatList>(null);
+	const [activeSlide, setActiveSlide] = useState(0);
+	const activeSlideRef = useRef(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			let nextIndex = activeSlideRef.current + 1;
+			if (nextIndex >= bannerImages.length) {
+				nextIndex = 0;
+			}
+	
+			bannerRef.current?.scrollToIndex({
+				index: nextIndex,
+				animated: true,
+			});
+	
+			activeSlideRef.current = nextIndex; // update ref
+			setActiveSlide(nextIndex); // update state to trigger dot update
+		}, 2500);
+	
+		return () => clearInterval(interval);
+	}, []);
+
+	const renderBanner = ({ item }: { item: string }) => (
+		<Image
+			source={item}
+			style={{
+				width,
+				aspectRatio: 312 / 176,
+			}}
+		/>
+	);
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+				
+			<View style={{ backgroundColor: "#E6F5FB", paddingHorizontal: 12}}>
 				<AddressWidget />
-
+			</View>
+				
 				<Spacer height={10} />
 
 				<TouchableOpacity
@@ -51,9 +93,9 @@ export default function HomePage() {
 					</Text>
 				</TouchableOpacity>
 
-				<Spacer height={20} />
+				{/* <Spacer height={20} /> */}
 
-				<ScrollView
+				{/* <ScrollView
 					horizontal
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={{ gap: 2 }}
@@ -65,23 +107,47 @@ export default function HomePage() {
 					<ServiceCard heading="Medicines" />
 					<ServiceCard heading="Medicines" />
 					<ServiceCard heading="Medicines" />
-				</ScrollView>
+				</ScrollView> */}
 
 				<Spacer height={10} />
 
-				<Image
-					source={"https://picsum.photos/id/123/400"}
-					style={{
-						// width: 300,
-						// height: 300,
-						aspectRatio: 312 / 176,
-						// borderRadius: 0,
-						// minHeight: 176,
-						// backgroundColor: "red",
-						width: "100%",
-						// height: 400,
+				{/* 🔄 Image Slider */}
+				<FlatList
+					ref={bannerRef}
+					data={bannerImages}
+					renderItem={renderBanner}
+					keyExtractor={(item, index) => `${item}-${index}`}
+					horizontal
+					pagingEnabled
+					showsHorizontalScrollIndicator={false}
+					initialScrollIndex={0}
+					getItemLayout={(_, index) => ({
+						length: width,
+						offset: width * index,
+						index,
+					})}
+					onMomentumScrollEnd={(event) => {
+						const index = Math.floor(event.nativeEvent.contentOffset.x / width);
+						activeSlideRef.current = index;
+						setActiveSlide(index);
 					}}
 				/>
+
+				{/* Pagination dots */}
+				<View style={{ flexDirection: "row", justifyContent: "center", marginTop: 6 }}>
+					{bannerImages.map((_, index) => (
+						<View
+							key={index}
+							style={{
+								width: 8,
+								height: 8,
+								borderRadius: 4,
+								backgroundColor: activeSlide === index ? "#4F46E5" : "#D1D5DB",
+								marginHorizontal: 4,
+							}}
+						/>
+					))}
+				</View>
 
 				<Spacer height={12} />
 
@@ -89,7 +155,17 @@ export default function HomePage() {
 
 				<Spacer height={5} />
 
-				<CategoiesContainer />
+				{/* 🔄 Horizontal ScrollView for categories */}
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={{
+						paddingHorizontal: 10,
+						gap: 10,
+					}}
+				>
+					<CategoiesContainer />
+				</ScrollView>
 
 				<Spacer height={12} />
 
@@ -111,10 +187,9 @@ export default function HomePage() {
 					{products.map((item) => (
 						<View
 							style={{
-								flexBasis: "46%", // Use a percentage to allow for margins
-								flexGrow: 0, // Prevent the item from growing
-								flexShrink: 0, // Prevent the item from shrinking
-								// backgroundColor: "#4CAF50",
+								flexBasis: "46%",
+								flexGrow: 0,
+								flexShrink: 0,
 								alignItems: "center",
 								justifyContent: "center",
 							}}
@@ -167,9 +242,8 @@ function CategoiesContainer() {
 	return (
 		<View
 			style={{
-				gap: 5,
-				justifyContent: "center",
 				flexDirection: "row",
+				gap: 10,
 			}}
 		>
 			{data.map((item) => (
@@ -178,6 +252,7 @@ function CategoiesContainer() {
 		</View>
 	);
 }
+
 
 // function HomePageOld() {
 // 	const { signOut } = useSession();

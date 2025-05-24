@@ -33,7 +33,7 @@ export default function AddressWidget() {
 				// onPress={() => router.push("/address-book")}
 				onPress={() => setIsSelectModalVisible(true)}
 			>
-				<Ionicons name="location-outline" size={20} color="black" />
+				<Ionicons name="location-outline" size={30} color="black" />
 			</TouchableOpacity>
 			<TouchableOpacity
 				style={styles.addressContainer}
@@ -41,13 +41,13 @@ export default function AddressWidget() {
 				onPress={() => setIsSelectModalVisible(true)}
 			>
 				<Text
-					style={{ color: "#c2c2c2", fontSize: 12, fontWeight: "semibold" }}
+					style={{ color: "#000000", fontSize: 12, fontWeight: "bold" }}
 				>
 					Delivery Address
 				</Text>
 				{!!selectedAddress ? (
 					<Text
-						style={{ color: "#838383", fontSize: 16, fontWeight: "semibold" }}
+						style={{ color: "#000000", fontSize: 16, fontWeight: "semibold" }}
 					>
 						{selectedAddress?.type}
 						{!!selectedAddress?.city && " - "}
@@ -55,7 +55,7 @@ export default function AddressWidget() {
 					</Text>
 				) : (
 					<Text
-						style={{ color: "#838383", fontSize: 16, fontWeight: "semibold" }}
+						style={{ color: "#000000", fontSize: 16, fontWeight: "semibold" }}
 					>
 						Add address
 					</Text>
@@ -207,8 +207,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 9,
 	},
 	locationIcon: {
-		width: 32,
-		height: 32,
+		width: 50,
+		height: 50,
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: "#eaf6fa",

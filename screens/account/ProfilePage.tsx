@@ -104,14 +104,14 @@ export default function ProfilePage() {
 							router.push("/manage-payments");
 						}}
 					>
-						<Text style={styles.sectionText}>Manage Payment</Text>
+						{/* <Text style={styles.sectionText}>Manage Payment</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
 							router.push("/address-book");
 						}}
-					>
+					> */}
 						<Text style={styles.sectionText}>Address Book</Text>
 					</TouchableOpacity>
 					<TouchableOpacity

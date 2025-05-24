@@ -37,14 +37,16 @@ export default function ProductCard({ data }: { data: Product }) {
 				/>
 				<Text
 					style={{
-						fontWeight: "semibold",
+						fontWeight: "600", // use 600 instead of "semibold" for consistency
 						color: "#808080",
 						fontSize: 14,
-
 						marginTop: 7,
+						height: 14 * 4 * 1.2,  // approx lineHeight(14) * maxLines(4) * lineSpacing(1.2)
+						lineHeight: 14 * 1.2,
 					}}
 					numberOfLines={4}
-				>
+					ellipsizeMode="tail"
+					>
 					{name || "Everherb Giloy Tulsi Juice-Body Defence System"}
 				</Text>
 
