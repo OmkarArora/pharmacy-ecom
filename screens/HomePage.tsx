@@ -1,6 +1,5 @@
 import ProductCard from "@/components/product/ProductCard";
 
-import { Product } from "@/lib/types";
 import {
 	FlatList,
 	StyleSheet,
@@ -14,15 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useRef, useState, useEffect } from "react";
-import { productsDB } from "@/lib/fake-data";
 import AddressWidget from "@/components/AddressWidget";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import ServiceCard from "@/components/ServiceCard";
 import Spacer from "@/components/ui/spacer";
 import CategoryCard from "@/components/CategoryCard";
 import useCategories from "@/lib/hooks/category/useCategories";
+import useCategoryProducts from "@/lib/hooks/category/useCategoryProducts";
 
-const products: Product[] = [...productsDB];
 const bannerImages = [
 	"https://www.netmeds.com/images/cms/offers/1606731039_Landing_Page1-pricedrop.jpg",
 	"https://www.netmeds.com/images/cms/wysiwyg/offers/mrp-ka-the-end-nms20/2018/04/16b/web/lp.jpg?v=25",
@@ -35,7 +32,8 @@ export default function HomePage() {
 	const bannerRef = useRef<FlatList>(null);
 	const [activeSlide, setActiveSlide] = useState(0);
 	const activeSlideRef = useRef(0);
-
+	const { data: products } = useCategoryProducts("7");
+	
 	useEffect(() => {
 		const interval = setInterval(() => {
 			let nextIndex = activeSlideRef.current + 1;
@@ -184,7 +182,7 @@ export default function HomePage() {
 						padding: 0,
 					}}
 				>
-					{products.map((item) => (
+					{products?.map((item) => (
 						<View
 							style={{
 								flexBasis: "46%",
@@ -253,162 +251,6 @@ function CategoiesContainer() {
 	);
 }
 
-
-// function HomePageOld() {
-// 	const { signOut } = useSession();
-// 	const router = useRouter();
-
-// 	const renderCard = ({ item }: { item: HomePageItem }) => {
-// 		const isProductType = isProduct(item);
-
-// 		// let renderData = isProductType
-// 		// 	? (item as Product)
-// 		// 	: (item as HomePageCategoryItem);
-
-// 		return (
-// 			<TouchableOpacity
-// 				style={styles.card}
-// 				onPress={() => {
-// 					if (item.category === "browseByHealthCondition") {
-// 						// navigation.navigate('ShopPage', { healthCondition: item.title })
-// 						router.push("/products/2");
-
-// 						console.error("Route not handled");
-// 						// router.push(`/ShopPage`)
-// 					} else {
-// 						router.push(`/products/${item.productId}`);
-// 					}
-// 				}}
-// 			>
-// 				<Image
-// 					source={item.image}
-// 					style={styles.cardImage}
-// 					contentFit="contain"
-// 				/>
-// 				<Text style={styles.cardTitle} numberOfLines={2}>
-// 					{item.name}
-// 				</Text>
-
-// 				{isProductType && item.price !== null && item.price !== undefined && (
-// 					<>
-// 						<Text style={styles.cardPrice}>₹{item.price.toFixed(2)}</Text>
-// 						{item.price !== null && item.price !== undefined && (
-// 							<Text style={styles.cardOriginalPrice}>
-// 								₹{item.price.toFixed(2)}
-// 							</Text>
-// 						)}
-// 						{item.discount !== null && item.discount !== undefined && (
-// 							<Text style={styles.cardDiscount}>{item.discount}% off</Text>
-// 						)}
-// 					</>
-// 				)}
-// 			</TouchableOpacity>
-// 		);
-// 	};
-
-// 	const renderSectionHeader = ({ section }: { section: any }) => (
-// 		<View>
-// 			<Text style={styles.categoryTitle}>{section.title}</Text>
-// 			{section.promotion && <Text style={styles.promotionTag}>Promotion</Text>}
-// 		</View>
-// 	);
-
-// 	const groupedProducts = [
-// 		{
-// 			title: "Product of the Day",
-// 			data: products.filter(
-// 				(product) => product.category === "Product of the Day"
-// 			),
-// 			horizontal: true,
-// 		},
-// 		{
-// 			title: "Browse by Health Condition",
-// 			data: products.filter(
-// 				(product) => product.category === "browseByHealthCondition"
-// 			),
-// 			horizontal: false,
-// 		},
-// 		{
-// 			title: "Top Brands",
-// 			data: products.filter((product) => product.category === "Top Brands"),
-// 			horizontal: true,
-// 		},
-// 	];
-
-// 	const renderSection = ({ item }: { item: any }) => {
-// 		return (
-// 			<View>
-// 				{renderSectionHeader({ section: item })}
-// 				<FlatList
-// 					data={item.data}
-// 					renderItem={renderCard}
-// 					keyExtractor={(product) => product.productId}
-// 					horizontal
-// 					showsHorizontalScrollIndicator={false}
-// 					contentContainerStyle={styles.horizontalList}
-// 				/>
-// 			</View>
-// 		);
-
-// 		// if (true) {
-// 		// 	return (
-// 		// 		<View>
-// 		// 			{renderSectionHeader({ section: item })}
-// 		// 			<FlatList
-// 		// 				data={item.data}
-// 		// 				renderItem={renderCard}
-// 		// 				keyExtractor={(product) => product.productId}
-// 		// 				horizontal
-// 		// 				showsHorizontalScrollIndicator={false}
-// 		// 				contentContainerStyle={styles.horizontalList}
-// 		// 			/>
-// 		// 		</View>
-// 		// 	);
-// 		// } else {
-// 		// 	return (
-// 		// 		<View>
-// 		// 			{renderSectionHeader({ section: item })}
-// 		// 			<FlatList
-// 		// 				data={item.data}
-// 		// 				renderItem={renderCard}
-// 		// 				keyExtractor={(product) => product.id}
-// 		// 				numColumns={3}
-// 		// 				columnWrapperStyle={styles.columnWrapper}
-// 		// 			/>
-// 		// 		</View>
-// 		// 	);
-// 		// }
-// 	};
-
-// 	return (
-// 		<SafeAreaView style={styles.container}>
-// 			<FlatList
-// 				data={groupedProducts}
-// 				renderItem={renderSection}
-// 				keyExtractor={(section) => section.title}
-// 				ListHeaderComponent={
-// 					<View style={styles.promotionSection}>
-// 						<Text style={styles.categoryTitle}>Promotion</Text>
-// 						<View style={styles.promotionCard}>
-// 							{/* Add promotional content here */}
-// 							<Text style={styles.promotionText}>Exclusive Offer!</Text>
-// 							<Text style={styles.promotionDescription}>
-// 								Get 20% off on all products this week!
-// 							</Text>
-// 						</View>
-// 					</View>
-// 				}
-// 				ListFooterComponent={
-// 					<View style={styles.footer}>
-// 						<Text style={styles.footerText}>End of List</Text>
-// 					</View>
-// 				}
-// 				ListHeaderComponentStyle={styles.promotionHeader}
-// 				ListFooterComponentStyle={styles.footerStyle}
-// 			/>
-// 		</SafeAreaView>
-// 	);
-// }
 
 const styles = StyleSheet.create({
 	container: {

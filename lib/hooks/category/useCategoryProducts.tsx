@@ -5,7 +5,6 @@ import { Product } from "@/lib/types";
 import { getAccessToken, useSession } from "@/lib/SessionProvider";
 
 export default function useCategoryProducts(categoryId: string) {
-	const { session } = useSession();
 
 	return useQuery({
 		queryKey: ["category-products", categoryId],
