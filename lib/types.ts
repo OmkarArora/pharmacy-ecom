@@ -14,12 +14,12 @@ export type Product = {
 	image: string;
 	price: number;
 	discount?: number;
-
 	category: string;
 	reviews?: number;
 	recentlyBought?: number;
 	healthConditions?: string[];
 	rating_count?: number;
+	prescription_required?: boolean;
 };
 
 export type Address = {

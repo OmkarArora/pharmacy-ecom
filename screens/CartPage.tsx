@@ -33,6 +33,7 @@ export default function CartPage() {
 		useCartStore,
 		useShallow((state) => state.selectTotalItemsCount(state))
 	);
+	const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(false);
 
 	// Address controls
 	const { selectedAddress } = useAddressStore();
@@ -45,7 +46,10 @@ export default function CartPage() {
 	const [priceToPay, fullNoDiscountPrice] = useMemo(() => {
 		let actualTotal = 0;
 		let preDiscountTotal = 0;
+		let prescription_required = false;
 		items.forEach((productCartItem) => {
+			if(productCartItem.product.prescription_required)
+				prescription_required = true;
 			preDiscountTotal +=
 				productCartItem.product.price * (productCartItem.quantity || 1);
 			actualTotal +=
@@ -54,7 +58,7 @@ export default function CartPage() {
 					productCartItem.product.discount || 0
 				) * (productCartItem.quantity || 1);
 		});
-
+		setIsPrescriptionRequired(prescription_required);
 		return [actualTotal, preDiscountTotal];
 	}, [items]);
 
@@ -219,7 +223,7 @@ export default function CartPage() {
 						</TouchableOpacity>
 					)}
 
-					{!!selectedAddress && (
+					{!!selectedAddress && !isPrescriptionRequired && (
 						<TouchableOpacity
 							style={[
 								styles.addAddressButton,
@@ -233,6 +237,23 @@ export default function CartPage() {
 						>
 							<Text style={styles.addAddressText}>
 								{isPlaceOrderPending ? "PLACING ORDER..." : "PLACE ORDER"}
+							</Text>
+						</TouchableOpacity>
+					)}
+					{!!selectedAddress && isPrescriptionRequired && (
+						<TouchableOpacity
+							style={[
+								styles.addAddressButton,
+								{ backgroundColor: primaryColor },
+							]}
+							onPress={() => {
+								console.log("hello hello");
+								router.push("/prescription-upload")
+								//placeOrder();
+							}}
+						>
+							<Text style={styles.addAddressText}>
+								{ "Add Prescription" }
 							</Text>
 						</TouchableOpacity>
 					)}
