@@ -90,6 +90,10 @@ export default function RootLayout() {
 							options={{ headerShown: false }}
 						/>
 						<Stack.Screen name="checkout" options={{ headerShown: false }} />
+						<Stack.Screen
+							name="prescription-upload"
+							options={{ headerShown: false }}
+						/>
 						<Stack.Screen name="payment" options={{ headerShown: false }} />
 						<Stack.Screen name="+not-found" />
 					</Stack>
