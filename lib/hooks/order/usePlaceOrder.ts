@@ -28,7 +28,7 @@ export interface OrderType {
 	ordered_at: Date;
 	order_notes: string;
 	prescription_required: boolean;
-	prescription_url: string;
+	prescription_url: string[];
 	status: string;
 	total_amount: number;
 	transaction_id: string;
@@ -55,6 +55,7 @@ export default function usePlaceOrder() {
 
 	const mutation = useMutation({
 		mutationFn: async (data: OrderType) => {
+			console.log('data asda', data);
 			return axios.post(`${ORDERS_BASE_URL}/create-order`, data, {
 				headers: { Authorization: `${await getAccessToken()}` },
 			});
@@ -87,7 +88,7 @@ export default function usePlaceOrder() {
 		);
 	}
 
-	function placeOrder() {
+	function placeOrder(prescription_url?: string[]) {
 		const products: Item[] = cartItems.map((item) => ({
 			product_id: item.product.product_id,
 			quantity: item.quantity,
@@ -108,8 +109,8 @@ export default function usePlaceOrder() {
 			items: products,
 			ordered_at: new Date(),
 			order_notes: "",
-			prescription_required: false,
-			prescription_url: "",
+			prescription_required: !!prescription_url && prescription_url?.length > 0,
+			prescription_url: prescription_url || [],
 			status: "",
 			total_amount: preDiscountTotal,
 			transaction_id: generateTransactionId(),
