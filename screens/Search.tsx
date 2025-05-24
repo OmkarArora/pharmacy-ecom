@@ -13,6 +13,7 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Image } from "expo-image";
 
 export default function Search() {
 	const { data, isFetching } = useCategories();
@@ -35,6 +36,12 @@ function CategoryItem({ category }: { category: CategoryType }) {
 	return (
 		<Link href={`/category/${category.category_id}`}>
 			<View style={styles.categoryItem}>
+				<Image
+					source={category.image || "https://placehold.co/100"}
+					style={{ width: 40,     
+						height: 40,
+						aspectRatio: 89 / 90, borderRadius: 8.25 }}
+				/>
 				<Text style={styles.categoryName}>{category.name}</Text>
 
 				<MaterialIcons name="chevron-right" size={24} color={"#ADB3BC"} />

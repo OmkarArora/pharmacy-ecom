@@ -14,7 +14,9 @@ export default function CategoryCard({ data }: { data: CategoryType }) {
 		>
 			<Image
 				source={image || "https://placehold.co/100"}
-				style={{ width: "100%", aspectRatio: 89 / 90, borderRadius: 8.25 }}
+				style={{ width: 80,     
+					height: 80,
+					aspectRatio: 89 / 90, borderRadius: 8.25 }}
 			/>
 			<Text style={styles.text}>{name}</Text>
 		</TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	View,
 	Text,
@@ -10,7 +10,7 @@ import {
 	Alert,
 	Platform,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { WebView } from "react-native-webview"; 
 import * as Location from "expo-location";
 import {
 	Address,
@@ -27,17 +27,17 @@ export default function AddressForm({
 	isVisible,
 	onClose,
 	onSuccess,
-	initialData
+	initialData,
 }: {
 	isVisible: boolean;
 	onClose: () => void;
 	onSuccess?: () => void;
-	initialData?: Address | null
+	initialData?: Address | null;
 }) {
 	const [[_, username]] = useStorageState("username");
 
 	const { addAddress } = useAddressStore();
-	const [showMap, setShowMap] = useState(false);
+	const [showWebMap, setShowWebMap] = useState(false); // for webview map modal
 	const [formData, setFormData] = useState<Address>({
 		...getEmptyAddressObject(),
 		user_name: username || "",
@@ -59,7 +59,7 @@ export default function AddressForm({
 			// Reset form when modal closes
 			setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
 			setErrors([]);
-			setShowMap(false);
+			setShowWebMap(false);
 		}
 	}, [isVisible]);
 
@@ -95,11 +95,11 @@ export default function AddressForm({
 	const grabCurrentLocation = async () => {
 		const location = await Location.getCurrentPositionAsync({});
 
-		setFormData({
-			...formData,
+		setFormData((prev) => ({
+			...prev,
 			latitude: location.coords.latitude,
 			longitude: location.coords.longitude,
-		});
+		}));
 	};
 
 	const handleLocationSelect = async () => {
@@ -112,7 +112,7 @@ export default function AddressForm({
 			}
 
 			grabCurrentLocation();
-			setShowMap(true);
+			setShowWebMap(true); // Show web map modal instead of MapView
 		} catch (error) {
 			console.error("Error getting location", error);
 			Alert.alert("Error getting location", "Please try again later.");
@@ -125,37 +125,93 @@ export default function AddressForm({
 		addAddressMutation.mutate(
 			{ ...formData, is_default: true },
 			{
-			onSuccess: () => {
-				setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
-				setShowMap(false);
-				onClose();     // Close the modal
-				onSuccess?.(); // Notify parent to refetch addresses
-			},
-			onError: (error) => {
-				console.error("Failed to save address:", error);
-				Alert.alert("Error", "Failed to save the address. Please try again.");
-			},
-		}
+				onSuccess: () => {
+					setFormData({ ...getEmptyAddressObject(), user_name: username || "" });
+					setShowWebMap(false);
+					onClose(); // Close the modal
+					onSuccess?.(); // Notify parent to refetch addresses
+				},
+				onError: (error) => {
+					console.error("Failed to save address:", error);
+					Alert.alert("Error", "Failed to save the address. Please try again.");
+				},
+			}
 		);
 	};
+
+	// Handle message from webview with selected coordinates
+	const onWebViewMessage = (event: any) => {
+		try {
+			const data = JSON.parse(event.nativeEvent.data);
+			if (data.latitude && data.longitude) {
+				setFormData((prev) => ({
+					...prev,
+					latitude: data.latitude,
+					longitude: data.longitude,
+				}));
+				setShowWebMap(false); // Close the map modal after selection
+			}
+		} catch (err) {
+			console.error("Failed to parse message from webview", err);
+		}
+	};
+
+	// Google Maps API key: replace this with your real key
+	const GOOGLE_MAPS_API_KEY = "AIzaSyAEEYcmZ5Bkx19VoKaViUI1bkBI7nfSxVg";
+
+	// WebView HTML for Google Maps map picker
+	const mapHtml = `
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Map Picker</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<style> html, body, #map { height: 100%; margin: 0; padding: 0; } </style>
+		<script src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}"></script>
+		<script>
+			let map;
+			let marker;
+
+			function initMap() {
+				map = new google.maps.Map(document.getElementById('map'), {
+					center: { lat: ${formData.latitude || 37.7749}, lng: ${formData.longitude || -122.4194} },
+					zoom: 12,
+				});
+
+				map.addListener('click', (e) => {
+					if (marker) marker.setMap(null);
+					marker = new google.maps.Marker({
+						position: e.latLng,
+						map: map,
+					});
+
+					window.ReactNativeWebView.postMessage(JSON.stringify({
+						latitude: e.latLng.lat(),
+						longitude: e.latLng.lng(),
+					}));
+				});
+			}
+		</script>
+	</head>
+	<body onload="initMap()">
+		<div id="map"></div>
+	</body>
+	</html>
+	`;
 
 	return (
 		<Modal visible={isVisible} animationType="slide">
 			<SafeAreaView style={{ flex: 1 }}>
 				{locationPermission === null && (
 					<View style={styles.container}>
-						<Text style={styles.loadingText}>
-							Checking location permissions...
-						</Text>
+						<Text style={styles.loadingText}>Checking location permissions...</Text>
 					</View>
 				)}
 				{locationPermission === false && (
 					<View style={styles.container}>
 						<View style={styles.permissionContainer}>
 							<AlertCircle size={48} color="#ff4444" style={styles.icon} />
-							<Text style={styles.permissionTitle}>
-								Location Access Required
-							</Text>
+							<Text style={styles.permissionTitle}>Location Access Required</Text>
 							<Text style={styles.permissionText}>
 								We need access to your location to provide accurate address
 								information.
@@ -168,141 +224,138 @@ export default function AddressForm({
 									style={styles.permissionButton}
 									onPress={requestLocationPermission}
 								>
-									<Text style={styles.permissionButtonText}>
-										Grant Permission
-									</Text>
+									<Text style={styles.permissionButtonText}>Grant Permission</Text>
 								</TouchableOpacity>
 							)}
 						</View>
 					</View>
 				)}
 				{locationPermission && (
-					<ScrollView style={styles.container}>
-						<Text style={styles.title}>Add New Address</Text>
+					<>
+						<ScrollView style={styles.container}>
+							<Text style={styles.title}>Add New Address</Text>
 
-						<View style={styles.form}>
-							<TextInput
-								style={styles.input}
-								placeholder="Type (e.g., Home, Work)"
-								value={formData.type}
-								onChangeText={(text) =>
-									setFormData({ ...formData, type: text })
-								}
-								autoCapitalize="words"
-							/>
+							<View style={styles.form}>
+								<TextInput
+									style={styles.input}
+									placeholder="Type (e.g., Home, Work)"
+									value={formData.type}
+									onChangeText={(text) =>
+										setFormData({ ...formData, type: text })
+									}
+									autoCapitalize="words"
+								/>
 
-							<TextInput
-								style={styles.input}
-								placeholder="Line 1"
-								value={formData.line1}
-								onChangeText={(text) =>
-									setFormData({ ...formData, line1: text })
-								}
-								autoCapitalize="words"
-							/>
+								<TextInput
+									style={styles.input}
+									placeholder="Line 1"
+									value={formData.line1}
+									onChangeText={(text) =>
+										setFormData({ ...formData, line1: text })
+									}
+									autoCapitalize="words"
+								/>
 
-							<TextInput
-								style={styles.input}
-								placeholder="Line 2"
-								value={formData.line2}
-								onChangeText={(text) =>
-									setFormData({ ...formData, line2: text })
-								}
-								autoCapitalize="words"
-							/>
+								<TextInput
+									style={styles.input}
+									placeholder="Line 2"
+									value={formData.line2}
+									onChangeText={(text) =>
+										setFormData({ ...formData, line2: text })
+									}
+									autoCapitalize="words"
+								/>
 
-							<TextInput
-								style={styles.input}
-								placeholder="City"
-								value={formData.city}
-								onChangeText={(text) =>
-									setFormData({ ...formData, city: text })
-								}
-								autoCapitalize="words"
-							/>
+								<TextInput
+									style={styles.input}
+									placeholder="City"
+									value={formData.city}
+									onChangeText={(text) =>
+										setFormData({ ...formData, city: text })
+									}
+									autoCapitalize="words"
+								/>
 
-							<TextInput
-								style={styles.input}
-								placeholder="State"
-								value={formData.state}
-								onChangeText={(text) =>
-									setFormData({ ...formData, state: text })
-								}
-								autoCapitalize="words"
-							/>
+								<TextInput
+									style={styles.input}
+									placeholder="State"
+									value={formData.state}
+									onChangeText={(text) =>
+										setFormData({ ...formData, state: text })
+									}
+									autoCapitalize="words"
+								/>
 
-							<TextInput
-								style={styles.input}
-								placeholder="ZIP Code"
-								value={formData.pincode}
-								onChangeText={(text) =>
-									setFormData({ ...formData, pincode: text })
-								}
-								keyboardType="numeric"
-							/>
+								<TextInput
+									style={styles.input}
+									placeholder="ZIP Code"
+									value={formData.pincode}
+									onChangeText={(text) =>
+										setFormData({ ...formData, pincode: text })
+									}
+									keyboardType="numeric"
+								/>
 
-							<TouchableOpacity
-								style={styles.locationButton}
-								onPress={handleLocationSelect}
-							>
-								<Text style={styles.locationButtonText}>
-									Select Location on Map
-								</Text>
-							</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.locationButton}
+									onPress={handleLocationSelect}
+								>
+									<Text style={styles.locationButtonText}>
+										Select Location on Map
+									</Text>
+								</TouchableOpacity>
 
-							{showMap && (
-								<View style={styles.mapContainer}>
-									<MapView
-										style={styles.map}
-										initialRegion={{
-											latitude: formData.latitude,
-											longitude: formData.longitude,
-											latitudeDelta: 0.0922,
-											longitudeDelta: 0.0421,
-										}}
-										onPress={(e) =>
-											setFormData({
-												...formData,
-												latitude: e.nativeEvent.coordinate.latitude,
-												longitude: e.nativeEvent.coordinate.longitude,
-											})
-										}
-									>
-										<Marker
-											coordinate={{
-												latitude: formData.latitude,
-												longitude: formData.longitude,
-											}}
-										/>
-									</MapView>
+								{/* Show selected lat/lng for user info */}
+								{formData.latitude && formData.longitude && (
+									<Text style={{ marginBottom: 16 }}>
+										Selected Coordinates: {formData.latitude.toFixed(5)},{" "}
+										{formData.longitude.toFixed(5)}
+									</Text>
+								)}
+
+								<TouchableOpacity
+									style={[styles.submitButton, { backgroundColor: primaryColor }]}
+									onPress={handleSubmit}
+								>
+									<Text style={styles.submitButtonText}>Save Address</Text>
+								</TouchableOpacity>
+
+								<TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+									<Text style={styles.cancelButtonText}>Cancel</Text>
+								</TouchableOpacity>
+							</View>
+
+							{errors.length > 0 && (
+								<View style={{ marginTop: 16 }}>
+									<Text style={{ color: "red", fontWeight: "bold" }}>Errors:</Text>
+									{errors.map((error, index) => (
+										<Text key={index} style={{ color: "red" }}>
+											- {error}
+										</Text>
+									))}
 								</View>
 							)}
+						</ScrollView>
 
-							<TouchableOpacity
-								style={[styles.submitButton, { backgroundColor: primaryColor }]}
-								onPress={handleSubmit}
-							>
-								<Text style={styles.submitButtonText}>Save Address</Text>
-							</TouchableOpacity>
-
-							<TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-								<Text style={styles.cancelButtonText}>Cancel</Text>
-							</TouchableOpacity>
-						</View>
-
-						{errors.length > 0 && (
-							<View style={{ marginTop: 16 }}>
-								<Text style={{ color: "red", fontWeight: "bold" }}>
-									Errors:
-								</Text>
-								{errors.map((error, index) => (
-									<Text key={index} style={{ color: "red" }}>
-										- {error}
+						{/* WebView modal for map location picking */}
+						<Modal visible={showWebMap} animationType="slide">
+							<View style={{ flex: 1 }}>
+								<WebView
+									originWhitelist={["*"]}
+									source={{ html: mapHtml }}
+									onMessage={onWebViewMessage}
+								/>
+								<TouchableOpacity
+									style={[styles.cancelButton, { backgroundColor: "#333" }]}
+									onPress={() => setShowWebMap(false)}
+								>
+									<Text style={[styles.cancelButtonText, { color: "white" }]}>
+										Cancel
 									</Text>
-								))}
+								</TouchableOpacity>
 							</View>
-						)}
-					</ScrollView>
+						</Modal>
+					</>
 				)}
 			</SafeAreaView>
 		</Modal>
@@ -351,15 +404,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "bold",
 	},
-	mapContainer: {
-		height: 300,
-		marginBottom: 16,
-		borderRadius: 8,
-		overflow: "hidden",
-	},
-	map: {
-		flex: 1,
-	},
 	submitButton: {
 		backgroundColor: "#2196f3",
 		padding: 16,
@@ -376,6 +420,7 @@ const styles = StyleSheet.create({
 		padding: 16,
 		borderRadius: 8,
 		alignItems: "center",
+		marginTop: 8,
 	},
 	cancelButtonText: {
 		color: "#666",
