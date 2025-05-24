@@ -27,7 +27,6 @@ export interface OrderType {
 	items: Item[];
 	ordered_at: Date;
 	order_notes: string;
-	// pharmacy_id: string;
 	prescription_required: boolean;
 	prescription_url: string;
 	status: string;
@@ -109,7 +108,6 @@ export default function usePlaceOrder() {
 			items: products,
 			ordered_at: new Date(),
 			order_notes: "",
-			// pharmacy_id: "",
 			prescription_required: false,
 			prescription_url: "",
 			status: "",
