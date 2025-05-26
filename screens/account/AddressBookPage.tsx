@@ -1,32 +1,40 @@
 import Header from "@/components/Header";
-import React, {  useState } from "react";
-import { View, Text, Button, StyleSheet, FlatList, Alert } from "react-native";
+import React, { useState } from "react";
+import {
+	View,
+	Text,
+	Button,
+	StyleSheet,
+	FlatList,
+	Alert,
+	TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAddress from "@/lib/hooks/address/useAddress";
 import AddressForm from "@/components/address/AddressForm";
-import { Address } from "@/lib/store/address-store"; 
-
+import { Address } from "@/lib/store/address-store";
 
 export default function AddressBookPage() {
 	const { addressQuery, deleteAddressMutation } = useAddress();
 	const { data } = addressQuery;
 	const [isFormVisible, setIsFormVisible] = useState(false);
 	const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-		
+
 	function onClickDelete(address_id: string) {
 		deleteAddressMutation.mutate(address_id, {
-				onSuccess: () => {
-					addressQuery.refetch();    
-				},
-				onError: (error) => {
-					console.error("Delete failed:", error);
-					Alert.alert("Error", "Failed to delete the address. Please try again.");
-				},
-			});
+			onSuccess: () => {
+				addressQuery.refetch();
+			},
+			onError: (error) => {
+				console.error("Delete failed:", error);
+				Alert.alert("Error", "Failed to delete the address. Please try again.");
+			},
+		});
 	}
+
 	const handleEdit = (address: Address) => {
-		setEditingAddress(address);   
-		setIsFormVisible(true); 
+		setEditingAddress(address);
+		setIsFormVisible(true);
 	};
 
 	const renderAddress = ({ item }: any) => (
@@ -37,14 +45,24 @@ export default function AddressBookPage() {
 				{`, ${item.city}, ${item.state} - ${item.pincode}`}
 			</Text>
 			<View style={styles.buttonRow}>
-				<Button title="Edit" onPress={() => handleEdit(item)} />
-				<Button title="Delete" onPress={() =>  onClickDelete(item.address_id)} />
+				<TouchableOpacity
+					style={styles.roundButton}
+					onPress={() => handleEdit(item)}
+				>
+					<Text style={styles.buttonText}>Edit</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.roundButton, styles.deleteButton]}
+					onPress={() => onClickDelete(item.address_id)}
+				>
+					<Text style={[styles.buttonText, { color: "#fff" }]}>Delete</Text>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
+		<SafeAreaView style={{ flex: 1 , backgroundColor : '#E6F5FB'}}>
 			<View style={{ padding: 16 }}>
 				<Header />
 				<View style={styles.addressContainer}>
@@ -53,11 +71,16 @@ export default function AddressBookPage() {
 						data={data}
 						keyExtractor={(item) => item.address_id.toString()}
 						renderItem={renderAddress}
+						ListEmptyComponent={
+							<Text style={styles.emptyText}>No addresses found.</Text>
+						}
 					/>
-					<Button
-						title="Add New Address"
+					<TouchableOpacity
+						style={styles.addButton}
 						onPress={() => setIsFormVisible(true)}
-					/>
+					>
+						<Text style={styles.addButtonText}>Add New Address</Text>
+					</TouchableOpacity>
 				</View>
 				<AddressForm
 					isVisible={isFormVisible}
@@ -67,7 +90,7 @@ export default function AddressBookPage() {
 					}}
 					initialData={editingAddress}
 					onSuccess={() => {
-						addressQuery.refetch(); 
+						addressQuery.refetch();
 					}}
 				/>
 			</View>
@@ -77,29 +100,64 @@ export default function AddressBookPage() {
 
 const styles = StyleSheet.create({
 	heading: {
-		fontSize: 20,
-		fontWeight: "bold",
+		fontSize: 22,
+		fontWeight: "700",
 		marginBottom: 20,
+		color: "#1a1a1a",
 	},
 	addressContainer: {
-		padding: 20,
+		paddingVertical: 20,
 	},
 	addressItem: {
-		marginBottom: 15,
-		padding: 15,
-		backgroundColor: "#fff",
-		borderRadius: 5,
+		marginBottom: 16,
+		padding: 16,
+		backgroundColor: "#ffffff",
+		borderRadius: 16,
 		shadowColor: "#000",
-		shadowOpacity: 0.1,
-		shadowRadius: 5,
+		shadowOpacity: 0.05,
+		shadowOffset: { width: 0, height: 2 },
+		shadowRadius: 6,
 		elevation: 3,
 	},
 	label: {
 		fontSize: 16,
-		marginBottom: 10,
+		color: "#333",
+		marginBottom: 12,
 	},
 	buttonRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
+	},
+	roundButton: {
+		backgroundColor: "#e0e0e0",
+		paddingVertical: 8,
+		paddingHorizontal: 20,
+		borderRadius: 25,
+	},
+	deleteButton: {
+		backgroundColor: "#d32f2f",
+	},
+	buttonText: {
+		fontSize: 14,
+		color: "#000",
+		fontWeight: "500",
+	},
+	addButton: {
+		backgroundColor: "#956D56",
+		paddingVertical: 14,
+		borderRadius: 30,
+		alignItems: "center",
+		marginTop: 20,
+	},
+	addButtonText: {
+		color: "#fff",
+		fontSize: 16,
+		fontWeight: "600",
+	},
+	emptyText: {
+		textAlign: "center",
+		color: "#999",
+		marginTop: 40,
+		fontSize: 16,
 	},
 });

@@ -1,7 +1,5 @@
-import Header from "@/components/Header";
-import useMyOrders from "@/lib/hooks/order/useMyOrders";
-import { OrderType } from "@/lib/hooks/order/usePlaceOrder";
 import React, { useState } from "react";
+import Header from "@/components/Header";
 import {
 	View,
 	Text,
@@ -11,305 +9,277 @@ import {
 	Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
-const ordersSample = [
+// Mocked order data
+const ordersData = [
 	{
-		id: 1,
-		name: "iPhone 15 Pro Max",
-		status: "Arriving in 10 mins",
-		tracking: [
-			{ time: "9:00 AM", status: "Order Placed" },
-			{ time: "10:00 AM", status: "Picked Up" },
-			{ time: "10:30 AM", status: "Out for Delivery" },
-			{ time: "10:40 AM", status: "Delivered" },
-		],
-	},
-	{
-		id: 2,
-		name: "USB-C Charger",
+		order_id: "ORD12345",
 		status: "Delivered",
-		tracking: [],
+		total: 499,
+		created_at: "2024-05-01",
+		medicines: ["Paracetamol 500mg", "Vitamin C", "Cough Syrup"],
 	},
 	{
-		id: 3,
-		name: "Wireless Headphones",
+		order_id: "ORD12346",
+		status: "Out for Delivery",
+		total: 899,
+		created_at: "2024-05-20",
+		medicines: ["Amoxicillin", "Ibuprofen"],
+	},
+	{
+		order_id: "ORD12347",
 		status: "Cancelled",
-		tracking: [],
+		total: 300,
+		created_at: "2024-05-15",
+		medicines: ["Insulin", "Glucometer Strips"],
 	},
 ];
 
 const MyOrders: React.FC = () => {
-	const [selectedTab, setSelectedTab] = useState<
-		"all" | "delivered" | "cancelled"
-	>("all");
+	const [selectedOrder, setSelectedOrder] = useState<any>(null);
 	const [showModal, setShowModal] = useState(false);
-	const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+	const navigation = useNavigation();
 
-	const { data } = useMyOrders();
-
-	const handleTabChange = (tab: "all" | "delivered" | "cancelled") => {
-		setSelectedTab(tab);
-	};
-
-	const handleOrderPress = (order: OrderType) => {
+	const openModal = (order: any) => {
 		setSelectedOrder(order);
 		setShowModal(true);
 	};
 
-	const filteredOrders = ordersSample.filter((order) => {
-		if (selectedTab === "all") return true;
-		if (selectedTab === "delivered") return order.status === "Delivered";
-		if (selectedTab === "cancelled") return order.status === "Cancelled";
-		return false;
-	});
+	const closeModal = () => {
+		setShowModal(false);
+		setSelectedOrder(null);
+	};
+
+	const getStatusStyle = (status: string) => {
+		switch (status) {
+			case "Delivered":
+				return { backgroundColor: "#e0f7e9", color: "#2e7d32" };
+			case "Cancelled":
+				return { backgroundColor: "#ffebee", color: "#c62828" };
+			case "Out for Delivery":
+				return { backgroundColor: "#fff8e1", color: "#f9a825" };
+			default:
+				return { backgroundColor: "#e0e0e0", color: "#555" };
+		}
+	};
 
 	return (
-		<>
-			<SafeAreaView style={{ flex: 1 }}>
-				<ScrollView style={styles.container}>
-					<Header />
+		<SafeAreaView style={styles.safeArea}>
+			<Header />
+			<Text style={styles.headerTitle} >My Orders</Text>
 
-					{data?.map((order) => (
+			<ScrollView contentContainerStyle={styles.container}>
+				{ordersData.map((order) => {
+					const statusStyle = getStatusStyle(order.status);
+					return (
 						<TouchableOpacity
 							key={order.order_id}
 							style={styles.orderCard}
-							onPress={() => handleOrderPress(order)}
+							onPress={() => openModal(order)}
 						>
-							<Text style={styles.orderName}>{order.order_id}</Text>
-							<Text style={styles.orderStatus}>{order.delivery_status}</Text>
-						</TouchableOpacity>
-					))}
-					{/* 
-					<View style={styles.tabsContainer}>
-						{["all", "delivered", "cancelled"].map((tab) => (
-							<TouchableOpacity
-								key={tab}
-								style={[styles.tab, selectedTab === tab && styles.activeTab]}
-								onPress={() => handleTabChange(tab as any)}
-							>
+							<View style={styles.orderHeader}>
+								<Text style={styles.orderId}>#{order.order_id}</Text>
 								<Text
 									style={[
-										styles.tabText,
-										selectedTab === tab && styles.activeTabText,
+										styles.orderStatus,
+										{
+											backgroundColor: statusStyle.backgroundColor,
+											color: statusStyle.color,
+										},
 									]}
 								>
-									{tab.charAt(0).toUpperCase() + tab.slice(1)}
+									{order.status}
 								</Text>
-							</TouchableOpacity>
-						))}
-					</View>
-
-					{filteredOrders.length === 0 ? (
-						<View style={styles.ordersContent}>
-							<View style={styles.noOrdersContainer}>
-								<Text style={styles.noOrdersText}>Uh oh! :)</Text>
-								<Text style={styles.noOrdersSubText}>No Orders Found!</Text>
-								<TouchableOpacity style={styles.orderNowButton}>
-									<Text style={styles.orderNowButtonText}>ORDER NOW</Text>
-								</TouchableOpacity>
 							</View>
-						</View>
-					) : (
-						filteredOrders.map((order) => (
-							<TouchableOpacity
-								key={order.id}
-								style={styles.orderCard}
-								onPress={() => handleOrderPress(order)}
-							>
-								<Text style={styles.orderName}>{order.name}</Text>
-								<Text style={styles.orderStatus}>{order.status}</Text>
-							</TouchableOpacity>
-						))
-					)} */}
-				</ScrollView>
 
-				<Modal
-					visible={showModal}
-					transparent
-					animationType="slide"
-					onRequestClose={() => setShowModal(false)}
-				>
-					<View style={styles.modalOverlay}>
-						<View style={styles.modalContainer}>
-							<Text style={styles.modalTitle}>Arriving in 10 mins</Text>
-							<Text style={styles.modalSubtitle}>
-								Tracking for: {selectedOrder?.order_id}
+							<Text style={styles.timestamp}>
+								Placed on: {order.created_at}
 							</Text>
 
-							<View style={styles.timeline}>
-								{ordersSample[0]?.tracking.map((step, index) => (
-									<View key={index} style={styles.timelineStep}>
-										<View style={styles.checkboxFilled} />
-										<View style={styles.timelineContent}>
-											<Text style={styles.timelineStatus}>{step.status}</Text>
-											<Text style={styles.timelineTime}>{step.time}</Text>
-										</View>
-									</View>
+							<View style={styles.medicineList}>
+								{order.medicines.map((med: string, index: number) => (
+									<Text key={index} style={styles.medicineItem}>
+										• {med}
+									</Text>
 								))}
 							</View>
 
-							<TouchableOpacity
-								style={styles.closeButton}
-								onPress={() => setShowModal(false)}
-							>
-								<Text style={styles.closeButtonText}>Close</Text>
-							</TouchableOpacity>
-						</View>
+							<View style={styles.orderFooter}>
+								<Text style={styles.totalText}>₹{order.total.toFixed(2)}</Text>
+								<Text style={styles.viewDetails}>View Details</Text>
+							</View>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			<Modal
+				visible={showModal}
+				transparent
+				animationType="slide"
+				onRequestClose={closeModal}
+			>
+				<View style={styles.modalOverlay}>
+					<View style={styles.modalContent}>
+						<Text style={styles.modalTitle}>
+							Order #{selectedOrder?.order_id}
+						</Text>
+						<Text style={styles.modalSubtitle}>
+							Status: {selectedOrder?.status}
+						</Text>
+
+						<Text style={styles.modalSectionTitle}>Medicines</Text>
+						{selectedOrder?.medicines.map((med: string, index: number) => (
+							<Text key={index} style={styles.modalMedicineItem}>
+								• {med}
+							</Text>
+						))}
+
+						<Text style={styles.modalTotal}>
+							Total Amount: ₹{selectedOrder?.total.toFixed(2)}
+						</Text>
+
+						<TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+							<Text style={styles.closeButtonText}>Close</Text>
+						</TouchableOpacity>
 					</View>
-				</Modal>
-			</SafeAreaView>
-		</>
+				</View>
+			</Modal>
+		</SafeAreaView>
 	);
 };
 
+export default MyOrders;
+
 const styles = StyleSheet.create({
-	container: {
+	safeArea: {
 		flex: 1,
-		paddingTop: 20,
-	},
-	breadcrumb: {
-		fontSize: 14,
-		color: "#666",
-		marginBottom: 10,
 	},
 	header: {
-		fontSize: 18,
-		fontWeight: "bold",
-		marginBottom: 20,
-	},
-	tabsContainer: {
 		flexDirection: "row",
-		justifyContent: "space-around",
-		marginBottom: 20,
-	},
-	tab: {
-		paddingVertical: 8,
-		paddingHorizontal: 20,
-		borderBottomWidth: 2,
-		borderBottomColor: "transparent",
-	},
-	activeTab: {
-		borderBottomColor: "#004d40",
-	},
-	tabText: {
-		fontSize: 14,
-		color: "#666",
-	},
-	activeTabText: {
-		color: "#004d40",
-		fontWeight: "bold",
-	},
-	ordersContent: {
-		justifyContent: "center",
 		alignItems: "center",
-		paddingVertical: 50,
+		justifyContent: "space-between",
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		backgroundColor: "#ffffff",
+		borderBottomWidth: 1,
+		borderBottomColor: "#e0e0e0",
 	},
-	noOrdersContainer: {
-		backgroundColor: "#f8f8f8",
-		padding: 20,
-		borderRadius: 10,
-		alignItems: "center",
-	},
-	noOrdersText: {
+	headerTitle: {
 		fontSize: 20,
-		fontWeight: "bold",
-		marginBottom: 10,
-		color: "#333",
+		fontWeight: "600",
+		color: "#1a1a1a",
 	},
-	noOrdersSubText: {
-		fontSize: 16,
-		color: "#666",
-		marginBottom: 20,
-	},
-	orderNowButton: {
-		backgroundColor: "#FFA000",
-		paddingVertical: 10,
-		paddingHorizontal: 20,
-		borderRadius: 5,
-	},
-	orderNowButtonText: {
-		fontSize: 14,
-		color: "#fff",
-		fontWeight: "bold",
+	container: {
+		padding: 16,
 	},
 	orderCard: {
-		backgroundColor: "#f0f0f0",
-		padding: 15,
-		borderRadius: 8,
-		marginBottom: 15,
+		backgroundColor: "#fff",
+		borderRadius: 16,
+		padding: 18,
+		marginBottom: 20,
+		elevation: 4,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
 	},
-	orderName: {
-		fontSize: 16,
-		fontWeight: "bold",
+	orderHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 6,
+	},
+	orderId: {
+		fontSize: 17,
+		fontWeight: "600",
+		color: "#222",
 	},
 	orderStatus: {
-		fontSize: 14,
-		color: "green",
-		marginTop: 5,
+		fontSize: 13,
+		fontWeight: "bold",
+		paddingVertical: 4,
+		paddingHorizontal: 10,
+		borderRadius: 12,
+		overflow: "hidden",
+	},
+	timestamp: {
+		fontSize: 12,
+		color: "#888",
+		marginBottom: 12,
+	},
+	medicineList: {
+		marginBottom: 12,
+	},
+	medicineItem: {
+		fontSize: 15,
+		color: "#333",
+		paddingVertical: 2,
+	},
+	orderFooter: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	totalText: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "#1a73e8",
+	},
+	viewDetails: {
+		fontSize: 13,
+		color: "#1a73e8",
+		fontWeight: "600",
 	},
 	modalOverlay: {
 		flex: 1,
 		backgroundColor: "rgba(0,0,0,0.5)",
 		justifyContent: "flex-end",
 	},
-	modalContainer: {
+	modalContent: {
 		backgroundColor: "#fff",
-		padding: 20,
-		borderTopLeftRadius: 16,
-		borderTopRightRadius: 16,
-		maxHeight: "80%",
+		padding: 24,
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
 	},
 	modalTitle: {
-		fontSize: 18,
+		fontSize: 20,
 		fontWeight: "bold",
-		color: "#2193b0",
-		marginBottom: 10,
+		color: "#0d47a1",
+		marginBottom: 6,
 	},
 	modalSubtitle: {
 		fontSize: 14,
-		color: "#555",
-		marginBottom: 20,
-	},
-	timeline: {
-		paddingLeft: 10,
-		borderLeftWidth: 2,
-		borderLeftColor: "#2193b0",
-		marginBottom: 20,
-	},
-	timelineStep: {
-		flexDirection: "row",
-		marginBottom: 15,
-		alignItems: "flex-start",
-	},
-	checkboxFilled: {
-		width: 14,
-		height: 14,
-		backgroundColor: "#2193b0",
-		borderRadius: 7,
-		marginRight: 10,
-		marginTop: 3,
-	},
-	timelineContent: {
-		flex: 1,
-	},
-	timelineStatus: {
-		fontSize: 14,
-		fontWeight: "bold",
-	},
-	timelineTime: {
-		fontSize: 12,
 		color: "#666",
+		marginBottom: 20,
+	},
+	modalSectionTitle: {
+		fontSize: 16,
+		fontWeight: "600",
+		marginBottom: 10,
+	},
+	modalMedicineItem: {
+		fontSize: 15,
+		marginBottom: 6,
+		color: "#333",
+	},
+	modalTotal: {
+		fontSize: 16,
+		fontWeight: "bold",
+		marginTop: 20,
+		color: "#1a73e8",
 	},
 	closeButton: {
-		backgroundColor: "#2193b0",
-		paddingVertical: 10,
-		borderRadius: 6,
+		marginTop: 24,
+		backgroundColor: "#1a73e8",
+		paddingVertical: 12,
+		borderRadius: 8,
 	},
 	closeButtonText: {
 		color: "#fff",
-		fontWeight: "bold",
 		textAlign: "center",
+		fontWeight: "bold",
+		fontSize: 15,
 	},
 });
-
-export default MyOrders;
