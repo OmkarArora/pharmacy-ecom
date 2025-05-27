@@ -9,37 +9,14 @@ import {
 	Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
-
-// Mocked order data
-const ordersData = [
-	{
-		order_id: "ORD12345",
-		status: "Delivered",
-		total: 499,
-		created_at: "2024-05-01",
-		medicines: ["Paracetamol 500mg", "Vitamin C", "Cough Syrup"],
-	},
-	{
-		order_id: "ORD12346",
-		status: "Out for Delivery",
-		total: 899,
-		created_at: "2024-05-20",
-		medicines: ["Amoxicillin", "Ibuprofen"],
-	},
-	{
-		order_id: "ORD12347",
-		status: "Cancelled",
-		total: 300,
-		created_at: "2024-05-15",
-		medicines: ["Insulin", "Glucometer Strips"],
-	},
-];
+import useMyOrders from "@/lib/hooks/order/useMyOrders";
+import { Item } from "@/lib/hooks/order/usePlaceOrder";
 
 const MyOrders: React.FC = () => {
 	const [selectedOrder, setSelectedOrder] = useState<any>(null);
 	const [showModal, setShowModal] = useState(false);
-	const navigation = useNavigation();
+	const ordersQuery = useMyOrders();
+	const {data: ordersData} = ordersQuery;
 
 	const openModal = (order: any) => {
 		setSelectedOrder(order);
@@ -53,11 +30,11 @@ const MyOrders: React.FC = () => {
 
 	const getStatusStyle = (status: string) => {
 		switch (status) {
-			case "Delivered":
+			case "order_accepted":
 				return { backgroundColor: "#e0f7e9", color: "#2e7d32" };
 			case "Cancelled":
 				return { backgroundColor: "#ffebee", color: "#c62828" };
-			case "Out for Delivery":
+			case "order_placed":
 				return { backgroundColor: "#fff8e1", color: "#f9a825" };
 			default:
 				return { backgroundColor: "#e0e0e0", color: "#555" };
@@ -70,8 +47,8 @@ const MyOrders: React.FC = () => {
 			<Text style={styles.headerTitle} >My Orders</Text>
 
 			<ScrollView contentContainerStyle={styles.container}>
-				{ordersData.map((order) => {
-					const statusStyle = getStatusStyle(order.status);
+				{ordersData?.map((order) => {
+					const statusStyle = getStatusStyle(order.delivery_status);
 					return (
 						<TouchableOpacity
 							key={order.order_id}
@@ -79,7 +56,7 @@ const MyOrders: React.FC = () => {
 							onPress={() => openModal(order)}
 						>
 							<View style={styles.orderHeader}>
-								<Text style={styles.orderId}>#{order.order_id}</Text>
+								<Text style={styles.orderId}>Order Id: {order.order_id}</Text>
 								<Text
 									style={[
 										styles.orderStatus,
@@ -89,24 +66,29 @@ const MyOrders: React.FC = () => {
 										},
 									]}
 								>
-									{order.status}
+									{order.delivery_status}
 								</Text>
 							</View>
 
-							<Text style={styles.timestamp}>
-								Placed on: {order.created_at}
-							</Text>
+							{/* <Text style={styles.timestamp}>
+								Placed on: {order.updated_at.toDateString()}
+							</Text> */}
 
 							<View style={styles.medicineList}>
-								{order.medicines.map((med: string, index: number) => (
-									<Text key={index} style={styles.medicineItem}>
-										• {med}
+								{order.items.map((med: Item, index: number) => (
+									<View key={index} style={styles.medicineItem}>
+									<Text style={styles.productName}>• {med.name}</Text>
+									
+									<Text style={styles.productPriceQty}>
+										₹{med.price} x {med.quantity} 
 									</Text>
+									
+									</View>
 								))}
 							</View>
 
 							<View style={styles.orderFooter}>
-								<Text style={styles.totalText}>₹{order.total.toFixed(2)}</Text>
+								<Text style={styles.totalText}>₹{order.total_amount.toFixed(2)}</Text>
 								<Text style={styles.viewDetails}>View Details</Text>
 							</View>
 						</TouchableOpacity>
@@ -123,22 +105,22 @@ const MyOrders: React.FC = () => {
 				<View style={styles.modalOverlay}>
 					<View style={styles.modalContent}>
 						<Text style={styles.modalTitle}>
-							Order #{selectedOrder?.order_id}
+							Order Id: {selectedOrder?.order_id}
 						</Text>
 						<Text style={styles.modalSubtitle}>
-							Status: {selectedOrder?.status}
+							Status: {selectedOrder?.delivery_status}
 						</Text>
 
 						<Text style={styles.modalSectionTitle}>Medicines</Text>
-						{selectedOrder?.medicines.map((med: string, index: number) => (
-							<Text key={index} style={styles.modalMedicineItem}>
-								• {med}
+						{selectedOrder?.items.map((med: Item, index: number) => (
+						<View key={index} style={{ marginBottom: 10 }}>
+							<Text style={styles.modalMedicineItem}>• {med.name}</Text>
+							<Text style={styles.productPriceQty}>
+							₹{med.price} × {med.quantity}
 							</Text>
+						</View>
 						))}
 
-						<Text style={styles.modalTotal}>
-							Total Amount: ₹{selectedOrder?.total.toFixed(2)}
-						</Text>
 
 						<TouchableOpacity style={styles.closeButton} onPress={closeModal}>
 							<Text style={styles.closeButtonText}>Close</Text>
@@ -282,4 +264,23 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		fontSize: 15,
 	},
+	productName: {
+	fontWeight: "bold",
+	fontSize: 16,
+	},
+	productMeta: {
+	color: "#666",
+	fontSize: 13,
+	},
+	productPriceQty: {
+	fontSize: 14,
+	color: "#333",
+	marginTop: 2,
+	},
+	productManufacturer: {
+	fontStyle: "italic",
+	fontSize: 12,
+	color: "#888",
+	}
+
 });
