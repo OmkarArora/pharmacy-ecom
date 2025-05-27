@@ -143,61 +143,198 @@ export default function AddressForm({
 	const onWebViewMessage = (event: any) => {
 		try {
 			const data = JSON.parse(event.nativeEvent.data);
+	
 			if (data.latitude && data.longitude) {
 				setFormData((prev) => ({
 					...prev,
 					latitude: data.latitude,
 					longitude: data.longitude,
+					line1: data.line1 || prev.line1,
+					city: data.city || prev.city,
+					state: data.state || prev.state,
+					pincode: data.pincode || prev.pincode,
 				}));
-				setShowWebMap(false); // Close the map modal after selection
+				setShowWebMap(false); // Close map
 			}
 		} catch (err) {
 			console.error("Failed to parse message from webview", err);
 		}
 	};
+	
 
 	// Google Maps API key: replace this with your real key
 	const GOOGLE_MAPS_API_KEY = "AIzaSyAEEYcmZ5Bkx19VoKaViUI1bkBI7nfSxVg";
+
+	const coords = formData.latitude && formData.longitude
+	? `{ lat: ${formData.latitude}, lng: ${formData.longitude} }`
+	: null;
 
 	// WebView HTML for Google Maps map picker
 	const mapHtml = `
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Map Picker</title>
-		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-		<style> html, body, #map { height: 100%; margin: 0; padding: 0; } </style>
-		<script src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}"></script>
-		<script>
-			let map;
-			let marker;
+	<title>Map Picker</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style>
+		html, body, #map {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		}
+		#search-container {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		right: 10px;
+		z-index: 5;
+		padding: 8px;
+		background-color: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+		}
+		input[type="text"] {
+		width: 100%;
+		padding: 10px;
+		font-size: 16px;
+		border: 1px solid #ccc;
+		border-radius: 6px;
+		}
+		.gmnoprint {
+		bottom: 10px !important;
+		top: auto !important;
+		}
+	</style>
+	<script src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places"></script>
+	<script>
+		let map;
+		let marker;
 
-			function initMap() {
-				map = new google.maps.Map(document.getElementById('map'), {
-					center: { lat: ${formData.latitude || 37.7749}, lng: ${formData.longitude || -122.4194} },
-					zoom: 12,
-				});
+		function sendLocation(lat, lng) {
+		const geocoder = new google.maps.Geocoder();
+		geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+			if (status === "OK" && results[0]) {
+			const addressComponents = results[0].address_components;
+			const addressObj = {
+				latitude: lat,
+				longitude: lng,
+				line1: "",
+				city: "",
+				state: "",
+				pincode: "",
+			};
 
-				map.addListener('click', (e) => {
-					if (marker) marker.setMap(null);
-					marker = new google.maps.Marker({
-						position: e.latLng,
-						map: map,
-					});
+			addressComponents.forEach((component) => {
+				const types = component.types;
+				if (types.includes("street_address") || types.includes("route") || types.includes("premise")) {
+				addressObj.line1 = component.long_name;
+				}
+				if (types.includes("locality")) {
+				addressObj.city = component.long_name;
+				}
+				if (types.includes("administrative_area_level_1")) {
+				addressObj.state = component.long_name;
+				}
+				if (types.includes("postal_code")) {
+				addressObj.pincode = component.long_name;
+				}
+			});
 
-					window.ReactNativeWebView.postMessage(JSON.stringify({
-						latitude: e.latLng.lat(),
-						longitude: e.latLng.lng(),
-					}));
-				});
+			if (!addressObj.line1) {
+				addressObj.line1 = results[0].formatted_address;
 			}
-		</script>
+
+			window.ReactNativeWebView.postMessage(JSON.stringify(addressObj));
+			} else {
+			window.ReactNativeWebView.postMessage(JSON.stringify({ latitude: lat, longitude: lng }));
+			}
+		});
+		}
+
+		function initMap() {
+		const defaultLat = window.INITIAL_COORDS?.lat || 21.155814;
+		const defaultLng = window.INITIAL_COORDS?.lng || 79.081919;
+
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: { lat: defaultLat, lng: defaultLng },
+			zoom: 14,
+			mapTypeControl: true,
+			streetViewControl: false,
+		});
+
+		const input = document.getElementById("search-input");
+		const autocomplete = new google.maps.places.Autocomplete(input);
+		autocomplete.bindTo("bounds", map);
+
+		// Show marker when selecting from search
+		autocomplete.addListener("place_changed", () => {
+			const place = autocomplete.getPlace();
+			if (!place.geometry || !place.geometry.location) return;
+
+			const lat = place.geometry.location.lat();
+			const lng = place.geometry.location.lng();
+
+			map.setCenter({ lat, lng });
+			map.setZoom(16);
+
+			if (marker) marker.setMap(null);
+			marker = new google.maps.Marker({
+			position: { lat, lng },
+			map: map,
+			});
+
+			// Add click listener to marker
+			marker.addListener("click", () => {
+			sendLocation(lat, lng);
+			});
+		});
+
+		// Add marker if opening with selected coords
+		if (window.INITIAL_COORDS) {
+			marker = new google.maps.Marker({
+			position: { lat: defaultLat, lng: defaultLng },
+			map: map,
+			});
+
+			marker.addListener("click", () => {
+			sendLocation(defaultLat, defaultLng);
+			});
+		}
+
+		// Handle map clicks
+		map.addListener("click", (e) => {
+			const lat = e.latLng.lat();
+			const lng = e.latLng.lng();
+
+			if (marker) marker.setMap(null);
+			marker = new google.maps.Marker({
+			position: e.latLng,
+			map: map,
+			});
+
+			marker.addListener("click", () => {
+			sendLocation(lat, lng);
+			});
+
+			sendLocation(lat, lng);
+		});
+		}
+	</script>
 	</head>
 	<body onload="initMap()">
-		<div id="map"></div>
+	<div id="search-container">
+		<input id="search-input" type="text" placeholder="Search a place..." />
+	</div>
+	<div id="map"></div>
 	</body>
 	</html>
 	`;
+
+	const finalHtml = `
+	<script>
+		window.INITIAL_COORDS = ${coords || 'null'};
+	</script>
+	` + mapHtml;
 
 	return (
 		<Modal visible={isVisible} animationType="slide">
@@ -306,12 +443,12 @@ export default function AddressForm({
 								</TouchableOpacity>
 
 								{/* Show selected lat/lng for user info */}
-								{formData.latitude && formData.longitude && (
+								{/* {formData.latitude && formData.longitude && (
 									<Text style={{ marginBottom: 16 }}>
 										Selected Coordinates: {formData.latitude.toFixed(5)},{" "}
 										{formData.longitude.toFixed(5)}
 									</Text>
-								)}
+								)} */}
 
 								<TouchableOpacity
 									style={[styles.submitButton, { backgroundColor: primaryColor }]}
@@ -342,7 +479,7 @@ export default function AddressForm({
 							<View style={{ flex: 1 }}>
 								<WebView
 									originWhitelist={["*"]}
-									source={{ html: mapHtml }}
+									source={{ html: finalHtml }}
 									onMessage={onWebViewMessage}
 								/>
 								<TouchableOpacity

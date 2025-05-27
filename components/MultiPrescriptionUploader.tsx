@@ -17,10 +17,12 @@ import { useStorageState } from "@/hooks/useStorageState";
 import { getAccessToken } from "@/lib/SessionProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
-const { width } = Dimensions.get("window");
 
 const UploadPrescriptionScreen = () => {
+	const router = useRouter();
+	
 	const [selectedImages, setSelectedImages] = useState<
 		ImagePicker.ImagePickerAsset[]
 	>([]);
@@ -83,13 +85,16 @@ const UploadPrescriptionScreen = () => {
 				body: formData,
 			});
 
-			const result = await response.json();
+			const result  = await response.json();
 
 			if (!response.ok) {
 				throw new Error(result?.message || "Upload failed");
 			}
+			console.log('result', result)
+			router.push({ pathname: "/cart", params: { urls: JSON.stringify(result.prescription_urls) } })
 
 			Alert.alert("Success", "Prescriptions uploaded successfully!");
+			console.log('result', result)
 			setSelectedImages([]);
 		} catch (error: any) {
 			console.error("Upload Error:", error);

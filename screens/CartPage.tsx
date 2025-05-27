@@ -12,8 +12,8 @@ import useCartStore, { CartItem as CartItemType } from "@/lib/store/cart-store";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
 import {
 	View,
 	Text,
@@ -27,39 +27,51 @@ import { useShallow } from "zustand/react/shallow";
 
 export default function CartPage() {
 	const router = useRouter();
+	const params = useLocalSearchParams();
 	const primaryColor = useThemeColor({}, "primary");
 	const items = useCartStore((state) => state.items);
-	const totalItemsInCart = useStore(
-		useCartStore,
-		useShallow((state) => state.selectTotalItemsCount(state))
-	);
-	const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(false);
+	const totalItemsInCart = useCartStore((state) => state.selectTotalItemsCount(state));
+
 
 	// Address controls
 	const { selectedAddress } = useAddressStore();
 	const [isSelectModalVisible, setIsSelectAddressModalVisible] = useState(false);
 	const [isFormVisible, setIsFormVisible] = useState(false);
-	// ----------------
-
+	const [prescriptionUrls, setPrescriptionUrls] = useState<string[]>([]);
+	
+	useEffect(() => {
+		if (params?.urls) {
+			console.log('params.urls', params.urls)
+			try {
+				const urls = JSON.parse(params.urls as string);
+				console.log("hrehr", typeof(urls), Array.isArray(urls));
+				if (Array.isArray(urls)) 
+					setPrescriptionUrls(urls);
+			} catch (e) {
+				console.warn("Failed to parse prescription URLs", e);
+			}
+		}
+	}, [params?.urls]);
+	console.log(`prescriptionUrls ${ prescriptionUrls.length }`);
 	const { placeOrder, isPending: isPlaceOrderPending } = usePlaceOrder();
 
-	const [priceToPay, fullNoDiscountPrice] = useMemo(() => {
+	const [priceToPay, fullNoDiscountPrice, prescriptionRequiredMemo] = useMemo(() => {
 		let actualTotal = 0;
 		let preDiscountTotal = 0;
 		let prescription_required = false;
+
 		items.forEach((productCartItem) => {
-			if(productCartItem.product.prescription_required)
+			if (productCartItem.product.prescription_required) {
 				prescription_required = true;
-			preDiscountTotal +=
-				productCartItem.product.price * (productCartItem.quantity || 1);
-			actualTotal +=
-				getDiscountedPrice(
-					productCartItem.product.price,
-					productCartItem.product.discount || 0
-				) * (productCartItem.quantity || 1);
+			}
+			preDiscountTotal += productCartItem.product.price * (productCartItem.quantity || 1);
+			actualTotal += getDiscountedPrice(
+				productCartItem.product.price,
+				productCartItem.product.discount || 0
+			) * (productCartItem.quantity || 1);
 		});
-		setIsPrescriptionRequired(prescription_required);
-		return [actualTotal, preDiscountTotal];
+
+		return [actualTotal, preDiscountTotal, prescription_required];
 	}, [items]);
 
 	if (totalItemsInCart === 0) {
@@ -116,7 +128,6 @@ export default function CartPage() {
 					<View style={styles.billSection}>
 						<View style={styles.billAddress}>
 							<Text style={styles.billTo}>Bill to --------</Text>
-							{/* <Text style={styles.billLocation}>Delhi 110001</Text> */}
 						</View>
 						<TouchableOpacity>
 							<Text style={[styles.addDetails, { color: primaryColor }]}>
@@ -124,12 +135,6 @@ export default function CartPage() {
 							</Text>
 						</TouchableOpacity>
 					</View>
-					{/* <View style={styles.offerSection}>
-						<Text style={styles.offerText}>'DELZERO' Applied</Text>
-						<TouchableOpacity>
-							<Text style={styles.removeOffer}>X</Text>
-						</TouchableOpacity>
-					</View> */}
 				</View>
 
 				<View style={styles.cartDetails}>
@@ -141,28 +146,6 @@ export default function CartPage() {
 						<CartItem data={item} key={`${item}-${index}`} />
 					))}
 
-					{/* Last Minute Buys Section */}
-					{/* <Text style={styles.lastMinuteTitle}>LAST MINUTE BUYS</Text>
-					<ScrollView
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						style={styles.lastMinuteScroll}
-					>
-						
-						<View style={styles.lastMinuteItem}>
-							<Image
-								source={
-									"https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-								}
-								style={styles.lastMinuteImage}
-							/>
-							<Text style={styles.lastMinutePrice}>₹160</Text>
-							<TouchableOpacity>
-								<Text style={styles.addButton}>ADD</Text>
-							</TouchableOpacity>
-						</View>
-			
-					</ScrollView> */}
 
 					{/* Cart Breakdown */}
 					<View style={styles.cartBreakdown}>
@@ -222,40 +205,43 @@ export default function CartPage() {
 							<Text style={styles.addAddressText}>ADD ADDRESS</Text>
 						</TouchableOpacity>
 					)}
+					{!!selectedAddress && (
+						<>
+							{/* Place Order Button (No Prescription Required OR Prescriptions Uploaded) */}
+							{(!prescriptionRequiredMemo || prescriptionUrls.length > 0) && (
+								<TouchableOpacity
+									style={[
+										styles.addAddressButton,
+										{ backgroundColor: primaryColor },
+									]}
+									onPress={() => {
+										placeOrder(prescriptionUrls);
+									}}
+									disabled={isPlaceOrderPending}
+								>
+									<Text style={styles.addAddressText}>
+										{isPlaceOrderPending ? "PLACING ORDER..." : "PLACE ORDER"}
+									</Text>
+								</TouchableOpacity>
+							)}
 
-					{!!selectedAddress && !isPrescriptionRequired && (
-						<TouchableOpacity
-							style={[
-								styles.addAddressButton,
-								{ backgroundColor: primaryColor },
-							]}
-							onPress={() => {
-								// router.push("/checkout")
-								placeOrder();
-							}}
-							disabled={isPlaceOrderPending}
-						>
-							<Text style={styles.addAddressText}>
-								{isPlaceOrderPending ? "PLACING ORDER..." : "PLACE ORDER"}
-							</Text>
-						</TouchableOpacity>
-					)}
-					{!!selectedAddress && isPrescriptionRequired && (
-						<TouchableOpacity
-							style={[
-								styles.addAddressButton,
-								{ backgroundColor: primaryColor },
-							]}
-							onPress={() => {
-								console.log("hello hello");
-								router.push("/prescription-upload")
-								//placeOrder();
-							}}
-						>
-							<Text style={styles.addAddressText}>
-								{ "Add Prescription" }
-							</Text>
-						</TouchableOpacity>
+							{/* Add Prescription Button (Prescription Required AND No Prescriptions Uploaded) */}
+							{prescriptionRequiredMemo && prescriptionUrls.length === 0 && (
+								<TouchableOpacity
+									style={[
+										styles.addAddressButton,
+										{ backgroundColor: primaryColor },
+									]}
+									onPress={() => {
+										router.push("/prescription-upload");
+									}}
+								>
+									<Text style={styles.addAddressText}>
+										{"Add Prescription"}
+									</Text>
+								</TouchableOpacity>
+							)}
+						</>
 					)}
 				</View>
 

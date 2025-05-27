@@ -42,7 +42,14 @@ const AboutCompanyScreen = () => (
 	</View>
 );
 
-const userName = "John Doe";
+// User data
+const user = {
+	name: "John Doe",
+	email: "john.doe@example.com",
+	mobile: "+91 9876543210",
+	photo:
+		require("@/assets/images/profile_photo.png"), // Placeholder image path
+};
 
 export default function ProfilePage() {
 	const primaryColor = useThemeColor({}, "primary");
@@ -59,9 +66,13 @@ export default function ProfilePage() {
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView contentContainerStyle={styles.container}>
 				<View style={styles.header}>
+				<Image source={user.photo} style={styles.profileImage} />
 					<Text style={[styles.userName, { color: primaryColor }]}>
-						{userName}
+						{user.name}
 					</Text>
+					<Text style={styles.userInfo}>{user.mobile}</Text>
+					<Text style={styles.userInfo}>{user.email}</Text>
+
 					{/* <Text
 						style={styles.editDetails}
 						onPress={() => {
@@ -72,7 +83,7 @@ export default function ProfilePage() {
 					</Text> */}
 				</View>
 
-				<View style={[styles.rateAppSection]}>
+				<View style={styles.rateAppSection}>
 					<TouchableOpacity
 						style={[styles.rateAppButton, { backgroundColor: primaryColor }]}
 					>
@@ -97,23 +108,26 @@ export default function ProfilePage() {
 					>
 						<Text style={styles.sectionText}>My Orders</Text>
 					</TouchableOpacity>
-					<TouchableOpacity
+
+					{/* <TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
 							// navigation.navigate('ManagePayment')
 							router.push("/manage-payments");
 						}}
 					>
-						{/* <Text style={styles.sectionText}>Manage Payment</Text>
-					</TouchableOpacity>
+						<Text style={styles.sectionText}>Manage Payment</Text>
+					</TouchableOpacity> */}
+
 					<TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
 							router.push("/address-book");
 						}}
-					> */}
+					>
 						<Text style={styles.sectionText}>Address Book</Text>
 					</TouchableOpacity>
+
 					<TouchableOpacity
 						style={styles.sectionItem}
 						onPress={() => {
@@ -131,18 +145,9 @@ export default function ProfilePage() {
 					</TouchableOpacity>
 					<TouchableOpacity
 						onPress={clearData}
-						style={{ backgroundColor: "red", padding: 10, marginTop: 10 }}
+						style={styles.clearDataButton}
 					>
-						<Text
-							style={{
-								color: "white",
-								fontSize: 20,
-								textTransform: "uppercase",
-								textAlign: "center",
-							}}
-						>
-							Clear App Settings
-						</Text>
+						<Text style={styles.clearDataText}>Clear App Settings</Text>
 					</TouchableOpacity>
 				</View>
 			</ScrollView>
@@ -154,20 +159,27 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		paddingTop: 40,
+		paddingHorizontal: 20,
 	},
 	header: {
-		marginBottom: 20,
+		alignItems: "center",
+		marginBottom: 30,
 	},
 	profileImage: {
 		width: 100,
 		height: 100,
 		borderRadius: 50,
 		marginBottom: 10,
+		borderWidth: 2,
+		borderColor: "#ccc",
 	},
 	userName: {
-		fontSize: 35,
+		fontSize: 24,
 		fontWeight: "bold",
-		color: "#333",
+	},
+	userInfo: {
+		fontSize: 14,
+		color: "#666",
 	},
 	editDetails: {
 		fontSize: 14,
@@ -176,16 +188,14 @@ const styles = StyleSheet.create({
 		textDecorationLine: "underline",
 	},
 	rateAppSection: {
-		marginBottom: 20,
+		marginBottom: 30,
 		alignItems: "center",
 	},
 	rateAppButton: {
 		flexDirection: "row",
 		alignItems: "center",
-		backgroundColor: "#E0F7FA",
-		padding: 15,
-		borderRadius: 10,
-		paddingVertical: 20,
+		padding: 16,
+		borderRadius: 12,
 		width: "100%",
 		justifyContent: "space-between",
 	},
@@ -202,11 +212,19 @@ const styles = StyleSheet.create({
 		marginHorizontal: 2,
 	},
 	section: {
-		marginBottom: 20,
+		backgroundColor: "#fff",
+		borderRadius: 10,
+		paddingHorizontal: 15,
+		paddingVertical: 10,
+		marginBottom: 30,
+		shadowColor: "#000",
+		shadowOpacity: 0.05,
+		shadowRadius: 10,
+		elevation: 2,
 	},
 	sectionItem: {
 		borderBottomWidth: 1,
-		borderBottomColor: "#ddd",
+		borderBottomColor: "#eee",
 		paddingVertical: 15,
 	},
 	sectionText: {
@@ -215,22 +233,37 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		alignItems: "center",
+		paddingBottom: 30,
 	},
 	versionText: {
 		fontSize: 14,
 		color: "#999",
-		marginBottom: 10,
+		marginBottom: 15,
 	},
 	logoutButton: {
 		backgroundColor: "#FF5252",
-		paddingVertical: 10,
-		paddingHorizontal: 20,
-		borderRadius: 5,
+		paddingVertical: 12,
+		paddingHorizontal: 30,
+		borderRadius: 25,
+		marginBottom: 10,
 	},
 	logoutText: {
 		fontSize: 16,
 		color: "#fff",
 		fontWeight: "600",
+	},
+	clearDataButton: {
+		backgroundColor: "red",
+		paddingVertical: 10,
+		paddingHorizontal: 25,
+		borderRadius: 25,
+	},
+	clearDataText: {
+		color: "white",
+		fontSize: 14,
+		fontWeight: "600",
+		textTransform: "uppercase",
+		textAlign: "center",
 	},
 	screenContainer: {
 		flex: 1,
