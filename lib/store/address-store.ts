@@ -17,6 +17,7 @@ export interface Address {
 	is_default: boolean;
 	type: string;
 	user_name: string;
+	area: string;
 }
 
 export function getEmptyAddressObject(): Address {
@@ -34,6 +35,7 @@ export function getEmptyAddressObject(): Address {
 		updated_at: new Date().toISOString(),
 		is_default: false,
 		user_name: "",
+		area: "",
 	};
 }
 

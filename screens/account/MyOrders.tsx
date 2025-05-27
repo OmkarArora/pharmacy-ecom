@@ -79,9 +79,9 @@ const MyOrders: React.FC = () => {
 									<View key={index} style={styles.medicineItem}>
 									<Text style={styles.productName}>• {med.name}</Text>
 									
-									<Text style={styles.productPriceQty}>
+									{/* <Text style={styles.productPriceQty}>
 										₹{med.price} x {med.quantity} 
-									</Text>
+									</Text> */}
 									
 									</View>
 								))}
@@ -115,13 +115,12 @@ const MyOrders: React.FC = () => {
 						{selectedOrder?.items.map((med: Item, index: number) => (
 						<View key={index} style={{ marginBottom: 10 }}>
 							<Text style={styles.modalMedicineItem}>• {med.name}</Text>
-							<Text style={styles.productPriceQty}>
+							{/* <Text style={styles.productPriceQty}>
 							₹{med.price} × {med.quantity}
-							</Text>
+							</Text> */}
 						</View>
 						))}
-
-
+						
 						<TouchableOpacity style={styles.closeButton} onPress={closeModal}>
 							<Text style={styles.closeButtonText}>Close</Text>
 						</TouchableOpacity>

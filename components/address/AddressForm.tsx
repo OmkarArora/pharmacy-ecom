@@ -22,6 +22,8 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { useStorageState } from "@/hooks/useStorageState";
 import useAddress from "@/lib/hooks/address/useAddress";
 import { CircleAlert as AlertCircle } from "lucide-react-native";
+import AreaPicker, { AreaType } from "./AreaPicker";
+import Spacer from "@/components/ui/spacer";
 
 export default function AddressForm({
 	isVisible,
@@ -92,6 +94,13 @@ export default function AddressForm({
 		setLocationPermission(status === "granted");
 	};
 
+	const PHARMACY_AREAS: AreaType[] = [
+		{ id: "1", name: "North Nagpur" },
+		{ id: "2", name: "South Nagpur" },
+		{ id: "3", name: "East Nagpur" },
+		{ id: "4", name: "West Nagpur" },
+	];
+
 	const grabCurrentLocation = async () => {
 		const location = await Location.getCurrentPositionAsync({});
 
@@ -153,6 +162,7 @@ export default function AddressForm({
 					city: data.city || prev.city,
 					state: data.state || prev.state,
 					pincode: data.pincode || prev.pincode,
+					area: data.area || prev.area,
 				}));
 				setShowWebMap(false); // Close map
 			}
@@ -385,7 +395,7 @@ export default function AddressForm({
 
 								<TextInput
 									style={styles.input}
-									placeholder="Line 1"
+									placeholder="Plot No., Area, Street"
 									value={formData.line1}
 									onChangeText={(text) =>
 										setFormData({ ...formData, line1: text })
@@ -395,7 +405,7 @@ export default function AddressForm({
 
 								<TextInput
 									style={styles.input}
-									placeholder="Line 2"
+									placeholder="Landmark (optional)"
 									value={formData.line2}
 									onChangeText={(text) =>
 										setFormData({ ...formData, line2: text })
@@ -432,6 +442,17 @@ export default function AddressForm({
 									}
 									keyboardType="numeric"
 								/>
+
+								<AreaPicker
+									selectedCategory={
+										PHARMACY_AREAS.find((area) => area.name === formData.area) || null
+									}
+									onSelectCategory={(selectedArea) =>
+										setFormData({ ...formData, area: selectedArea.name })
+									}
+									categories={PHARMACY_AREAS}
+								/>
+								<Spacer height={10} />
 
 								<TouchableOpacity
 									style={styles.locationButton}
