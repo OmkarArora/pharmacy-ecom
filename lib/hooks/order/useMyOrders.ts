@@ -21,7 +21,7 @@ export default function useMyOrders() {
 		queryFn: async () => {
 			try {
 				const response = await axios.get<{ orders: OrderType[] }>(
-					`${ORDERS_BASE_URL}/get-orders-by-user?user_name=${username}`,
+					`${ORDERS_BASE_URL}/get-orders?user_name=${username}`,
 					{
 						headers: { Authorization: `${await getAccessToken()}` },
 					}

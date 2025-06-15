@@ -88,9 +88,10 @@ export default function usePlaceOrder() {
 	}
 
 	function placeOrder(prescription_url?: string[]) {
+		console.log("---create order");
 		const products: Item[] = cartItems.map((item) => ({
 			product_id: item.product.product_id,
-			name : item.product.name,
+			name: item.product.name,
 			quantity: item.quantity,
 			price: getDiscountedPrice(item.product.price, item.product.discount || 0),
 		}));
@@ -116,6 +117,8 @@ export default function usePlaceOrder() {
 			updated_at: new Date(),
 			user_name: username || "",
 		};
+
+		console.log({ orderDetails, items: orderDetails.items });
 		mutation.mutate(orderDetails);
 	}
 
