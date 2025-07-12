@@ -67,46 +67,90 @@ export default function HomePage() {
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 				
-			<View style={{ backgroundColor: "#E6F5FB", paddingHorizontal: 12}}>
-				<AddressWidget />
-			</View>
-				
-				<Spacer height={10} />
+				<View style={{ backgroundColor: "#E6F5FB", paddingHorizontal: 12}}>
+					<AddressWidget />
+				</View>
+					
+					<Spacer height={10} />
 
-				<TouchableOpacity
-					onPress={() => router.push("/search")}
+					<TouchableOpacity
+						onPress={() => router.push("/search")}
+						style={{
+							backgroundColor: "#FDFDFD",
+							padding: 16,
+							borderRadius: 19,
+							flexDirection: "row",
+							gap: 16,
+						}}
+					>
+						<IconSymbol size={20} name="magnifyingglass" color={"#303134"} />
+						<Text
+							style={{ fontWeight: "semibold", color: "#B7B7B7", fontSize: 15 }}
+						>
+							Search
+						</Text>
+					</TouchableOpacity>
+
+					{/* <Spacer height={20} /> */}
+
+					{/* <ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						contentContainerStyle={{ gap: 2 }}
+					>
+						<ServiceCard heading="Medicines" />
+						<ServiceCard heading="Healthcare" />
+						<ServiceCard heading="Lab Test" />
+						<ServiceCard heading="Doctor Consultation" />
+						<ServiceCard heading="Medicines" />
+						<ServiceCard heading="Medicines" />
+						<ServiceCard heading="Medicines" />
+					</ScrollView> */}
+
+					<Spacer height={10} />
+
+					<TouchableOpacity
+					onPress={() => {
+						router.push("/prescription-upload");
+					}}
 					style={{
-						backgroundColor: "#FDFDFD",
-						padding: 16,
-						borderRadius: 19,
+						backgroundColor: "#F5F7F9",
+						borderRadius: 12,
+						marginTop: 16,
+						marginHorizontal: 10,
 						flexDirection: "row",
-						gap: 16,
+						justifyContent: "space-between",
+						alignItems: "center",
+						paddingVertical: 14,
+						paddingHorizontal: 16,
+						shadowColor: "#000",
+						shadowOpacity: 0.1,
+						shadowRadius: 4,
+						elevation: 2,
 					}}
 				>
-					<IconSymbol size={20} name="magnifyingglass" color={"#303134"} />
-					<Text
-						style={{ fontWeight: "semibold", color: "#B7B7B7", fontSize: 15 }}
+					<View style={{ flexDirection: "row", alignItems: "center" }}>
+						<Image
+							source={require("@/assets/images/prescription.png")} 
+							style={{ width: 36, height: 36, marginRight: 12, borderRadius: 8 }}
+						/>
+						<Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>
+							Order with prescription
+						</Text>
+					</View>
+
+					<View
+						style={{
+							backgroundColor: "#000",
+							paddingVertical: 8,
+							paddingHorizontal: 14,
+							borderRadius: 20,
+						}}
 					>
-						Search
-					</Text>
+						<Text style={{ color: "#fff", fontWeight: "600" }}>Order now</Text>
+					</View>
 				</TouchableOpacity>
-
-				{/* <Spacer height={20} /> */}
-
-				{/* <ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					contentContainerStyle={{ gap: 2 }}
-				>
-					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Healthcare" />
-					<ServiceCard heading="Lab Test" />
-					<ServiceCard heading="Doctor Consultation" />
-					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Medicines" />
-					<ServiceCard heading="Medicines" />
-				</ScrollView> */}
-
+			
 				<Spacer height={10} />
 
 				{/* 🔄 Image Slider */}
